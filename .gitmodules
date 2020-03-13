@@ -1,0 +1,6 @@
+[submodule "authentication"]
+	path = authentication
+	url = https://github.com/NOVAPokemon/authentication.git
+[submodule "utils"]
+	path = utils
+	url = https://github.com/NOVAPokemon/utils.git
