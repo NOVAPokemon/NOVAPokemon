@@ -1,9 +1,12 @@
 [submodule "authentication"]
 	path = authentication
 	url = https://github.com/NOVAPokemon/authentication.git
+	update = merge
 [submodule "utils"]
 	path = utils
 	url = https://github.com/NOVAPokemon/utils.git
+	update = merge
 [submodule "generator"]
 	path = generator
 	url = https://github.com/NOVAPokemon/generator.git
+	update = merge
