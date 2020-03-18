@@ -18,3 +18,6 @@
 	path = client
 	url = https://github.com/NOVAPokemon/client.git
 	update = merge
+[submodule "trades"]
+	path = trades
+	url = https://github.com/NOVAPokemon/trades.git
