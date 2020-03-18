@@ -13,6 +13,8 @@
 [submodule "battles"]
 	path = battles
 	url = https://github.com/NOVAPokemon/battles.git
+	update = merge
 [submodule "client"]
 	path = client
 	url = https://github.com/NOVAPokemon/client.git
+	update = merge
