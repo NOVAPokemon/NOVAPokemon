@@ -21,3 +21,4 @@
 [submodule "trades"]
 	path = trades
 	url = https://github.com/NOVAPokemon/trades.git
+	update = merge
