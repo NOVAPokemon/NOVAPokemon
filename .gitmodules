@@ -22,3 +22,6 @@
 	path = trades
 	url = https://github.com/NOVAPokemon/trades.git
 	update = merge
+[submodule "trainers"]
+	path = trainers
+	url = https://github.com/NOVAPokemon/trainers.git

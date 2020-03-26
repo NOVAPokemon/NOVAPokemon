@@ -12,6 +12,11 @@
 - Gerar Pokemons
 - Microtransições
 
+- tracker localizacoes
+- inventario
+- notificações
+
+
 ## Operações
 
 - Registar
