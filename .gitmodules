@@ -26,3 +26,7 @@
 	path = trainers
 	url = https://github.com/NOVAPokemon/trainers.git
 	update = merge
+[submodule "notifications"]
+	path = notifications
+	url = https://github.com/NOVAPokemon/notifications.git
+	update = merge
