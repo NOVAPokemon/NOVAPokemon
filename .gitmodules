@@ -25,3 +25,4 @@
 [submodule "trainers"]
 	path = trainers
 	url = https://github.com/NOVAPokemon/trainers.git
+	update = merge
