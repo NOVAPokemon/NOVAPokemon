@@ -27,7 +27,7 @@ tmux start-server
 tmux new-session -s $session -d -x "$(tput cols)" -y "$(tput lines)"
 
 # create a new window called scratch
-tmux new-window -t $session:0 -n mongo
+tmux rename-window -t $session:0 mongo
 tmux send-keys "$runMongo" C-m
 
 # create a new window called scratch
