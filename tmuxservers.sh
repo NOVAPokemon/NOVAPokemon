@@ -11,6 +11,7 @@ session="servers"
 cdToRepo="cd ~/go/src/github.com/NOVAPokemon/"
 runGoPkg="go run github.com/NOVAPokemon/"
 runMongo="docker run -p 27017:27017 mongo"
+stopMongo="docker stop \$(docker ps -f \"ancestor=mongo\" -q -a)"
 
 # Set Session Name
 SESSIONEXISTS=$(tmux list-sessions | grep $session)
@@ -28,6 +29,7 @@ tmux new-session -s $session -d -x "$(tput cols)" -y "$(tput lines)"
 
 # create a new window called scratch
 tmux rename-window -t $session:0 mongo
+tmux send-keys "$stopMongo" C-m
 tmux send-keys "$runMongo" C-m
 
 # create a new window called scratch
