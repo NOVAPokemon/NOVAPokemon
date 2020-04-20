@@ -33,7 +33,7 @@ tmux send-keys "$stopMongo" C-m
 tmux send-keys "$runMongo" C-m
 
 # create a new window called scratch
-tmux new-window -t $session:1 -n servers
+tmux new-window -t $session:1 -n servers_1
 
 name="authentication"
 tmux send-keys "$cdToRepo$name;$runGoPkg$name"
@@ -76,5 +76,21 @@ tmux select-layout even-vertical
 tmux setw synchronize-panes on
 tmux send-keys C-m
 tmux setw synchronize-panes off
+
+tmux new-window -t $session:2 -n servers_2
+
+name="battles"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux splitw -v -p 50
+
+name="gym"
+tmux send-keys "sleep 5;$cdToRepo$name;$runGoPkg$name"
+
+tmux select-layout even-vertical
+tmux setw synchronize-panes on
+tmux send-keys C-m
+tmux setw synchronize-panes off
+
+tmux selectw -t $session:servers_1
 
 tmux attach-session -t $session
