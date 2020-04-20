@@ -6,6 +6,7 @@
     <mapping directory="$PROJECT_DIR$/battles" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/client" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/generator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/gym" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/location" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/microtransactions" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/notifications" vcs="Git" />
