@@ -6,10 +6,6 @@
 	path = utils
 	url = https://github.com/NOVAPokemon/utils.git
 	update = merge
-[submodule "generator"]
-	path = generator
-	url = https://github.com/NOVAPokemon/generator.git
-	update = merge
 [submodule "battles"]
 	path = battles
 	url = https://github.com/NOVAPokemon/battles.git
