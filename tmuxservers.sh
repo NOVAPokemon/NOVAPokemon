@@ -64,7 +64,7 @@ tmux send-keys "$cdToRepo$name;$runGoPkg$name"
 tmux selectp -t 0
 tmux splitw -v -p 50
 
-name="generator"
+name="battles"
 tmux send-keys "$cdToRepo$name;$runGoPkg$name"
 tmux selectp -t 2
 tmux splitw -v -p 50
@@ -78,10 +78,6 @@ tmux send-keys C-m
 tmux setw synchronize-panes off
 
 tmux new-window -t $session:2 -n servers_2
-
-name="battles"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
-tmux splitw -v -p 50
 
 name="gym"
 tmux send-keys "sleep 5;$cdToRepo$name;$runGoPkg$name"
