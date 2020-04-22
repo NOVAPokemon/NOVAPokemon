@@ -1,0 +1,115 @@
+version: '3'
+services:
+
+  mongo_service:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - 'mongo:/data/db'
+
+  authentication:
+    build:
+      context: ./authentication
+    ports:
+      - "8001:8001"
+    image: authentication:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL=mongodb://mongo_service:27017/
+
+  battles:
+    build:
+      context: ./battles
+    ports:
+      - "8002:8002"
+    image: battles:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL=mongodb://mongo_service:27017/
+
+  gym:
+    build:
+      context: ./gym
+    ports:
+      - "8003:8003"
+    image: gym:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+
+  location:
+    build:
+      context: ./location
+    ports:
+      - "8004:8004"
+    image: location:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL=mongodb://mongo_service:27017/
+
+  microtransactions:
+    build:
+      context: ./microtransactions
+    ports:
+      - "8005:8005"
+    image: microtransactions:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+  notifications:
+    build:
+      context: ./notifications
+    ports:
+      - "8006:8006"
+    image: notifications:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+  store:
+    build:
+      context: ./store
+    ports:
+      - "8007:8007"
+    image: store:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+  trades:
+    build:
+      context: ./trades
+    ports:
+      - "8008:8008"
+    image: trades:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+  trainers:
+    build:
+      context: ./trainers
+    ports:
+      - "8009:8009"
+    image: trainers:latest
+    depends_on:
+      - mongo_service
+    environment:
+      - MONGODB_URL="mongodb://mongo_service:27017/"
+
+volumes:
+  mongo:
