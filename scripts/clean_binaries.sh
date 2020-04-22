@@ -18,8 +18,8 @@ for d in */; do
   echo "Cleaning binary..."
 
   #remove previous binary if already exists
-  if [ -e "$dirname_stripped" ]; then
-    rm "$dirname_stripped"
+  if [ -e executable ]; then
+    rm executable
   fi
 
   cd .. || exit
