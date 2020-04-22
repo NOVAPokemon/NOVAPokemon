@@ -10,6 +10,8 @@ services:
       - MONGO_LOG_DIR=/dev/null
     volumes:
       - 'mongo:/data/db'
+    logging:
+      driver: none
 
   authentication:
     build:
@@ -21,6 +23,15 @@ services:
       - mongo_service
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   battles:
     build:
@@ -32,6 +43,15 @@ services:
       - mongo_service
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   gym:
     build:
@@ -41,8 +61,18 @@ services:
     image: gym:latest
     depends_on:
       - mongo_service
+      - location
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
 
   location:
@@ -55,6 +85,15 @@ services:
       - mongo_service
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   microtransactions:
     build:
@@ -65,7 +104,16 @@ services:
     depends_on:
       - mongo_service
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   notifications:
     build:
@@ -76,7 +124,16 @@ services:
     depends_on:
       - mongo_service
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   store:
     build:
@@ -87,7 +144,16 @@ services:
     depends_on:
       - mongo_service
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   trades:
     build:
@@ -98,7 +164,16 @@ services:
     depends_on:
       - mongo_service
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
   trainers:
     build:
@@ -109,7 +184,16 @@ services:
     depends_on:
       - mongo_service
     environment:
-      - MONGODB_URL="mongodb://mongo_service:27017/"
+      - MONGODB_URL=mongodb://mongo_service:27017/
+      - AUTHENTICATION_URL="authentication:8001"
+      - BATTLES_URL="battles:8002"
+      - GYM_URL="gym:8003"
+      - LOCATION_URL="location:8004"
+      - MICROTRANSACTION_URL="microtransaction:8005"
+      - NOTIFICATIONS_URL="notifications:8006"
+      - STORE_URL="store:8007"
+      - TRADES_URL="trades:8008"
+      - TRAINERS_URL="trainers:8009"
 
 volumes:
   mongo:
