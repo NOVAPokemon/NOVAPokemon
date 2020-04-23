@@ -21,179 +21,196 @@ services:
     image: authentication:latest
     depends_on:
       - mongo_service
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
 
   battles:
     build:
       context: ./battles
     ports:
-      - "8002:8002"
+      - "${BATTLES_PORT}:${BATTLES_PORT}"
     image: battles:latest
     depends_on:
       - mongo_service
+      - ${TRAINERS_NAME}
+      - ${NOTIFICATIONS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS} && ./executable"
 
   gym:
     build:
       context: ./gym
     ports:
-      - "8003:8003"
+      - "${GYM_PORT}:${GYM_PORT}"
     image: gym:latest
     depends_on:
       - mongo_service
-      - location
+      - ${LOCATION_NAME}
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
-
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${WAIT_LOCATION} ${DEFAULT_FLAGS} && ./executable"
 
   location:
     build:
       context: ./location
     ports:
-      - "8004:8004"
+      - "${LOCATION_PORT}:${LOCATION_PORT}"
     image: location:latest
     depends_on:
       - mongo_service
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
 
   microtransactions:
     build:
       context: ./microtransactions
     ports:
-      - "8005:8005"
+      - "${MICROTRANSACTIONS_PORT}:${MICROTRANSACTIONS_PORT}"
     image: microtransactions:latest
     depends_on:
       - mongo_service
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
 
   notifications:
     build:
       context: ./notifications
     ports:
-      - "8006:8006"
+      - "${NOTIFICATIONS_PORT}:${NOTIFICATIONS_PORT}"
     image: notifications:latest
     depends_on:
       - mongo_service
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${DEFAULT_FLAGS} && ./executable"
 
   store:
     build:
       context: ./store
     ports:
-      - "8007:8007"
+      - "${STORE_PORT}:${STORE_PORT}"
     image: store:latest
     depends_on:
       - mongo_service
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
 
   trades:
     build:
       context: ./trades
     ports:
-      - "8008:8008"
+      - "${TRADES_PORT}:${TRADES_PORT}"
     image: trades:latest
     depends_on:
       - mongo_service
+      - ${NOTIFICATIONS_NAME}
+      - ${TRAINERS_NAME}
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS} && ./executable"
 
   trainers:
     build:
       context: ./trainers
     ports:
-      - "8009:8009"
+      - "${TRAINERS_PORT}:${TRAINERS_PORT}"
     image: trainers:latest
     depends_on:
       - mongo_service
     environment:
       - MONGODB_URL=mongodb://mongo_service:27017/
-      - AUTHENTICATION_URL="authentication:8001"
-      - BATTLES_URL="battles:8002"
-      - GYM_URL="gym:8003"
-      - LOCATION_URL="location:8004"
-      - MICROTRANSACTION_URL="microtransaction:8005"
-      - NOTIFICATIONS_URL="notifications:8006"
-      - STORE_URL="store:8007"
-      - TRADES_URL="trades:8008"
-      - TRAINERS_URL="trainers:8009"
+      - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
+      - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
+      - GYM_URL=${GYM_NAME}:${GYM_PORT}
+      - LOCATION_URL=${LOCATION_NAME}:${LOCATION_PORT}
+      - MICROTRANSACTION_URL=${MICROTRANSACTIONS_NAME}:${MICROTRANSACTIONS_PORT}
+      - NOTIFICATIONS_URL=${NOTIFICATIONS_NAME}:${NOTIFICATIONS_PORT}
+      - STORE_URL=${STORE_NAME}:${STORE_PORT}
+      - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
+      - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
+    command: sh -c "./dockerize ${WAIT_MONGO} ${DEFAULT_FLAGS} && ./executable"
 
 volumes:
   mongo:
