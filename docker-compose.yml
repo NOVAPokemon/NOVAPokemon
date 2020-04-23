@@ -6,12 +6,9 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - 'mongo:/data/db'
     logging:
-      driver: none
+      driver: "none"
 
   authentication:
     build:
@@ -211,6 +208,3 @@ services:
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
     command: sh -c "./dockerize ${WAIT_MONGO} ${DEFAULT_FLAGS} && ./executable"
-
-volumes:
-  mongo:
