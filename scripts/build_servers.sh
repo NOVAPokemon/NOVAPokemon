@@ -20,10 +20,6 @@ for d in */; do
 
   cd "$d" || exit
 
-  if [ -e dockerize ]; then
-    rm dockerize
-  fi
-
   #remove previous binary if already exists
   if [ -e "$dirname_stripped" ]; then
     rm executable
