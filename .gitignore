@@ -1,3 +1,5 @@
 pull.sh
 push.sh
 notes.md
+
+base_image/dockerize
