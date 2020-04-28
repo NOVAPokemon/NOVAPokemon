@@ -9,6 +9,8 @@ services:
     image: authentication:latest
     depends_on:
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -31,6 +33,8 @@ services:
     depends_on:
       - ${TRAINERS_NAME}
       - ${NOTIFICATIONS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -53,6 +57,8 @@ services:
     depends_on:
       - ${LOCATION_NAME}
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -74,6 +80,8 @@ services:
     image: location:latest
     depends_on:
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -95,6 +103,8 @@ services:
     image: microtransactions:latest
     depends_on:
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -114,6 +124,8 @@ services:
     ports:
       - "${NOTIFICATIONS_PORT}:${NOTIFICATIONS_PORT}"
     image: notifications:latest
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -135,6 +147,8 @@ services:
     image: store:latest
     depends_on:
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -157,6 +171,8 @@ services:
     depends_on:
       - ${NOTIFICATIONS_NAME}
       - ${TRAINERS_NAME}
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -176,6 +192,8 @@ services:
     ports:
       - "${TRAINERS_PORT}:${TRAINERS_PORT}"
     image: trainers:latest
+    volumes:
+      - logs:/logs
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
@@ -188,3 +206,6 @@ services:
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
     command: sh -c "./dockerize ${DEFAULT_FLAGS} && ./start_with_mongo.sh"
+
+volumes:
+  logs:

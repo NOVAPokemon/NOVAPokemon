@@ -1,5 +1,6 @@
 FROM mongo:latest
 
+RUN mkdir /logs
 RUN mkdir /service
 WORKDIR /service
 
