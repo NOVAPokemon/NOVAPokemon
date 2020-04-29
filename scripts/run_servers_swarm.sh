@@ -9,7 +9,11 @@ cd "$(go env GOPATH)"/src/github.com/NOVAPokemon/ || exit
 bash scripts/build_servers.sh
 
 #MONGO
-export MONGODB_URL="mongodb://localhost:27017"
+export USERS_MONGODB_URL=mongodb://usersmongos0:27017,usersmongos1:27017
+export TRAINERS_MONGODB_URL=mongodb://trainersmongos0:27017,trainersmongos1:27017
+export LOCATION_MONGODB_URL=mongodb://locationmongos0:27017,locationmongos1:27017
+export MICROTRANSACTIONS_MONGODB_URL=mongodb://microtransactionsmongos0:27017,microtransactionsmongos1:27017
+export NOTIFICATIONS_MONGODB_URL=mongodb://notificationsmongos0:27017,notificationsmongos1:27017
 
 # PORTS
 export AUTH_PORT=8001
@@ -54,6 +58,21 @@ export WAIT_TRADES="$WAIT_FLAG $HTTP_PREFIX$TRADES_NAME:$TRADES_PORT"
 export WAIT_TRAINERS="$WAIT_FLAG $HTTP_PREFIX$TRAINERS_NAME:$TRAINERS_PORT"
 
 # COMMANDS
+
+bash scripts/create_swarm_networks.sh || true
+docker stack rm services trainers users location microtransactions notifications || true
+
+echo "------------------------------ BOOTSTRAPING MONGO CLUSTERS ------------------------------"
+
+cd mongo-swarm || exit
+# changing args here may change the url of database (if messing with number of mongos)
+bash bootstrap.sh "trainers" "2,2" 2 1
+bash bootstrap.sh "users" "2,2" 2 1
+bash bootstrap.sh "notifications" "2,2" 2 1
+bash bootstrap.sh "microtransactions" "2,2" 2 1
+bash bootstrap.sh "location" "2,2" 2 1
+cd .. || exit
+
 cd base_image || exit
 
 if [ ! -e dockerize ]; then
@@ -67,16 +86,15 @@ fi
 echo "------------------------------ BUILDING nova-server-base image ------------------------------"
 
 docker build -t nova-server-base:latest .
-
 cd .. || exit
 
-echo "------------------------------ BUILDING images with docker-compose ------------------------------"
+echo "------------------------------ BUILDING other images ------------------------------"
 
-docker-compose build
+bash scripts/build_service_images.sh
 
-echo "------------------------------ STARTING docker-compose ------------------------------"
+echo "------------------------------ STARTING swarm stack ------------------------------"
 
-docker-compose up --remove-orphan
+docker stack deploy -c docker-compose-swarm.yml services
 
 bash scripts/clean_binaries.sh
 

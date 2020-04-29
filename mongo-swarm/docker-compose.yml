@@ -1,0 +1,50 @@
+
+version: "3.6"
+
+networks:
+  primary_net:
+      external: true
+
+services:
+
+  locationdata00:
+    image: mongo:4.0
+    command: mongod --shardsvr --replSet locationdata0rs --smallfiles --port 27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationdata01:
+    image: mongo:4.0
+    command: mongod --shardsvr --replSet locationdata0rs --smallfiles --port 27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationdata10:
+    image: mongo:4.0
+    command: mongod --shardsvr --replSet locationdata1rs --smallfiles --port 27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationdata11:
+    image: mongo:4.0
+    command: mongod --shardsvr --replSet locationdata1rs --smallfiles --port 27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationcfg0:
+    image: mongo:4.0
+    command: mongod --configsvr --replSet locationcfgrs --smallfiles --port 27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationmongos0:
+    image: mongo:4.0
+    command: mongos --configdb locationcfgrs/locationcfg0:27017 --bind_ip_all
+    networks:
+      - primary_net
+
+  locationmongos1:
+    image: mongo:4.0
+    command: mongos --configdb locationcfgrs/locationcfg0:27017 --bind_ip_all
+    networks:
+      - primary_net

@@ -1,0 +1,1 @@
+--dataSet=locationdata0rs/locationdata00:27017,locationdata01:27017 --dataSet=locationdata1rs/locationdata10:27017,locationdata11:27017 --configSet=locationcfgrs/locationcfg0:27017 --mongos=locationmongos0:27017,locationmongos1:27017
