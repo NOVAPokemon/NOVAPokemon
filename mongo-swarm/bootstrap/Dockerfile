@@ -1,4 +1,4 @@
-FROM golang:1.12.9-alpine as builder
+FROM golang as builder
 # FROM golang:latest as builder
 
 ARG APP_VERSION=unknown
@@ -8,8 +8,6 @@ WORKDIR /root/build
 
 # copy code
 ADD . /root/build
-
-RUN apk add --no-cache git
 
 RUN go mod download
 

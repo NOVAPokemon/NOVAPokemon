@@ -4,8 +4,6 @@ set -e
 
 DOCKERIZE_VERSION=v0.6.1
 
-cd "$(go env GOPATH)"/src/github.com/NOVAPokemon/ || exit
-
 bash scripts/build_servers.sh
 
 #MONGO
