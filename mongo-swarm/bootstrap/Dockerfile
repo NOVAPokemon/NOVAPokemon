@@ -16,7 +16,7 @@ RUN go build -o /tmp/bootstrap .
 
 # RUN echo "done"
 
-FROM alpine:latest
+FROM golang:latest
 
 COPY --from=builder /tmp/bootstrap /mongo-swarm/bootstrap
 
