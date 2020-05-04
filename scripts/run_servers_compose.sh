@@ -6,8 +6,6 @@ DOCKERIZE_VERSION=v0.6.1
 
 cd "$(go env GOPATH)"/src/github.com/NOVAPokemon/ || exit
 
-bash scripts/build_servers.sh
-
 #MONGO
 export MONGODB_URL="mongodb://mongo:27017"
 
@@ -54,30 +52,11 @@ export WAIT_TRADES="$WAIT_FLAG $HTTP_PREFIX$TRADES_NAME:$TRADES_PORT"
 export WAIT_TRAINERS="$WAIT_FLAG $HTTP_PREFIX$TRAINERS_NAME:$TRAINERS_PORT"
 
 # COMMANDS
-cd base_image || exit
 
-if [ ! -e dockerize ]; then
-  echo "Downloading dockerize"
-  wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-   -O dockerize.tar.gz
-  tar -xzvf dockerize.tar.gz
-  rm dockerize.tar.gz
-fi
-
-echo "------------------------------ BUILDING nova-server-base image ------------------------------"
-
-docker build -t nova-server-base:latest .
-
-cd .. || exit
-
-echo "------------------------------ BUILDING images with docker-compose ------------------------------"
-
-docker-compose build
+#bash scripts/build_service_images.sh
 
 echo "------------------------------ STARTING docker-compose ------------------------------"
-
+bash scripts/build_service_images.sh
 docker-compose up --remove-orphan
-
 bash scripts/clean_binaries.sh
-
 cd - || exit
