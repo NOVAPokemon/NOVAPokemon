@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{$.Values.services.trainers.name}}-app
+spec:
+    selector:
+        matchLabels:
+            app: {{$.Values.services.trainers.name}}
+    replicas: 2
+    template:
+        metadata:
+            labels:
+                app: {{$.Values.services.trainers.name}}
+        spec:
+            containers:
+                - name: {{$.Values.services.trainers.name}}
+                  image: nmmorais/trainers:latest
+                  imagePullPolicy: IfNotPresent
+                  command: ["sh", "-c", "./executable"]
+                  ports:
+                      - containerPort: {{$.Values.services.trainers.port}}
+                  env:
+                      - name: MONGODB_URL
+                        value: mongodb://{{$.Values.trainersdb.service.name}}:{{$.Values.trainersdb.service.port}}
+                      - name: AUTHENTICATION_URL
+                        value: {{$.Values.services.auth.name}}:{{$.Values.services.auth.port}}
