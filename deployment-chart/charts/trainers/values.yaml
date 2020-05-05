@@ -1,0 +1,16 @@
+trainersdb:
+  service:
+    name: "trainersdb"
+    port: 27017
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  shards: 1
+  shardsvr:
+    dataNode:
+      replicas: 1
+  mongos:
+    replicas: 1
+  configsvr:
+    replicas: 1

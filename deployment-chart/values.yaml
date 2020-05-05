@@ -9,60 +9,60 @@ dockerize:
   retry_interval_flag: "-wait-retry-interval 5s"
   default_flags: "$wait_timeout_flag $retry_interval_flag"
 
-services:
-  trainers:
-    image: nmmorais/trainers:latest
-    name: "trainers"
-    port: 8009
-    n_replicas: 2
+global:
+  services:
+    trainers:
+      image: novapokemon/trainers:latest
+      name: "trainers"
+      port: 8009
+      n_replicas: 2
 
-  auth:
-    name: "auth"
-    port: 8001
-    n_replicas: 2
+    auth:
+      image: novapokemon/authentication:latest
+      name: "auth"
+      port: 8001
+      n_replicas: 2
 
-  battles:
-    name: "battles"
-    n_replicas: 2
-    port: 8002
+    battles:
+      name: "battles"
+      n_replicas: 2
+      port: 8002
 
-  gym:
-    name: "gym"
-    n_replicas: 2
-    port: 8003
+    gym:
+      name: "gym"
+      n_replicas: 2
+      port: 8003
 
-  location:
-    name: "location"
-    n_replicas: 1
-    port: 8004
+    location:
+      name: "location"
+      n_replicas: 1
+      port: 8004
 
-  microtransactions:
-    name: "microtransactions"
-    n_replicas: 2
-    port: 8005
+    microtransactions:
+      name: "microtransactions"
+      n_replicas: 2
+      port: 8005
 
-  notifications:
-    name: "notifications"
-    n_replicas: 2
-    port: 8006
+    notifications:
+      name: "notifications"
+      n_replicas: 2
+      port: 8006
 
-  store:
-    name: "store"
-    n_replicas: 2
-    port: 8007
+    store:
+      name: "store"
+      n_replicas: 2
+      port: 8007
 
-  trades:
-    name: "trades"
-    n_replicas: 2
-    port: 8008
+    trades:
+      name: "trades"
+      n_replicas: 2
+      port: 8008
 
 database:
   trainers:
     mongodb_url: mongodb://trainersmongos0:27017,trainersmongos1:27017
   auth:
     mongodb_url: mongodb://usersmongos0:27017,usersmongos1:27017
-  battles:
-
   location:
     mongodb_url: mongodb://locationmongos0:27017,locationmongos1:27017
   microtransactions:
@@ -70,9 +70,9 @@ database:
   notifications:
     mongodb_url: mongodb://notificationsmongos0:27017,notificationsmongos1:27017
 
-microtransactionsdb:
+trainersdb:
   service:
-    name: "microtransactionsdb"
+    name: "trainersdb"
     port: 27017
   livenessProbe:
     enabled: false
@@ -87,9 +87,9 @@ microtransactionsdb:
   configsvr:
     replicas: 1
 
-trainersdb:
+microtransactionsdb:
   service:
-    name: "trainersdb"
+    name: "microtransactionsdb"
     port: 27017
   livenessProbe:
     enabled: false
