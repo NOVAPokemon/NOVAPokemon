@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{$.Values.global.services.auth.name}}-app
+spec:
+    selector:
+        matchLabels:
+            app: {{$.Values.global.services.auth.name}}
+    replicas: 2
+    template:
+        metadata:
+            labels:
+                app: {{$.Values.global.services.auth.name}}
+        spec:
+            containers:
+                - name: {{$.Values.global.services.auth.name}}
+                  image: novapokemon/authentication:latest
+                  imagePullPolicy: IfNotPresent
+                  command: ["sh", "-c", "./executable"]
+                  ports:
+                      - containerPort: {{$.Values.global.services.auth.port}}
+                  env:
+                      - name: MONGODB_URL
+                        value: "mongodb://{{$.Values.usersdb.service.name}}:{{$.Values.usersdb.service.port}}"
+                      - name: TRAINERS_URL
+                        value: "{{$.Values.global.services.trainers.name}}:{{$.Values.global.services.trainers.port}}"
