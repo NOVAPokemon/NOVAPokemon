@@ -18,7 +18,7 @@ services:
       context: ./authentication
     ports:
       - "8001:8001"
-    image: authentication:latest
+    image: novapokemon/authentication:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
@@ -41,7 +41,7 @@ services:
       context: ./battles
     ports:
       - "${BATTLES_PORT}:${BATTLES_PORT}"
-    image: battles:latest
+    image: novapokemon/battles:latest
     depends_on:
       - ${TRAINERS_NAME}
       - ${NOTIFICATIONS_NAME}
@@ -65,7 +65,7 @@ services:
       context: ./gym
     ports:
       - "${GYM_PORT}:${GYM_PORT}"
-    image: gym:latest
+    image: novapokemon/gym:latest
     depends_on:
       - ${LOCATION_NAME}
       - ${TRAINERS_NAME}
@@ -89,7 +89,7 @@ services:
       context: ./location
     ports:
       - "${LOCATION_PORT}:${LOCATION_PORT}"
-    image: location:latest
+    image: novapokemon/location:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
@@ -112,7 +112,7 @@ services:
       context: ./microtransactions
     ports:
       - "${MICROTRANSACTIONS_PORT}:${MICROTRANSACTIONS_PORT}"
-    image: microtransactions:latest
+    image: novapokemon/microtransactions:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
@@ -135,7 +135,7 @@ services:
       context: ./notifications
     ports:
       - "${NOTIFICATIONS_PORT}:${NOTIFICATIONS_PORT}"
-    image: notifications:latest
+    image: novapokemon/notifications:latest
     volumes:
       - logs:/logs
     environment:
@@ -156,7 +156,7 @@ services:
       context: ./store
     ports:
       - "${STORE_PORT}:${STORE_PORT}"
-    image: store:latest
+    image: novapokemon/store:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
@@ -179,7 +179,7 @@ services:
       context: ./trades
     ports:
       - "${TRADES_PORT}:${TRADES_PORT}"
-    image: trades:latest
+    image: novapokemon/trades:latest
     depends_on:
       - ${NOTIFICATIONS_NAME}
       - ${TRAINERS_NAME}
@@ -203,7 +203,7 @@ services:
       context: ./trainers
     ports:
       - "${TRAINERS_PORT}:${TRAINERS_PORT}"
-    image: trainers:latest
+    image: novapokemon/trainers:latest
     volumes:
       - logs:/logs
     environment:
