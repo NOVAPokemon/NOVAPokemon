@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #!/bin/bash
 
 ignored_utils="utils"
@@ -8,7 +10,7 @@ ignored_base_image="base_image"
 
 set -e
 
-#build binaries
+#build images
 for d in */; do
   dirname_stripped=$(basename "$d")
 
@@ -22,14 +24,7 @@ for d in */; do
 
   cd "$d" || exit
 
-  #remove previous binary if already exists
-  if [ -e "$dirname_stripped" ]; then
-    rm executable
-  fi
-
-  # build new binary
-  echo "Building binary..."
-  GOOS=linux GOARCH=amd64 go build -v -o executable .
+  docker build . -t $dirname_stripped
 
   cd .. || exit
 done

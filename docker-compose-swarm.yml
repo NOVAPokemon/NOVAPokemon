@@ -1,30 +1,21 @@
 version: '3'
+
+networks:
+  default:
+    external:
+      name: primary_net
+
 services:
-
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - 'mongo:/data/db'
-    logging:
-      driver: none
-
   authentication:
-    build:
-      context: ./authentication
+    image: authentication:latest
     ports:
       - "8001:8001"
-    image: authentication:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_URL=${USERS_MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -34,21 +25,18 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS}; ./executable"
 
   battles:
-    build:
-      context: ./battles
+    image: battles:latest
     ports:
       - "${BATTLES_PORT}:${BATTLES_PORT}"
-    image: battles:latest
     depends_on:
       - ${TRAINERS_NAME}
       - ${NOTIFICATIONS_NAME}
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -58,21 +46,18 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS}; ./executable"
 
   gym:
-    build:
-      context: ./gym
+    image: gym:latest
     ports:
       - "${GYM_PORT}:${GYM_PORT}"
-    image: gym:latest
     depends_on:
       - ${LOCATION_NAME}
       - ${TRAINERS_NAME}
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -82,20 +67,18 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_LOCATION} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_LOCATION} ${DEFAULT_FLAGS}; ./executable"
 
   location:
-    build:
-      context: ./location
-    ports:
-      - "${LOCATION_PORT}:${LOCATION_PORT}"
     image: location:latest
     depends_on:
       - ${TRAINERS_NAME}
+    ports:
+      - "${LOCATION_PORT}:${LOCATION_PORT}"
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_URL=${LOCATION_MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -105,20 +88,18 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS}; ./executable"
 
   microtransactions:
-    build:
-      context: ./microtransactions
+    image: microtransactions:latest
     ports:
       - "${MICROTRANSACTIONS_PORT}:${MICROTRANSACTIONS_PORT}"
-    image: microtransactions:latest
     depends_on:
       - ${TRAINERS_NAME}
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_URL=${MICROTRANSACTIONS_MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -128,18 +109,16 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS}; ./executable"
 
   notifications:
-    build:
-      context: ./notifications
+    image: notifications:latest
     ports:
       - "${NOTIFICATIONS_PORT}:${NOTIFICATIONS_PORT}"
-    image: notifications:latest
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_URL=${NOTIFICATIONS_MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -149,20 +128,17 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./executable"
 
   store:
-    build:
-      context: ./store
-    ports:
-      - "${STORE_PORT}:${STORE_PORT}"
     image: store:latest
     depends_on:
       - ${TRAINERS_NAME}
+    ports:
+      - "${STORE_PORT}:${STORE_PORT}"
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -172,21 +148,18 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${DEFAULT_FLAGS}; ./executable"
 
   trades:
-    build:
-      context: ./trades
+    image: trades:latest
     ports:
       - "${TRADES_PORT}:${TRADES_PORT}"
-    image: trades:latest
     depends_on:
       - ${NOTIFICATIONS_NAME}
       - ${TRAINERS_NAME}
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -196,18 +169,16 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./dockerize ${WAIT_TRAINERS} ${WAIT_NOTIFICATIONS} ${DEFAULT_FLAGS}; ./executable"
 
   trainers:
-    build:
-      context: ./trainers
+    image: trainers:latest
     ports:
       - "${TRAINERS_PORT}:${TRAINERS_PORT}"
-    image: trainers:latest
     volumes:
       - logs:/logs
     environment:
-      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_URL=${TRAINERS_MONGODB_URL}
       - AUTHENTICATION_URL=${AUTH_NAME}:${AUTH_PORT}
       - BATTLES_URL=${BATTLES_NAME}:${BATTLES_PORT}
       - GYM_URL=${GYM_NAME}:${GYM_PORT}
@@ -217,8 +188,7 @@ services:
       - STORE_URL=${STORE_NAME}:${STORE_PORT}
       - TRADES_URL=${TRADES_NAME}:${TRADES_PORT}
       - TRAINERS_URL=${TRAINERS_NAME}:${TRAINERS_PORT}
-    command: sh -c "./dockerize ${DEFAULT_FLAGS} && ./executable"
+    command: sh -c "./executable"
 
 volumes:
   logs:
-  mongo:
