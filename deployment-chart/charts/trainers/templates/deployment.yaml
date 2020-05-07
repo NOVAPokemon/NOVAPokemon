@@ -1,26 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: {{$.Values.global.services.trainers.name}}-app
+  name: {{$.Values.global.services.trainers.name}}-app
 spec:
-    selector:
-        matchLabels:
-            app: {{$.Values.global.services.trainers.name}}
-    replicas: 2
-    template:
-        metadata:
-            labels:
-                app: {{$.Values.global.services.trainers.name}}
-        spec:
-            containers:
-                - name: {{$.Values.global.services.trainers.name}}
-                  image: nmmorais/trainers:latest
-                  imagePullPolicy: IfNotPresent
-                  command: ["sh", "-c", "./executable"]
-                  ports:
-                      - containerPort: {{$.Values.global.services.trainers.port}}
-                  env:
-                      - name: MONGODB_URL
-                        value: "mongodb://{{$.Values.trainersdb.service.name}}:{{$.Values.trainersdb.service.port}}"
-                      - name: AUTHENTICATION_URL
-                        value: "{{$.Values.global.services.auth.name}}:{{$.Values.global.services.auth.port}}"
+  selector:
+    matchLabels:
+      app: {{$.Values.global.services.trainers.name}}
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: {{$.Values.global.services.trainers.name}}
+    spec:
+      containers:
+        - name: {{$.Values.global.services.trainers.name}}
+          image: {{$.Values.global.services.trainers.image}}
+          command: ["sh", "-c", "./executable -l"]
+          ports:
+            - containerPort: {{$.Values.global.services.trainers.port}}
+          env:
+            - name: MONGODB_URL
+              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.trainers.databaseName}}:{{$.Values.global.services.trainers.databasePort}}"
+            - name: AUTHENTICATION_URL
+              value: "{{$.Values.global.services.auth.serviceName}}:{{$.Values.global.services.auth.port}}"

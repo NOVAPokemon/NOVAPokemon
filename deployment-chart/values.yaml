@@ -10,18 +10,28 @@ dockerize:
   default_flags: "$wait_timeout_flag $retry_interval_flag"
 
 global:
+  database:
+    prefix: "novapokemon"
+    user: "root"
+    mongodbRootPassword: "secretpassword"
   services:
     trainers:
       image: novapokemon/trainers:latest
       name: "trainers"
       port: 8009
       n_replicas: 2
+      serviceName: "trainers-service"
+      databaseName: "trainersdb"
+      databasePort: 27017
 
     auth:
       image: novapokemon/authentication:latest
-      name: "auth"
+      name: "authentication"
       port: 8001
       n_replicas: 2
+      serviceName: "authentication-service"
+      databaseName: "usersdb"
+      databasePort: 27017
 
     battles:
       name: "battles"
@@ -58,103 +68,95 @@ global:
       n_replicas: 2
       port: 8008
 
-database:
-  trainers:
-    mongodb_url: mongodb://trainersmongos0:27017,trainersmongos1:27017
-  auth:
-    mongodb_url: mongodb://usersmongos0:27017,usersmongos1:27017
-  location:
-    mongodb_url: mongodb://locationmongos0:27017,locationmongos1:27017
-  microtransactions:
-    mongodb_url: mongodb://microtransactionsmongos0:27017,microtransactionsmongos1:27017
-  notifications:
-    mongodb_url: mongodb://notificationsmongos0:27017,notificationsmongos1:27017
+usersdb:
+  user: "root"
+  mongodbRootPassword: "secretpassword"
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  shards: 4
+  shardsvr:
+    arbiter:
+      replicas: 1
+    dataNode:
+      replicas: 2
+  mongos:
+    replicas: 2
+  configsvr:
+    replicas: 2
 
 trainersdb:
-  service:
-    name: "trainersdb"
-    port: 27017
+  user: "root"
+  mongodbRootPassword: "secretpassword"
   livenessProbe:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 1
+  shards: 4
   shardsvr:
-    dataNode:
+    arbiter:
       replicas: 1
+    dataNode:
+      replicas: 2
   mongos:
-    replicas: 1
+    replicas: 2
   configsvr:
-    replicas: 1
+    replicas: 2
 
 microtransactionsdb:
-  service:
-    name: "microtransactionsdb"
-    port: 27017
+  user: "root"
+  mongodbRootPassword: "secretpassword"
   livenessProbe:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 1
+  shards: 4
   shardsvr:
-    dataNode:
+    arbiter:
       replicas: 1
+    dataNode:
+      replicas: 2
   mongos:
-    replicas: 1
+    replicas: 2
   configsvr:
-    replicas: 1
+    replicas: 2
 
 locationdb:
-  service:
-    name: "locationdb"
-    port: 27017
+  user: "root"
+  mongodbRootPassword: "secretpassword"
   livenessProbe:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 1
+  shards: 4
   shardsvr:
-    dataNode:
+    arbiter:
       replicas: 1
-  mongos:
-    replicas: 1
-  configsvr:
-    replicas: 1
-
-usersdb:
-  service:
-    name: "usersdb"
-    port: 27017
-  livenessProbe:
-    enabled: false
-  readinessProbe:
-    enabled: false
-  shards: 1
-  shardsvr:
     dataNode:
-      replicas: 1
+      replicas: 2
   mongos:
-    replicas: 1
+    replicas: 2
   configsvr:
-    replicas: 1
-
+    replicas: 2
 
 notificationsdb:
-  service:
-    name: "notificationsdb"
-    port: 27017
+  user: "root"
+  mongodbRootPassword: "secretpassword"
   livenessProbe:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 1
+  shards: 4
   shardsvr:
-    dataNode:
+    arbiter:
       replicas: 1
+    dataNode:
+      replicas: 2
   mongos:
-    replicas: 1
+    replicas: 2
   configsvr:
-    replicas: 1
+    replicas: 2
 
 ## hostnames
 #auth_name: "authentication"
