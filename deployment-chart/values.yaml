@@ -31,7 +31,7 @@ global:
       n_replicas: 2
       serviceName: "authentication-service"
       databaseName: "usersdb"
-      databasePort: 27018
+      databasePort: 27017
 
     battles:
       name: "battles"
@@ -69,6 +69,9 @@ global:
       port: 8008
 
 trainersdb:
+  common:
+    mongodbSystemLogVerbosity:
+      2
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
@@ -77,18 +80,22 @@ trainersdb:
     enabled: false
   shards: 1
   shardsvr:
+    persistence:
+      enabled: false
     dataNode:
       replicas: 1
   mongos:
     replicas: 1
   configsvr:
+    persistence:
+      enabled: false
     replicas: 1
 
 usersdb:
+  common:
+    mongodbSystemLogVerbosity:
+      2
   user: "root"
-  service:
-    port:
-      27018
   mongodbRootPassword: "secretpassword"
   livenessProbe:
     enabled: false
@@ -96,12 +103,17 @@ usersdb:
     enabled: false
   shards: 1
   shardsvr:
+    persistence:
+      enabled: false
     dataNode:
       replicas: 1
   mongos:
     replicas: 1
   configsvr:
+    persistence:
+      enabled: false
     replicas: 1
+
 
 microtransactionsdb:
   user: "root"
