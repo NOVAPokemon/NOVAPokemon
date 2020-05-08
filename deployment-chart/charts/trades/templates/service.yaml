@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$.Values.global.services.trades.serviceName}}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{$.Values.global.services.trades.name}}
+  ports:
+    - protocol: TCP
+      port: {{$.Values.global.services.trades.port}}
+      targetPort: {{$.Values.global.services.trades.port}}

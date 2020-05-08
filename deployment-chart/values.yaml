@@ -9,20 +9,27 @@ dockerize:
   retry_interval_flag: "-wait-retry-interval 5s"
   default_flags: "$wait_timeout_flag $retry_interval_flag"
 
+  ## wait flags
+  wait_auth: "$wait_flag $http_prefix$auth_name:$auth_port"
+  wait_battles: "$wait_flag $http_prefix$battles_name:$battles_port"
+  wait_gym: "$wait_flag $http_prefix$gym_name:$gym_port"
+  wait_location: "$wait_flag $http_prefix$location_name:$location_port"
+  wait_microtransactions: "$wait_flag $http_prefix$microtransactions_name:$microtransactions_port"
+  wait_notifications: "$wait_flag $http_prefix$notifications_name:$notifications_port"
+  wait_store: "$wait_flag $http_prefix$store_name:$store_port"
+  wait_trades: "$wait_flag $http_prefix$trades_name:$trades_port"
+  wait_trainers: "$wait_flag $http_prefix$trainers_name:$trainers_port"
+
 global:
+  api_configmap:
+    name: "services-api"
+
   database:
     prefix: "novapokemon"
     user: "root"
     mongodbRootPassword: "secretpassword"
+
   services:
-    trainers:
-      image: novapokemon/trainers:latest
-      name: "trainers"
-      port: 8009
-      n_replicas: 2
-      serviceName: "trainers-service"
-      databaseName: "trainersdb"
-      databasePort: 27017
 
     auth:
       image: novapokemon/authentication:latest
@@ -37,36 +44,66 @@ global:
       name: "battles"
       n_replicas: 2
       port: 8002
+      image: novapokemon/battles:latest
+      serviceName: "battles-service"
 
     gym:
       name: "gym"
       n_replicas: 2
       port: 8003
+      image: novapokemon/gym:latest
+      serviceName: "gym-service"
 
     location:
       name: "location"
       n_replicas: 1
       port: 8004
+      image: novapokemon/location:latest
+      serviceName: "location-service"
+      databaseName: "locationdb"
+      databasePort: 27017
 
     microtransactions:
       name: "microtransactions"
       n_replicas: 2
       port: 8005
+      image: novapokemon/microtransactions:latest
+      serviceName: "microtransactions-service"
+      databaseName: "microtransactionsdb"
+      databasePort: 27017
 
     notifications:
       name: "notifications"
-      n_replicas: 2
       port: 8006
+      n_replicas: 2
+      image: novapokemon/notifications:latest
+      serviceName: "notifications-service"
+      databaseName: "notificationsdb"
+      databasePort: 27017
 
     store:
       name: "store"
       n_replicas: 2
       port: 8007
+      image: novapokemon/store:latest
+      serviceName: "store-service"
 
     trades:
       name: "trades"
       n_replicas: 2
       port: 8008
+      image: novapokemon/trades:latest
+      serviceName: "trades-service"
+
+    trainers:
+      image: novapokemon/trainers:latest
+      name: "trainers"
+      port: 8009
+      n_replicas: 2
+      serviceName: "trainers-service"
+      databaseName: "trainersdb"
+      databasePort: 27017
+
 
 trainersdb:
   common:
@@ -124,11 +161,15 @@ microtransactionsdb:
     enabled: false
   shards: 1
   shardsvr:
+    persistence:
+      enabled: false
     dataNode:
       replicas: 1
   mongos:
     replicas: 1
   configsvr:
+    persistence:
+      enabled: false
     replicas: 1
 
 locationdb:
@@ -140,11 +181,15 @@ locationdb:
     enabled: false
   shards: 1
   shardsvr:
+    persistence:
+      enabled: false
     dataNode:
       replicas: 1
   mongos:
     replicas: 1
   configsvr:
+    persistence:
+      enabled: false
     replicas: 1
 
 notificationsdb:
@@ -156,35 +201,13 @@ notificationsdb:
     enabled: false
   shards: 1
   shardsvr:
+    persistence:
+      enabled: false
     dataNode:
       replicas: 1
   mongos:
     replicas: 1
   configsvr:
+    persistence:
+      enabled: false
     replicas: 1
-
-## hostnames
-#auth_name: "authentication"
-#battles_name: "battles"
-#gym_name: "gym"
-#location_name: "location"
-#microtransactions_name: "microtransactions"
-#notifications_name: "notifications"
-#store_name: "store"
-#trades_name: "trades"
-#trainers_name: "trainers"
-#
-
-## wait flags
-wait_auth: "$wait_flag $http_prefix$auth_name:$auth_port"
-wait_battles: "$wait_flag $http_prefix$battles_name:$battles_port"
-wait_gym: "$wait_flag $http_prefix$gym_name:$gym_port"
-wait_location: "$wait_flag $http_prefix$location_name:$location_port"
-wait_microtransactions: "$wait_flag $http_prefix$microtransactions_name:$microtransactions_port"
-wait_notifications: "$wait_flag $http_prefix$notifications_name:$notifications_port"
-wait_store: "$wait_flag $http_prefix$store_name:$store_port"
-wait_trades: "$wait_flag $http_prefix$trades_name:$trades_port"
-wait_trainers: "$wait_flag $http_prefix$trainers_name:$trainers_port"
-#
-#
-#

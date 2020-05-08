@@ -21,5 +21,6 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.trainers.databaseName}}:{{$.Values.global.services.trainers.databasePort}}"
-            - name: AUTHENTICATION_URL
-              value: "{{$.Values.global.services.auth.serviceName}}:{{$.Values.global.services.auth.port}}"
+          envFrom:
+            - configMapRef:
+                name: {{$.Values.global.api_configmap.name}}

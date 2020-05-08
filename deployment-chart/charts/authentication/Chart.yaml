@@ -1,5 +1,5 @@
 apiVersion: v2
 name: authentication
-description: A Helm chart for Kubernetes
+description: Authentication microservice
 version: 0.1.0
 appVersion: 1.16.0
