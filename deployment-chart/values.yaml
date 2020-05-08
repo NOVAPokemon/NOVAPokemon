@@ -31,7 +31,7 @@ global:
       n_replicas: 2
       serviceName: "authentication-service"
       databaseName: "usersdb"
-      databasePort: 27017
+      databasePort: 27018
 
     battles:
       name: "battles"
@@ -68,24 +68,6 @@ global:
       n_replicas: 2
       port: 8008
 
-usersdb:
-  user: "root"
-  mongodbRootPassword: "secretpassword"
-  livenessProbe:
-    enabled: false
-  readinessProbe:
-    enabled: false
-  shards: 4
-  shardsvr:
-    arbiter:
-      replicas: 1
-    dataNode:
-      replicas: 2
-  mongos:
-    replicas: 2
-  configsvr:
-    replicas: 2
-
 trainersdb:
   user: "root"
   mongodbRootPassword: "secretpassword"
@@ -93,16 +75,33 @@ trainersdb:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 4
+  shards: 1
   shardsvr:
-    arbiter:
-      replicas: 1
     dataNode:
-      replicas: 2
+      replicas: 1
   mongos:
-    replicas: 2
+    replicas: 1
   configsvr:
-    replicas: 2
+    replicas: 1
+
+usersdb:
+  user: "root"
+  service:
+    port:
+      27018
+  mongodbRootPassword: "secretpassword"
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  shards: 1
+  shardsvr:
+    dataNode:
+      replicas: 1
+  mongos:
+    replicas: 1
+  configsvr:
+    replicas: 1
 
 microtransactionsdb:
   user: "root"
@@ -111,16 +110,14 @@ microtransactionsdb:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 4
+  shards: 1
   shardsvr:
-    arbiter:
-      replicas: 1
     dataNode:
-      replicas: 2
+      replicas: 1
   mongos:
-    replicas: 2
+    replicas: 1
   configsvr:
-    replicas: 2
+    replicas: 1
 
 locationdb:
   user: "root"
@@ -129,16 +126,14 @@ locationdb:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 4
+  shards: 1
   shardsvr:
-    arbiter:
-      replicas: 1
     dataNode:
-      replicas: 2
+      replicas: 1
   mongos:
-    replicas: 2
+    replicas: 1
   configsvr:
-    replicas: 2
+    replicas: 1
 
 notificationsdb:
   user: "root"
@@ -147,16 +142,14 @@ notificationsdb:
     enabled: false
   readinessProbe:
     enabled: false
-  shards: 4
+  shards: 1
   shardsvr:
-    arbiter:
-      replicas: 1
     dataNode:
-      replicas: 2
+      replicas: 1
   mongos:
-    replicas: 2
+    replicas: 1
   configsvr:
-    replicas: 2
+    replicas: 1
 
 ## hostnames
 #auth_name: "authentication"
