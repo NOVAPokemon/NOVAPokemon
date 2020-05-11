@@ -30,7 +30,6 @@ global:
     mongodbRootPassword: "secretpassword"
 
   services:
-
     auth:
       image: novapokemon/authentication:latest
       name: "authentication"
@@ -103,7 +102,6 @@ global:
       serviceName: "trainers-service"
       databaseName: "trainersdb"
       databasePort: 27017
-
 
 trainersdb:
   common:
@@ -211,3 +209,7 @@ notificationsdb:
     persistence:
       enabled: false
     replicas: 1
+
+elasticsearch-logging:
+  esJavaOpts: "-Xmx500m -Xms500m"
+  replicas: 1
