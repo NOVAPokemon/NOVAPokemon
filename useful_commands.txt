@@ -1,0 +1,11 @@
+oarsub -I -p "host in ('node9', 'node10', 'node11')" -l /nodes=3 -t knets
+ssh -L 8001:localhost:8080 b.anjos@cluster.di.fct.unl.pt -p 12034 OAR_JOB_ID=1081 oarsh -L 8080:localhost:8001 -N node10 -p 12034
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+
+kubectl create serviceaccount cluster-admin-dashboard-sa
+kubectl create clusterrolebinding cluster-admin-dashboard-sa \
+--clusterrole=cluster-admin \
+--serviceaccount=default:cluster-admin-dashboard-sa
+kubectl get secret | grep cluster-admin-dashboard-sa
+kubectl describe secret cluster-admin-dashboard-sa-token-dc5k6
