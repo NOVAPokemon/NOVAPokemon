@@ -31,7 +31,7 @@ global:
 
   services:
     auth:
-      image: novapokemon/authentication:latest
+      image: "novapokemon/authentication:latest"
       name: "authentication"
       port: 8001
       n_replicas: 2
@@ -43,21 +43,21 @@ global:
       name: "battles"
       n_replicas: 2
       port: 8002
-      image: novapokemon/battles:latest
+      image: "novapokemon/battles:latest"
       serviceName: "battles-service"
 
     gym:
       name: "gym"
       n_replicas: 2
       port: 8003
-      image: novapokemon/gym:latest
+      image: "novapokemon/gym:latest"
       serviceName: "gym-service"
 
     location:
       name: "location"
-      n_replicas: 1
+      n_replicas: 5
       port: 8004
-      image: novapokemon/location:latest
+      image: "novapokemon/location:latest"
       serviceName: "location-service"
       databaseName: "locationdb"
       databasePort: 27017
@@ -66,7 +66,7 @@ global:
       name: "microtransactions"
       n_replicas: 2
       port: 8005
-      image: novapokemon/microtransactions:latest
+      image: "novapokemon/microtransactions:latest"
       serviceName: "microtransactions-service"
       databaseName: "microtransactionsdb"
       databasePort: 27017
@@ -75,7 +75,7 @@ global:
       name: "notifications"
       port: 8006
       n_replicas: 2
-      image: novapokemon/notifications:latest
+      image: "novapokemon/notifications:latest"
       serviceName: "notifications-service"
       databaseName: "notificationsdb"
       databasePort: 27017
@@ -84,18 +84,18 @@ global:
       name: "store"
       n_replicas: 2
       port: 8007
-      image: novapokemon/store:latest
+      image: "novapokemon/store:latest"
       serviceName: "store-service"
 
     trades:
       name: "trades"
       n_replicas: 2
       port: 8008
-      image: novapokemon/trades:latest
+      image: "novapokemon/trades:latest"
       serviceName: "trades-service"
 
     trainers:
-      image: novapokemon/trainers:latest
+      image: "novapokemon/trainers:latest"
       name: "trainers"
       port: 8009
       n_replicas: 2
