@@ -55,7 +55,7 @@ global:
 
     location:
       name: "location"
-      n_replicas: 5
+      n_replicas: 4
       port: 8004
       image: "novapokemon/location:latest"
       serviceName: "location-service"
