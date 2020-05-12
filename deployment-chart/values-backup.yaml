@@ -213,5 +213,8 @@ notificationsdb:
 elasticsearch-logging:
   esJavaOpts: "-Xmx1g -Xms1g"
   replicas: 1
-  persistence:
-    enabled: false
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 5G

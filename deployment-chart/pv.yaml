@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: logs-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 10G
+  claimRef:
+    namespace: default
+    name: "elasticsearch-master-elasticsearch-master-0"
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/b.anjos/logs"
