@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$.Values.global.services.trainers.name}}-app
+spec:
+  selector:
+    matchLabels:
+      app: {{$.Values.global.services.trainers.name}}
+  replicas: {{$.Values.global.services.trainers.n_replicas}}
+  template:
+    metadata:
+      labels:
+        app: {{$.Values.global.services.trainers.name}}
+    spec:
+      containers:
+        - name: {{$.Values.global.services.trainers.name}}
+          image: {{$.Values.global.services.trainers.image}}
+          command: ["sh", "-c", "./executable -l"]
+          ports:
+            - containerPort: {{$.Values.global.services.trainers.port}}
+          env:
+            - name: MONGODB_URL
+              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.trainers.databaseName}}:{{$.Values.global.services.trainers.databasePort}}"
+          envFrom:
+            - configMapRef:
+                name: {{$.Values.global.api_configmap.name}}

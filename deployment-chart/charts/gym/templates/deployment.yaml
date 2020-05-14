@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$.Values.global.services.gym.name}}-app
+spec:
+  selector:
+    matchLabels:
+      app: {{$.Values.global.services.gym.name}}
+  replicas: {{$.Values.global.services.gym.n_replicas}}
+  template:
+    metadata:
+      labels:
+        app: {{$.Values.global.services.gym.name}}
+    spec:
+      containers:
+        - name: {{$.Values.global.services.gym.name}}
+          image: {{$.Values.global.services.gym.image}}
+          command: ["sh", "-c", "./executable -l"]
+          ports:
+            - containerPort: {{$.Values.global.services.gym.port}}
+          envFrom:
+            - configMapRef:
+                name: {{$.Values.global.api_configmap.name}}

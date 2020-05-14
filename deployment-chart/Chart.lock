@@ -1,0 +1,18 @@
+dependencies:
+- name: mongodb-sharded
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.3.1
+- name: mongodb-sharded
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.3.1
+- name: mongodb-sharded
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.3.1
+- name: mongodb-sharded
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.3.1
+- name: mongodb-sharded
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.3.1
+digest: sha256:c91962a76f2cc15241b63b568abf59c0934a92f35dfb4691155ec3cfefdc3660
+generated: "2020-05-14T15:26:45.077644+01:00"

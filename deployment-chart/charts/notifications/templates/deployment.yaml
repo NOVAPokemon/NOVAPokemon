@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$.Values.global.services.notifications.name}}-app
+spec:
+  selector:
+    matchLabels:
+      app: {{$.Values.global.services.notifications.name}}
+  replicas: {{$.Values.global.services.notifications.n_replicas}}
+  template:
+    metadata:
+      labels:
+        app: {{$.Values.global.services.notifications.name}}
+    spec:
+      containers:
+        - name: {{$.Values.global.services.notifications.name}}
+          image: {{$.Values.global.services.notifications.image}}
+          command: ["sh", "-c", "./executable -l"]
+          ports:
+            - containerPort: {{$.Values.global.services.notifications.port}}
+          env:
+            - name: MONGODB_URL
+              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.notifications.databaseName}}:{{$.Values.global.services.notifications.databasePort}}"
+          envFrom:
+            - configMapRef:
+                name: {{$.Values.global.api_configmap.name}}

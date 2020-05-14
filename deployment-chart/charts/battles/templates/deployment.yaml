@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$.Values.global.services.battles.name}}-app
+spec:
+  selector:
+    matchLabels:
+      app: {{$.Values.global.services.battles.name}}
+  replicas: {{$.Values.global.services.battles.n_replicas}}
+  template:
+    metadata:
+      labels:
+        app: {{$.Values.global.services.battles.name}}
+    spec:
+      containers:
+        - name: {{$.Values.global.services.battles.name}}
+          image: {{$.Values.global.services.battles.image}}
+          command: ["sh", "-c", "./executable -l"]
+          ports:
+            - containerPort: {{$.Values.global.services.battles.port}}
+          envFrom:
+            - configMapRef:
+                name: {{$.Values.global.api_configmap.name}}
