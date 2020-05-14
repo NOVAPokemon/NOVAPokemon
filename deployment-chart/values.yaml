@@ -20,10 +20,20 @@ dockerize:
   wait_trades: "$wait_flag $http_prefix$trades_name:$trades_port"
   wait_trainers: "$wait_flag $http_prefix$trainers_name:$trainers_port"
 
+kubernetes-dashboard:
+  service:
+    enableSkipLogin: true
+  enableInsecureLogin: true
+  enableSkipLogin: true
+  serviceAccount:
+    name: admin
+  rbac:
+    create: true
+    clusterAdminRole: true
+
 global:
   api_configmap:
     name: "services-api"
-
   database:
     prefix: "novapokemon"
     user: "root"
