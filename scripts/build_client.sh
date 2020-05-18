@@ -13,8 +13,9 @@ fi
 
 # build new binary
 echo "Building binary..."
-go build -o executable .
+GOOS=linux GOARCH=amd64 go build -o executable .
 
 cd .. || exit
 
-docker build client -t client
+docker build client -t novapokemon/client:latest
+docker push novapokemon/client:latest

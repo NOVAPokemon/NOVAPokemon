@@ -18,17 +18,17 @@ spec:
               serviceName: {{$.Values.global.services.battles.serviceName}}
               servicePort: {{$.Values.global.services.battles.port}}
 
-          - path: /{{$.Values.global.services.gym.name}}
-            pathType: Prefix
-            backend:
-              serviceName: {{$.Values.global.services.gym.serviceName}}
-              servicePort: {{$.Values.global.services.gym.port}}
-
           - path: /{{$.Values.global.services.location.name}}
             pathType: Prefix
             backend:
               serviceName: {{$.Values.global.services.location.serviceName}}
               servicePort: {{$.Values.global.services.location.port}}
+
+          - path: /{{$.Values.global.services.gym.name}}
+            pathType: Prefix
+            backend:
+              serviceName: {{$.Values.global.services.gym.serviceName}}
+              servicePort: {{$.Values.global.services.gym.port}}
 
           - path: /{{$.Values.global.services.notifications.name}}
             pathType: Prefix
@@ -59,3 +59,9 @@ spec:
             backend:
               serviceName: {{$.Values.global.services.trainers.serviceName}}
               servicePort: {{$.Values.global.services.trainers.port}}
+
+          - path: /kubernetes-dashboard
+            pathType: Prefix
+            backend:
+              serviceName: kubernetes-dashboard
+              servicePort: 443
