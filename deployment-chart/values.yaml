@@ -84,7 +84,7 @@ global:
     notifications:
       name: "notifications"
       port: 8006
-      n_replicas: 2
+      n_replicas: 1
       image: "novapokemon/notifications:latest"
       serviceName: "notifications-service"
       databaseName: "notificationsdb"

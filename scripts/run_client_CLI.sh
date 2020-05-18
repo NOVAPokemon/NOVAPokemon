@@ -2,8 +2,13 @@
 
 set -e
 
+if [[ $# -ne  1 ]]; then
+  echo "usage: ./scripts/run_client_CLI <clientName>"
+  exit 1
+fi
+
 bash scripts/build_client.sh
-kubectl delete pod client-cli || true
+kubectl delete pod "$1" || true
 kubectl run -i -t --image novapokemon/client:latest \
   --env AUTHENTICATION_URL="authentication-service:8001" \
   --env BATTLES_URL="battles-service:8002" \
@@ -14,4 +19,4 @@ kubectl run -i -t --image novapokemon/client:latest \
   --env STORE_URL="store-service:8007" \
   --env TRADES_URL="trades-service:8008" \
   --env TRAINERS_URL="trainers-service:8009" \
-  client-cli --restart=Never
+  "$1" --restart=Never
