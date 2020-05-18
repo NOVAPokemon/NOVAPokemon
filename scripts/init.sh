@@ -11,7 +11,7 @@ kubectl describe secret cluster-admin-dashboard-sa-token | grep token:
 
 kubectl proxy &
 
-echo "Link:http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
+echo "Link: http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
 
 # VOLUME
 kubectl apply -f "${HOME}"/git/NOVAPokemon/deployment-chart/pv.yaml
