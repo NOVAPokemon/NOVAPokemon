@@ -34,3 +34,8 @@ dependencies:
     version: 7.6.2
     repository: https://helm.elastic.co
     alias: elasticsearch-logging
+
+  - name: kibana
+    version: 7.6.2
+    repository: https://helm.elastic.co
+    alias: kibana
