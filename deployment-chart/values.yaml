@@ -211,7 +211,21 @@ notificationsdb:
     replicas: 1
 
 elasticsearch-logging:
+  antiAffinity: "soft"
   esJavaOpts: "-Xmx1g -Xms1g"
   replicas: 1
-  persistence:
-    enabled: false
+  podSecurityContext:
+    fsGroup: 20001
+    runAsUser: 5026
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    runAsNonRoot: true
+    runAsUser: 5026
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 5G
+  clusterHealthCheckParams: wait_for_status=yellow&timeout=180s
