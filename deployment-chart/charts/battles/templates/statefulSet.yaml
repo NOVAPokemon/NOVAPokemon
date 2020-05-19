@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{$.Values.global.services.battles.name}}-app
 spec:
@@ -7,6 +7,7 @@ spec:
     matchLabels:
       app: {{$.Values.global.services.battles.name}}
   replicas: {{$.Values.global.services.battles.n_replicas}}
+  serviceName: {{$.Values.global.services.battles.serviceNameHeadless}}
   template:
     metadata:
       labels:
@@ -21,3 +22,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
+          env:
+            - name: "HEADLESS_SERVICE_NAME"
+              value: {{$.Values.global.services.battles.serviceNameHeadless}}

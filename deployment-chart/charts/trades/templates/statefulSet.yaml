@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: {{$.Values.global.services.trades.name}}
   replicas: {{$.Values.global.services.trades.n_replicas}}
-  serviceName: {{$.Values.global.services.trades.serviceName}}
+  serviceName: {{$.Values.global.services.trades.serviceNameHeadless}}
   template:
     metadata:
       labels:
@@ -22,3 +22,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
+          env:
+            - name: "HEADLESS_SERVICE_NAME"
+              value: {{$.Values.global.services.trades.serviceNameHeadless}}
