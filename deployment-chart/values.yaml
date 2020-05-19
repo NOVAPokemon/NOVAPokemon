@@ -239,3 +239,12 @@ elasticsearch-logging:
       requests:
         storage: 5G
   clusterHealthCheckParams: wait_for_status=yellow&timeout=180s
+
+kibana:
+  service:
+    type: NodePort
+    port: 5601
+    nodePort: "30001"
+    labels: {}
+    annotations: {}
+    loadBalancerSourceRanges: []
