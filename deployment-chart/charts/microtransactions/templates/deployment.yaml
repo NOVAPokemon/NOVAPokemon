@@ -16,6 +16,10 @@ spec:
         - name: {{$.Values.global.services.microtransactions.name}}
           image: {{$.Values.global.services.microtransactions.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.microtransactions.port}}
           env:

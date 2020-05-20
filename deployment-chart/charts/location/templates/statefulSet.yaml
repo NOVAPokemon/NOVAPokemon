@@ -17,6 +17,10 @@ spec:
         - name: {{$.Values.global.services.location.name}}
           image: {{$.Values.global.services.location.image}}
           command: ["sh", "-c", "export SERVER_NUM=${HOSTNAME##*-}; ./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.location.port}}
           env:

@@ -16,6 +16,10 @@ spec:
         - name: {{$.Values.global.services.notifications.name}}
           image: {{$.Values.global.services.notifications.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.notifications.port}}
           env:
