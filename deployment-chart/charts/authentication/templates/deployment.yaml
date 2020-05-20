@@ -16,6 +16,10 @@ spec:
         - name: {{$.Values.global.services.auth.name}}
           image: {{$.Values.global.services.auth.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.auth.port}}
           env:

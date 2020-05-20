@@ -17,6 +17,10 @@ spec:
         - name: {{$.Values.global.services.battles.name}}
           image: {{$.Values.global.services.battles.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.battles.port}}
           envFrom:

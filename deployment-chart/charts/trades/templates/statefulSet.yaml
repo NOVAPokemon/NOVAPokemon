@@ -17,6 +17,10 @@ spec:
         - name: {{$.Values.global.services.trades.name}}
           image: {{$.Values.global.services.trades.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.trades.port}}
           envFrom:

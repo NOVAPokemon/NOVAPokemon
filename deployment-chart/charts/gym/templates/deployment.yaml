@@ -16,6 +16,10 @@ spec:
         - name: {{$.Values.global.services.gym.name}}
           image: {{$.Values.global.services.gym.image}}
           command: ["sh", "-c", "./executable -l"]
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.gym.port}}
           envFrom:
