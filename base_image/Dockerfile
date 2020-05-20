@@ -1,7 +1,7 @@
 FROM alpine:3.7
 
-RUN mkdir /logs
-RUN mkdir /service
+RUN apk add iproute2
+RUN mkdir /logs && mkdir /service
 WORKDIR /service
 
 COPY dockerize .
