@@ -1,2 +1,6 @@
 notes.md
 base_image/dockerize
+
+deployment-chart/charts/kafka-10.3.3.tgz
+
+*.tgz
