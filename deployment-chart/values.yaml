@@ -132,9 +132,10 @@ global:
       databasePort: 27017
 
 trainersdb:
-  common:
-    mongodbSystemLogVerbosity:
-      2
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
@@ -164,9 +165,10 @@ trainersdb:
     replicas: 1
 
 usersdb:
-  common:
-    mongodbSystemLogVerbosity:
-      2
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
@@ -197,6 +199,10 @@ usersdb:
 
 
 microtransactionsdb:
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
@@ -226,6 +232,10 @@ microtransactionsdb:
       nodetype: "servers"
 
 locationdb:
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
@@ -255,6 +265,10 @@ locationdb:
       nodetype: "servers"
 
 notificationsdb:
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
   user: "root"
   mongodbRootPassword: "secretpassword"
   livenessProbe:
