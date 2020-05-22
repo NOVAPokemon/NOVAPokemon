@@ -30,3 +30,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
+      nodeSelector:
+        nodetype: "servers"

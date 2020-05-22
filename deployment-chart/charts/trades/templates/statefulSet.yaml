@@ -29,3 +29,5 @@ spec:
           env:
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.trades.serviceNameHeadless}}
+      nodeSelector:
+        nodetype: "servers"
