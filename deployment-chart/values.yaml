@@ -147,9 +147,18 @@ trainersdb:
       enabled: false
     dataNode:
       replicas: 1
+      nodeSelector:
+        nodetype: "servers"
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
   mongos:
+    nodeSelector:
+      nodetype: "servers"
     replicas: 1
   configsvr:
+    nodeSelector:
+      nodetype: "servers"
     persistence:
       enabled: false
     replicas: 1
@@ -166,16 +175,25 @@ usersdb:
     enabled: false
   shards: 1
   shardsvr:
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
+      nodeSelector:
+        nodetype: "servers"
   mongos:
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
 
 
 microtransactionsdb:
@@ -187,16 +205,25 @@ microtransactionsdb:
     enabled: false
   shards: 1
   shardsvr:
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
+      nodeSelector:
+        nodetype: "servers"
   mongos:
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
 
 locationdb:
   user: "root"
@@ -207,16 +234,25 @@ locationdb:
     enabled: false
   shards: 1
   shardsvr:
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
+      nodeSelector:
+        nodetype: "servers"
   mongos:
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
 
 notificationsdb:
   user: "root"
@@ -227,16 +263,25 @@ notificationsdb:
     enabled: false
   shards: 1
   shardsvr:
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
+      nodeSelector:
+        nodetype: "servers"
   mongos:
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
+    nodeSelector:
+      nodetype: "servers"
 
 elasticsearch-logging:
   antiAffinity: "soft"
@@ -268,3 +313,5 @@ kibana:
     labels: {}
     annotations: {}
     loadBalancerSourceRanges: []
+  nodeSelector:
+    nodetype: "servers"
