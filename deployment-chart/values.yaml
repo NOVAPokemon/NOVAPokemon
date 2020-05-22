@@ -242,6 +242,8 @@ elasticsearch-logging:
   antiAffinity: "soft"
   esJavaOpts: "-Xmx1g -Xms1g"
   replicas: 1
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
   podSecurityContext:
     fsGroup: 20001
     runAsUser: 5026
