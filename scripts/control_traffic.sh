@@ -40,25 +40,25 @@ for pod in $pods; do
 
 	if [ "$r_flag" = true ]; then
 		echo "removing latency from pod $pod"
-                kubectl exec $pod -- sh -c "tc qdisc del dev eth0 root"
+                kubectl exec "$pod" -- sh -c "tc qdisc del dev eth0 root"
 		continue
 	else
-		kubectl exec $pod -- sh -c "tc qdisc add dev eth0 root handle 1:0 htb default 10"
+		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 root handle 1:0 htb default 10"
 	fi
 
 
 	if [ "$b_flag" = true ]; then
                 echo "limiting bandwidth to $bandwidth on pod $pod"
-                kubectl exec $pod -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate $bandwidth prio 0"
+                kubectl exec "$pod" -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate $bandwidth prio 0"
 	else
-		kubectl exec $pod -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate 40gbit prio 0"
+		kubectl exec "$pod" -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate 40gbit prio 0"
 	fi
 
 	if [ "$l_flag" = true ]; then
 		echo "adding $latency to pod $pod"
-		kubectl exec $pod -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $latency"
+		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $latency"
 	fi
 
-	kubectl exec $pod -- sh -c "tc filter add dev eth0 parent 1:0 prio 0 protocol ip handle 10 fw flowid 1:10"
+	kubectl exec "$pod" -- sh -c "tc filter add dev eth0 parent 1:0 prio 0 protocol ip handle 10 fw flowid 1:10"
 
 done
