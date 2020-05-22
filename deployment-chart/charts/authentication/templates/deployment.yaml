@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: {{$.Values.global.services.auth.name}}-app
 spec:
-  nodeSelector:
-    nodetype: "servers"
   selector:
     matchLabels:
       app: {{$.Values.global.services.auth.name}}
@@ -30,3 +28,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
+      nodeSelector:
+        nodetype: "servers"
