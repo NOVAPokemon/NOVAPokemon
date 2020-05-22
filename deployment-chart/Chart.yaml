@@ -39,3 +39,8 @@ dependencies:
     version: 7.6.2
     repository: https://helm.elastic.co
     alias: kibana
+
+  - name: kafka
+    version: 10.3.3
+    repository: https://charts.bitnami.com/bitnami
+    alias: kafka
