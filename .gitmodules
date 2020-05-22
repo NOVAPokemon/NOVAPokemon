@@ -27,9 +27,9 @@
 	url = https://github.com/NOVAPokemon/store.git
 	update = merge
 [submodule "microtransactions"]
-    path = microtransactions
-    url = https://github.com/NOVAPokemon/microtransactions.git
-    update = merge
+	path = microtransactions
+	url = https://github.com/NOVAPokemon/microtransactions.git
+	update = merge
 [submodule "notifications"]
 	path = notifications
 	url = https://github.com/NOVAPokemon/notifications.git
@@ -41,4 +41,8 @@
 [submodule "gym"]
 	path = gym
 	url = https://github.com/NOVAPokemon/gym.git
+	update = merge
+[submodule "config"]
+	path = config
+	url = https://github.com/NOVAPokemon/config.git
 	update = merge
