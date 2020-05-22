@@ -42,7 +42,3 @@
 	path = gym
 	url = https://github.com/NOVAPokemon/gym.git
 	update = merge
-[submodule "config"]
-	path = config
-	url = https://github.com/NOVAPokemon/config.git
-	update = merge
