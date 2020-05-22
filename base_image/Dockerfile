@@ -1,6 +1,5 @@
-FROM alpine:3.7
+FROM debian:latest
 
-RUN apk add iproute2
 RUN mkdir /logs && mkdir /service
 WORKDIR /service
 
