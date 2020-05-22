@@ -31,6 +31,22 @@ kubernetes-dashboard:
     create: true
     clusterAdminRole: true
 
+kafka:
+  replicaCount: 3
+  defaultReplicationFactor: 3
+  offsetsTopicReplicationFactor: 3
+  transactionStateLogReplicationFactor: 3
+  transactionStateLogMinIsr: 3
+  persistence:
+    enabled: false
+  readinessProbe:
+  zookeeper:
+    persistence:
+      enabled: false
+    readinessProbe:
+      enabled: false
+
+
 global:
   api_configmap:
     name: "services-api"
@@ -85,7 +101,7 @@ global:
     notifications:
       name: "notifications"
       port: 8006
-      n_replicas: 1
+      n_replicas: 3
       image: "novapokemon/notifications:latest"
       serviceName: "notifications-service"
       databaseName: "notificationsdb"
@@ -232,7 +248,7 @@ elasticsearch-logging:
   securityContext:
     capabilities:
       drop:
-      - ALL
+        - ALL
     runAsNonRoot: true
     runAsUser: 5026
   volumeClaimTemplate:
