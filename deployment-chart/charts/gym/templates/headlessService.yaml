@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{$.Values.global.services.gym.serviceName}}
+  name: {{$.Values.global.services.gym.serviceNameHeadless}}
 spec:
-  type: ClusterIP
+  clusterIP: None
   selector:
     app: {{$.Values.global.services.gym.name}}
   ports:

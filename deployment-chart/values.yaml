@@ -78,7 +78,8 @@ global:
       n_replicas: 2
       port: 8003
       image: "novapokemon/gym:latest"
-      serviceName: "gym-service"
+      serviceNameHeadless: "gym-service-headless"
+      databaseName: "gymsdb"
 
     location:
       name: "location"
@@ -265,6 +266,39 @@ locationdb:
       nodetype: "servers"
 
 notificationsdb:
+  image:
+    registry: "docker.io"
+    repository: "novapokemon/mongodb"
+    tag: "latest"
+  user: "root"
+  mongodbRootPassword: "secretpassword"
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  shards: 1
+  shardsvr:
+    arbiter:
+      nodeSelector:
+        nodetype: "servers"
+    persistence:
+      enabled: false
+    dataNode:
+      replicas: 1
+      nodeSelector:
+        nodetype: "servers"
+  mongos:
+    replicas: 1
+    nodeSelector:
+      nodetype: "servers"
+  configsvr:
+    persistence:
+      enabled: false
+    replicas: 1
+    nodeSelector:
+      nodetype: "servers"
+
+gymsdb:
   image:
     registry: "docker.io"
     repository: "novapokemon/mongodb"

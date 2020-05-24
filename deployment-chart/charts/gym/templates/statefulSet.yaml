@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{$.Values.global.services.gym.name}}-app
+  name: {{$.Values.global.services.gym.name}}
 spec:
+  serviceName: {{$.Values.global.services.gym.serviceNameHeadless}}
   selector:
     matchLabels:
       app: {{$.Values.global.services.gym.name}}
@@ -25,5 +26,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
+          env:
+            - name: MONGODB_URL
+              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.gym.databaseName}}:{{$.Values.global.services.location.databasePort}}"
       nodeSelector:
         nodetype: "servers"

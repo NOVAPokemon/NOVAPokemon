@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{$.Values.global.services.trainers.name}}-app
+  name: {{$.Values.global.services.trainers.name}}
 spec:
   selector:
     matchLabels:
