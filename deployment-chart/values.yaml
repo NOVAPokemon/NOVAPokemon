@@ -305,9 +305,6 @@ notificationsdb:
       serversnode: "true"
   metrics:
     enabled: true
-      serversnode: "true"
-  metrics:
-    enabled: true
 
 gymsdb:
   image:
@@ -377,7 +374,6 @@ kibana:
   nodeSelector:
     serversnode: "true"
 prometheus:
-    service:
   server:
       type: "NodePort"
       nodePort: "30002"
