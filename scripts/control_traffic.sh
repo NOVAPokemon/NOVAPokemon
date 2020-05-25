@@ -35,13 +35,13 @@ pods=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{
 function control_traffic_for_pod() {
   if [[ $pod =~ kibana || $pod =~ elastic || $pod =~ chaos-chaos ]]; then
 		echo "skipped - $pod"
-		continue
+		return
 	fi
 
 	if [ "$r_flag" = true ]; then
 		echo "removing latency from pod $pod"
                 kubectl exec "$pod" -- sh -c "tc qdisc del dev eth0 root"
-		continue
+		return
 	else
 		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 root handle 1:0 htb default 10"
 	fi
