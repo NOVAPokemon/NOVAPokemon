@@ -376,17 +376,20 @@ kibana:
 
 prometheus:
   nodeExporter:
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
   alertmanager:
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
     securityContext:
-      capabilities:
-        drop:
-          - ALL
       runAsNonRoot: true
       runAsUser: 5026
   server:
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
     service:
       type: "NodePort"
       nodePort: "30002"
