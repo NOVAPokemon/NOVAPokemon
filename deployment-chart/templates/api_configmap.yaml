@@ -5,7 +5,7 @@ metadata:
 data:
   AUTHENTICATION_URL: "{{$.Values.global.services.auth.serviceName}}:{{$.Values.global.services.auth.port}}"
   BATTLES_URL: "{{$.Values.global.services.battles.serviceName}}:{{$.Values.global.services.battles.port}}"
-  GYM_URL: "{{$.Values.global.services.gym.serviceName}}:{{$.Values.global.services.gym.port}}"
+  GYM_URL: "{{$.Values.global.services.gym.serviceNameHeadless}}:{{$.Values.global.services.gym.port}}"
   LOCATION_URL: "{{$.Values.global.services.location.serviceName}}:{{$.Values.global.services.location.port}}"
   MICROTRANSACTIONS_URL: "{{$.Values.global.services.microtransactions.serviceName}}:{{$.Values.global.services.microtransactions.port}}"
   NOTIFICATIONS_URL: "{{$.Values.global.services.notifications.serviceName}}:{{$.Values.global.services.notifications.port}}"
