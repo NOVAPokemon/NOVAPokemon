@@ -377,9 +377,6 @@ kibana:
 prometheus:
   nodeExporter:
     securityContext:
-      capabilities:
-        drop:
-          - ALL
       runAsNonRoot: true
       runAsUser: 5026
   alertmanager:
@@ -394,8 +391,5 @@ prometheus:
       type: "NodePort"
       nodePort: "30002"
     securityContext:
-      capabilities:
-        drop:
-          - ALL
       runAsNonRoot: true
       runAsUser: 5026
