@@ -13,7 +13,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/home/b.anjos/prometheus-server"
+    path: "/tmp/logs_prometheusServer"
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -30,4 +30,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/home/b.anjos/prometheus-alertmanager"
+    path: "/tmp/logs_prometheusAlertManager"
