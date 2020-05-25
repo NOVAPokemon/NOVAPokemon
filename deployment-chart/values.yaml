@@ -150,17 +150,17 @@ trainersdb:
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
     replicas: 1
   configsvr:
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
     persistence:
       enabled: false
     replicas: 1
@@ -180,23 +180,23 @@ usersdb:
   shardsvr:
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
 
 
 microtransactionsdb:
@@ -214,23 +214,23 @@ microtransactionsdb:
   shardsvr:
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
 
 locationdb:
   image:
@@ -247,23 +247,23 @@ locationdb:
   shardsvr:
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
 
 notificationsdb:
   image:
@@ -280,23 +280,23 @@ notificationsdb:
   shardsvr:
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
 
 gymsdb:
   image:
@@ -313,23 +313,23 @@ gymsdb:
   shardsvr:
     arbiter:
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
     persistence:
       enabled: false
     dataNode:
       replicas: 1
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
   mongos:
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
   configsvr:
     persistence:
       enabled: false
     replicas: 1
     nodeSelector:
-      nodetype: "servers"
+      serversnode: "true"
 
 elasticsearch-logging:
   antiAffinity: "soft"
@@ -362,4 +362,4 @@ kibana:
     annotations: {}
     loadBalancerSourceRanges: []
   nodeSelector:
-    nodetype: "servers"
+    serversnode: "true"

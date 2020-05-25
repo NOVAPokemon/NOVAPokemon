@@ -30,4 +30,4 @@ spec:
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.battles.serviceNameHeadless}}
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"

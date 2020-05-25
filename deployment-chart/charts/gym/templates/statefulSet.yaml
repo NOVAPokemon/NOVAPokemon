@@ -30,4 +30,4 @@ spec:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.gym.databaseName}}:{{$.Values.global.services.location.databasePort}}"
       nodeSelector:
-        nodetype: "servers"
+        serversnode: "true"
