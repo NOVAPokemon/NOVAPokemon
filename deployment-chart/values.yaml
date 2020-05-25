@@ -373,8 +373,29 @@ kibana:
     loadBalancerSourceRanges: []
   nodeSelector:
     serversnode: "true"
+
 prometheus:
+  nodeExporter:
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+        runAsNonRoot: true
+        runAsUser: 5026
+  alertmanager:
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+        runAsNonRoot: true
+        runAsUser: 5026
   server:
+    service:
       type: "NodePort"
-      nodePort: "30002"
-    serversnode: "true"
+        nodePort: "30002"
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+        runAsNonRoot: true
+        runAsUser: 5026
