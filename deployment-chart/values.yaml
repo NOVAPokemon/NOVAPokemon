@@ -380,15 +380,15 @@ prometheus:
       capabilities:
         drop:
           - ALL
-        runAsNonRoot: true
-        runAsUser: 5026
+      runAsNonRoot: true
+      runAsUser: 5026
   alertmanager:
     securityContext:
       capabilities:
         drop:
           - ALL
-        runAsNonRoot: true
-        runAsUser: 5026
+      runAsNonRoot: true
+      runAsUser: 5026
   server:
     service:
       type: "NodePort"
@@ -397,5 +397,5 @@ prometheus:
       capabilities:
         drop:
           - ALL
-        runAsNonRoot: true
-        runAsUser: 5026
+      runAsNonRoot: true
+      runAsUser: 5026
