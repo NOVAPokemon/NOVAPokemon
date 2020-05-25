@@ -32,16 +32,16 @@ done
 
 pods=$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 
-for pod in $pods; do
-	if [[ $pod =~ kibana || $pod =~ elastic || $pod =~ chaos-chaos ]]; then
+function control_traffic_for_pod() {
+  if [[ $pod =~ kibana || $pod =~ elastic || $pod =~ chaos-chaos ]]; then
 		echo "skipped - $pod"
-		continue
+		return
 	fi
 
 	if [ "$r_flag" = true ]; then
 		echo "removing latency from pod $pod"
                 kubectl exec "$pod" -- sh -c "tc qdisc del dev eth0 root"
-		continue
+		return
 	else
 		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 root handle 1:0 htb default 10"
 	fi
@@ -60,5 +60,8 @@ for pod in $pods; do
 	fi
 
 	kubectl exec "$pod" -- sh -c "tc filter add dev eth0 parent 1:0 prio 0 protocol ip handle 10 fw flowid 1:10"
+}
 
+for pod in $pods; do
+	control_traffic_for_pod &
 done
