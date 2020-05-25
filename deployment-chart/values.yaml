@@ -382,12 +382,16 @@ prometheus:
       runAsNonRoot: true
       runAsUser: 5026
   alertmanager:
+    persistentVolume:
+      existingClaim: "novapokemon-prometheus-alertmanager"
     nodeSelector:
       node-role.kubernetes.io/master: ""
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
   server:
+    persistentVolume:
+      existingClaim: "novapokemon-prometheus-server"
     nodeSelector:
       node-role.kubernetes.io/master: ""
     service:
