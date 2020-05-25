@@ -305,7 +305,6 @@ notificationsdb:
       serversnode: "true"
   metrics:
     enabled: true
-      serversnode: "true"
 
 gymsdb:
   image:
