@@ -374,7 +374,6 @@ kibana:
   nodeSelector:
     serversnode: "true"
 prometheus:
-    service:
   server:
       type: "NodePort"
       nodePort: "30002"
