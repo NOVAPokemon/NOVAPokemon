@@ -54,6 +54,9 @@ global:
     prefix: "novapokemon"
     user: "root"
     mongodbRootPassword: "secretpassword"
+  grafana:
+    username : "admin"
+    password : "admin"
 
   services:
     auth:
@@ -394,9 +397,14 @@ prometheus:
       existingClaim: "novapokemon-prometheus-server"
     nodeSelector:
       node-role.kubernetes.io/master: ""
-    service:
-      type: "NodePort"
-      nodePort: "30002"
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
+    prefixURL: "/prometheus/"
+
+grafana:
+  admin:
+    existingSecret: "grafana-credentials"
+  grafana.ini:
+    server:
+      root_url: http://localhost:3000/grafana
