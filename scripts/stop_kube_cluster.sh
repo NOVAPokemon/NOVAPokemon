@@ -14,3 +14,4 @@ echo "45s..."
 sleep 15s
 echo "done"
 bash scripts/save_logs.sh
+bash scripts/save_logs_prometheus.sh

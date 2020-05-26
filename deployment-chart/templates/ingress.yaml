@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: novapokemon-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
     - http:
@@ -65,3 +68,9 @@ spec:
             backend:
               serviceName: kubernetes-dashboard
               servicePort: 443
+
+          - path: /grafana/?(.*)
+            pathType: Prefix
+            backend:
+              serviceName: novapokemon-grafana
+              servicePort: 3000
