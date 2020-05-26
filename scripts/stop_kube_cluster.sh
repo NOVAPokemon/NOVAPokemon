@@ -2,6 +2,7 @@
 
 set -e
 
+kubectl delete job novapokemon-tester || true
 helm uninstall novapokemon
 echo "waiting 1m for pods to finish and collect logs..."
 sleep 15s
