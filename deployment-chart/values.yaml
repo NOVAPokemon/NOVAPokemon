@@ -351,7 +351,7 @@ elasticsearch-logging:
     resources:
       requests:
         storage: 5G
-  clusterHealthCheckParams: wait_for_status=yellow&timeout=180s
+  clusterHealthCheckParams: wait_for_status=yellow&timeout=30s
 
 kibana:
   service:
