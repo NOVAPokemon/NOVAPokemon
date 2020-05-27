@@ -12,6 +12,8 @@ mkdir /tmp/logs_elastic
 mkdir /tmp/logs_prometheusAlertManager
 mkdir /tmp/logs_prometheusServer
 
+bash scripts/setup_nodes.sh
+
 # VOLUME
 kubectl apply -f "${HOME}"/git/NOVAPokemon/deployment-chart/persistentVolumes/elasticSearch-pv.yaml
 kubectl apply -f "${HOME}"/git/NOVAPokemon/deployment-chart/persistentVolumes/prometheus-pvs.yaml
