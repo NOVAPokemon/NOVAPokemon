@@ -10,9 +10,6 @@ helm dependency update
 #kubectl taint nodes --all node-role.kubernetes.io/master- || true
 helm upgrade --install novapokemon . -f ./values.yaml
 
-#ingress
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/baremetal/deploy.yaml
-
 # dashboard
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 kubectl create serviceaccount dashboard -n default || true

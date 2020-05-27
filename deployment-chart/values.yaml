@@ -406,4 +406,14 @@ grafana:
     existingSecret: "grafana-credentials"
   grafana.ini:
     server:
-      root_url: http://localhost:3000/grafana
+      root_url: "http://localhost:3000/grafana"
+
+nginx-ingress:
+  controller:
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    service:
+      type: "NodePort"
+      nodePorts:
+        http: 30002
+        https: 30443

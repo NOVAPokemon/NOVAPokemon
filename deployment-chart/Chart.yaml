@@ -59,3 +59,8 @@ dependencies:
     version: 5.0.26
     repository: https://kubernetes-charts.storage.googleapis.com
     alias: grafana
+
+  - name: nginx-ingress
+    version: 0.32.0
+    repository: https://kubernetes-charts.storage.googleapis.com
+    alias: nginx-ingress
