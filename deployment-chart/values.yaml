@@ -242,7 +242,7 @@ locationdb:
   livenessProbe:
     enabled: false
   readinessProbe:
-    enabled: false
+    enabled: true
   shards: 1
   shardsvr:
     arbiter:
