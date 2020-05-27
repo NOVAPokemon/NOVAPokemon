@@ -7,7 +7,7 @@ if [[ $# -ne  1 ]]; then
   exit 1
 fi
 
-bash scripts/build_client.sh
+#bash scripts/build_client.sh
 kubectl delete pod "$1" || true
 kubectl run -i -t --image novapokemon/client:latest \
   --env AUTHENTICATION_URL="authentication-service:8001" \
@@ -19,4 +19,5 @@ kubectl run -i -t --image novapokemon/client:latest \
   --env STORE_URL="store-service:8007" \
   --env TRADES_URL="trades-service:8008" \
   --env TRAINERS_URL="trainers-service:8009" \
-  "$1" --restart=Never
+  "$1" --restart=Never \
+  --overrides='{ "apiVersion": "v1", "spec": { "template": { "spec": { "nodeSelector": { "clientsnode": "true" }, "containers": { "securityContext": { "capabilities": { "add": "NET_ADMIN" } } } } } } }'
