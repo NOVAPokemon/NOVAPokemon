@@ -36,41 +36,41 @@ tmux send-keys "$runMongo" C-m
 tmux new-window -t $session:1 -n servers_1
 
 name="authentication"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux splitw -v -p 50
 
 name="notifications"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 1
 tmux splitw -v -p 50
 
 name="trades"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 1
 tmux splitw -v -p 50
 
 name="trainers"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 3
 tmux splitw -v -p 50
 
 name="microtransactions"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 0
 tmux splitw -v -p 50
 
 name="store"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 0
 tmux splitw -v -p 50
 
 name="battles"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 tmux selectp -t 2
 tmux splitw -v -p 50
 
 name="location"
-tmux send-keys "$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "$cdToRepo$name;$runGoPkg$name -l"
 
 tmux select-layout even-vertical
 tmux setw synchronize-panes on
@@ -80,7 +80,7 @@ tmux setw synchronize-panes off
 tmux new-window -t $session:2 -n servers_2
 
 name="gym"
-tmux send-keys "sleep 5;$cdToRepo$name;$runGoPkg$name"
+tmux send-keys "sleep 5;$cdToRepo$name;$runGoPkg$name -l"
 
 tmux select-layout even-vertical
 tmux setw synchronize-panes on
