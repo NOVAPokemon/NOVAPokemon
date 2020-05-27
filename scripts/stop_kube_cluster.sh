@@ -13,4 +13,3 @@ do
 done
 
 bash scripts/save_logs.sh
-bash scripts/save_logs_prometheus.sh
