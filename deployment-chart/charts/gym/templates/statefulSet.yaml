@@ -29,5 +29,7 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.gym.databaseName}}:{{$.Values.global.services.location.databasePort}}"
+            - name: "HEADLESS_SERVICE_NAME"
+              value: {{$.Values.global.services.gym.serviceNameHeadless}}
       nodeSelector:
         serversnode: "true"
