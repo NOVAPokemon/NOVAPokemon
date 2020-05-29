@@ -3,7 +3,7 @@
 nodes_out=$(kubectl get nodes --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 readarray -t nodes <<<"$nodes_out"
 
-if [ ${#nodes[@]} -eq 1 ]; then
+if [[ ${#nodes[@]} -eq 1 ]]; then
   kubectl label nodes "${nodes[0]}" serversnode-
   kubectl label nodes "${nodes[0]}" clientsnode-
   kubectl label nodes "${nodes[0]}" serversnode=true
