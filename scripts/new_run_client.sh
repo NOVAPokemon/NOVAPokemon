@@ -14,7 +14,7 @@ do
 	sleep 2
 done
 
-jobs_file="client/clientJobs.yaml"
+jobs_file="client/client-jobs-template.yaml"
 
 groups_out=$(cat client/client_groups.json | python3 -c "\
 import sys, json;\
