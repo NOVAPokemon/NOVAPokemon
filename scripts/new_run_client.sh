@@ -41,6 +41,7 @@ do
 done
 
 jobs_file="client/client-jobs-template.yaml"
+pvs_file="client/client-pvs-template.yaml"
 
 groups_out=$(cat client/client_groups.json | python3 -c "\
 import sys, json;\
@@ -61,27 +62,37 @@ var_client_nums="VAR_CLIENT_NUMS"
 var_client_pv_name="VAR_CLIENT_PV_NAME"
 var_client_pv_path="VAR_CLIENT_PV_PATH"
 
-client_job_charts="client/clients_charts_applied"
+client_charts_dirname="client/client_charts"
 client_pvs_dirname="client/client_pvs"
 
-mkdir ${client_job_charts}
-mkdir ${client_pvs_dirname}
+if [[ ! -d ${client_charts_dirname} ]]
+then
+    mkdir ${client_charts_dirname}
+fi
+
+if [[ ! -d ${client_pvs_dirname} ]]
+then
+    mkdir ${client_pvs_dirname}
+fi
+
+time=$(date +%d_%m_%Y__%H_%M_%S)
+top_dir="$HOME/client_logs_${time}"
+
+mkdir $top_dir
 
 group_num=0
 for number_clients in ${groups_out}
 do
-
     echo "$header GROUP $group_num $header"
+
+    dirname="$top_dir/novapokemon-tester-${group_num}"
+    mkdir $dirname
 
     echo "Creating client group PV ($group_num)"
 
-    time=$(date +%d_%m_%Y__%H_%M_%S)
-    dirname="/tmp/client_logs_${time}/novapokemon-tester-${group_num}"
-    mkdir dirname
-
     client_pv_name="${client_pvs_dirname}/client-group-pv-${group_num}"
 
-    sed "s/${var_client_pv_name}/novapokemon-pv-${group_num}/" | \
+    sed "s/${var_client_pv_name}/novapokemon-pv-${group_num}/" $pvs_file | \
     sed "s|${var_client_pv_path}|${dirname}|" > ${client_pv_name}
 
     echo "Applying client-group-pv-$group_num"
@@ -91,19 +102,21 @@ do
         kubectl apply -f ${client_pv_name}
     fi
 
-	echo "Creating job for client group $group_num with $number_clients clients"
+    echo "Creating job for client group $group_num with $number_clients clients"
+    
+    client_chart_name="${client_charts_dirname}/client-group-chart-${group_num}"
 
-	sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
-	sed "s/${var_client_nums}/$number_clients/" ${jobs_file} > client-group-job-${group_num}
+    sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
+    sed "s/${var_client_nums}/$number_clients/" > ${client_chart_name}
 
     echo "Applying client-group-job-$group_num"
 
     if [[ ! ${test_run} ]]
     then
-	    kubectl apply -f client/client-group-job-${group_num}.yaml
+	    kubectl apply -f ${client_chart_name}
     fi
 
-	group_num=$((group_num+1))
+    group_num=$((group_num+1))
 done
 
 #bash scripts/build_client.sh
