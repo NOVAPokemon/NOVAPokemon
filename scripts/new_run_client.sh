@@ -17,7 +17,7 @@ groups = json.load(sys.stdin)['groups'];\
 
 for group in ${groups}
 do
-	sed -i "s/value:.*/value: $group/1" $jobs_file
+	sed -i "s/value:.*/value: $group/1" ${jobs_file}
 	#kubectl apply -f client/clientJobs.yaml
 done
 

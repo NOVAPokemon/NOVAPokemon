@@ -55,8 +55,8 @@ global:
     user: "root"
     mongodbRootPassword: "secretpassword"
   grafana:
-    username : "admin"
-    password : "admin"
+    username: "admin"
+    password: "admin"
 
   services:
     auth:
