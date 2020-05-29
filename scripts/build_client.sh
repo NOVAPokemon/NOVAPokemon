@@ -15,13 +15,6 @@ fi
 echo "Building binary..."
 GOOS=linux GOARCH=amd64 go build -o executable .
 
-if [[ -e multiclient ]]; then
-  rm multiclient
-fi
-
-echo "Building multi client binary"
-gcc -o multiclient create_thread_clients.c -lpthread
-
 cd .. || exit
 
 docker build client -t novapokemon/client:latest
