@@ -2,7 +2,7 @@
 
 time=$(date +%d_%m_%Y__%H_%M_%S)
 
-logs_dir=/tmp/logs_elastic_2
+logs_dir=/tmp/logs_elastic
 dirname=~/logs_$time
 mkdir "$dirname" && mv "$logs_dir"/* "$dirname"/
 
