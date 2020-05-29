@@ -32,11 +32,7 @@ kubernetes-dashboard:
     clusterAdminRole: true
 
 kafka:
-  replicaCount: 3
-  defaultReplicationFactor: 3
-  offsetsTopicReplicationFactor: 3
-  transactionStateLogReplicationFactor: 3
-  transactionStateLogMinIsr: 3
+  replicaCount: 1
   persistence:
     enabled: false
   readinessProbe:
@@ -45,7 +41,6 @@ kafka:
       enabled: false
     readinessProbe:
       enabled: false
-
 
 global:
   api_configmap:
