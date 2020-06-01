@@ -395,9 +395,6 @@ prometheus:
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
-    service:
-      type: "NodePort"
-      nodePort : 30003
 
 grafana:
   admin:

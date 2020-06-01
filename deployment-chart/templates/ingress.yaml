@@ -68,3 +68,9 @@ spec:
             backend:
               serviceName: novapokemon-grafana
               servicePort: 3000
+
+          - path: /prometheus/?(.*)
+            pathType: Prefix
+            backend:
+              serviceName: novapokemon-prometheus-server
+              servicePort: 3000
