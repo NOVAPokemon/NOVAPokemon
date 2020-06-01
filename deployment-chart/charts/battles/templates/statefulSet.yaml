@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{$.Values.global.services.battles.name}}
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: {{quote $.Values.global.services.battles.port}}
 spec:
   selector:
     matchLabels:

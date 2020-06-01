@@ -1,7 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{$.Values.global.services.notifications.name}}-app
+  name: {{$.Values.global.services.notifications.name}}
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: {{quote $.Values.global.services.notifications.port}}
 spec:
   selector:
     matchLabels:
