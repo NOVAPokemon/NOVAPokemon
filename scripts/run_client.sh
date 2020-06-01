@@ -78,7 +78,7 @@ if [[ -d $logs_dir ]]; then
 	echo "There are logs on the folder do you wish to save them?[y/n]"
 	read -r confirmation
 	if [[ $confirmation == "y" ]]; then
-		mv $logs_dir "/tmp/client_logs_${time}"
+		bash scripts/save_client_logs.sh
 	else
 		echo "unexpected option $confirmation, exiting..."
 		exit 1
