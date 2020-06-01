@@ -68,11 +68,6 @@ then
     mkdir ${client_charts_dirname}
 fi
 
-if [[ ! -d ${client_pvs_dirname} ]]
-then
-    mkdir ${client_pvs_dirname}
-fi
-
 time=$(date +%d_%m_%Y__%H_%M_%S)
 logs_dir="/tmp/client_logs_${time}"
 mkdir $logs_dir
