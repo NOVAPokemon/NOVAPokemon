@@ -4,8 +4,10 @@ masterNode=$(kubectl get nodes --template '{{range .items}}{{.metadata.name}}{{"
 hostnode=$(hostname)
 
 if [ $masterNode != $hostnode ]; then
-  echo "running this in $hostnode, expected to run in master $masterNode"
-  exit 1
+	echo "Running this in $hostnode, expected to run in master $masterNode. Will ssh and run there. Username?"
+	read -r username
+	ssh "$username"@"$masterNode" 'cd ~/git/NOVAPokemon/ && bash scripts/init.sh'
+	exit 0
 fi
 
 mkdir /tmp/logs_elastic
