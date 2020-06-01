@@ -59,11 +59,9 @@ var_image_name="VAR_IMAGE_NAME"
 var_client_nums="VAR_CLIENT_NUMS"
 
 # PV template vars
-var_client_pv_name="VAR_CLIENT_PV_NAME"
-var_client_pv_path="VAR_CLIENT_PV_PATH"
+var_host_path="VAR_HOST_PATH"
 
 client_charts_dirname="client/client_charts"
-client_pvs_dirname="client/client_pvs"
 
 if [[ ! -d ${client_charts_dirname} ]]
 then
@@ -76,38 +74,24 @@ then
 fi
 
 time=$(date +%d_%m_%Y__%H_%M_%S)
-top_dir="$HOME/client_logs_${time}"
-
-mkdir $top_dir
+logs_dir="/tmp/client_logs_${time}"
+mkdir $logs_dir
 
 group_num=0
 for number_clients in ${groups_out}
 do
     echo "$header GROUP $group_num $header"
 
-    dirname="$top_dir/novapokemon-tester-${group_num}"
+    dirname="$logs_dir/novapokemon_tester_${group_num}"
     mkdir $dirname
-
-    echo "Creating client group PV ($group_num)"
-
-    client_pv_name="${client_pvs_dirname}/client-group-pv-${group_num}"
-
-    sed "s/${var_client_pv_name}/novapokemon-pv-${group_num}/" $pvs_file | \
-    sed "s|${var_client_pv_path}|${dirname}|" > ${client_pv_name}
-
-    echo "Applying client-group-pv-$group_num"
-
-    if [[ ! ${test_run} ]]
-    then
-        kubectl apply -f ${client_pv_name}
-    fi
 
     echo "Creating job for client group $group_num with $number_clients clients"
     
     client_chart_name="${client_charts_dirname}/client-group-chart-${group_num}"
 
     sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
-    sed "s/${var_client_nums}/$number_clients/" > ${client_chart_name}
+    sed "s/${var_client_nums}/$number_clients/" | \
+    sed "s|${var_host_path}|/$dirname" > ${client_chart_name}
 
     echo "Applying client-group-job-$group_num"
 
