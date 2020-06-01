@@ -90,7 +90,7 @@ do
 
     echo "Applying client-group-job-$group_num"
 
-    if [[ ! ${test_run} ]]
+    if [[ ${test_run} = false ]]
     then
 	    kubectl apply -f ${client_chart_name}
     fi
