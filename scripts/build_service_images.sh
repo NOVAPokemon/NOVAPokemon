@@ -44,7 +44,7 @@ for d in */; do
   cd "$d" || exit
 
   #remove previous binary if already exists
-  if [ -e "$dirname_stripped" ]; then
+  if [ -e executable ]; then
     rm executable
   fi
 
@@ -58,7 +58,7 @@ for d in */; do
   docker build . -t novapokemon/"$dirname_stripped":latest; docker push novapokemon/"$dirname_stripped":latest
   echo "done"
 
-  #remove previous binary if already exists
+  #remove binary after building
   if [ -e executable ]; then
     rm executable
   fi
