@@ -5,7 +5,7 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: /metrics
-    prometheus.io/port: {{$.Values.global.services.location.port}}
+    prometheus.io/port: {{quote $.Values.global.services.location.port}}
 spec:
   selector:
     matchLabels:
