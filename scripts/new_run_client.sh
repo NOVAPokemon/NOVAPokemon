@@ -77,7 +77,7 @@ do
 
     sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
     sed "s/${var_client_nums}/$number_clients/" | \
-    sed "s|${var_host_path}|/$dirname|" > ${client_chart_name}
+    sed "s|${var_host_path}|$dirname|" > ${client_chart_name}
 
     echo "Applying client-group-job-$group_num"
 
