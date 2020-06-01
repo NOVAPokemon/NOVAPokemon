@@ -16,7 +16,7 @@ kubectl create serviceaccount dashboard -n default || true
 kubectl create clusterrolebinding dashboard-admin -n default  --clusterrole=cluster-admin  --serviceaccount=default:dashboard || true
 
 echo "---Dashboard key---"
-kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
+kubectl get secret "$(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}")" -o jsonpath="{.data.token}" | base64 --decode
 echo ""
 echo "---end---"
 killall kubectl 2> /dev/null || true && kubectl proxy --address 0.0.0.0 2> /dev/null &
