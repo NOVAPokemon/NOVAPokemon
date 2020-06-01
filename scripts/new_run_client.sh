@@ -6,7 +6,7 @@ test_run=false
 
 while getopts ":t" opt; do
   case ${opt} in
-    a)
+    t)
       test_run=true
       ;;
     \?)
@@ -23,26 +23,23 @@ echo "$header DELETING JOBS $header"
 for job in $(kubectl get job --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep tester)
 do
     echo "Deleting job: $job"
-    kubectl delete job ${job}
+    kubectl delete job "${job}"
 done
 
-echo "$header DELETING PVs $header"
-
-until ! kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>&1 | grep tester 2>&1 1>/dev/null
+until ! kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>&1 | grep tester 1>/dev/null 2>&1
 do
 	echo "waiting for testers to finish"
 	sleep 2
 done
 
 jobs_file="client/client-jobs-template.yaml"
-pvs_file="client/client-pvs-template.yaml"
 
-groups_out=$(cat client/client_groups.json | python3 -c "\
+groups_out=$(python3 -c "\
 import sys, json;\
 groups = json.load(sys.stdin)['groups'];\
 groups = list(map(str, groups))
 groups_joined = \" \".join(groups)
-print(groups_joined)")
+print(groups_joined)" < client/client_groups.json)
 
 echo "$header GROUPS CONFIG $header"
 
@@ -64,7 +61,7 @@ fi
 
 time=$(date +%d_%m_%Y__%H_%M_%S)
 logs_dir="/tmp/client_logs_${time}"
-mkdir $logs_dir
+mkdir "$logs_dir"
 
 group_num=0
 for number_clients in ${groups_out}
@@ -72,7 +69,7 @@ do
     echo "$header GROUP $group_num $header"
 
     dirname="$logs_dir/novapokemon_tester_${group_num}"
-    mkdir $dirname
+    mkdir "$dirname"
 
     echo "Creating job for client group $group_num with $number_clients clients"
     
