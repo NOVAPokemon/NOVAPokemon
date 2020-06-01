@@ -11,10 +11,10 @@ spec:
     metadata:
       labels:
         app: {{$.Values.global.services.microtransactions.name}}
-          annotations:
-            prometheus.io/scrape: "true"
-            prometheus.io/path: "/metrics"
-            prometheus.io/port: {{quote $.Values.global.services.microtransactions.port}}
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/path: "/metrics"
+          prometheus.io/port: {{quote $.Values.global.services.microtransactions.port}}
     spec:
       containers:
         - name: {{$.Values.global.services.microtransactions.name}}

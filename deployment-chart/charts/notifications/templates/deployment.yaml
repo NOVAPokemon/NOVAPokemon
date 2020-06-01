@@ -11,10 +11,10 @@ spec:
     metadata:
       labels:
         app: {{$.Values.global.services.notifications.name}}
-          annotations:
-            prometheus.io/scrape: "true"
-            prometheus.io/path: "/metrics"
-            prometheus.io/port: {{quote $.Values.global.services.notifications.port}}
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/path: "/metrics"
+          prometheus.io/port: {{quote $.Values.global.services.notifications.port}}
     spec:
       containers:
         - name: {{$.Values.global.services.notifications.name}}
