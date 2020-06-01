@@ -16,6 +16,10 @@ spec:
     metadata:
       labels:
         app: {{$.Values.global.services.gym.name}}
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/path: "/metrics"
+          prometheus.io/port: {{quote $.Values.global.services.gym.port}}
     spec:
       containers:
         - name: {{$.Values.global.services.gym.name}}
