@@ -11,7 +11,7 @@ then
 	read -r username
 	ssh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon && bash scripts/save_client_logs.sh'
 	started=$(ssh "$username"@"$clientsnode" 'cat $logs_dir/started_at.txt')
-	scp -R "$username"@"$clientsnode":/tmp/client_logs_collected_"$started" /tmp/client_logs_collected_"$started"
+	scp -r "$username"@"$clientsnode":/tmp/client_logs_collected_"$started" /tmp/client_logs_collected_"$started"
 	exit 0
 fi
 
