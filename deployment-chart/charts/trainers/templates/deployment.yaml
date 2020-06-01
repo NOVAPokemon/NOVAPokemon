@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{$.Values.global.services.trainers.name}}
+  annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/path: /metrics
+    prometheus.io/path: "/metrics"
     prometheus.io/port: {{quote $.Values.global.services.trainers.port}}
 spec:
   selector:

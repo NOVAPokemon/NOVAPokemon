@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{$.Values.global.services.auth.name}}
     prometheus.io/scrape: "true"
-    prometheus.io/path: /metrics
+    prometheus.io/path: "/metrics"
     prometheus.io/port: {{quote $.Values.global.services.auth.port}}
 spec:
   selector:
