@@ -70,12 +70,13 @@ then
 		mkdir ${client_charts_dirname}
 fi
 
+time=$(date +%d_%m_%Y__%H_%M_%S)
+
 logs_dir="/tmp/current_client_logs"
 if [[ -d $logs_dir ]]; then
 	echo "There are logs on the folder do you wish to save them?[y/n]"
 	read -r confirmation
 	if [[ $confirmation == "y" ]]; then
-		time=$(date +%d_%m_%Y__%H_%M_%S)
 		mv $logs_dir "/tmp/client_logs_${time}"
 	else
 		echo "unexpected option $confirmation, exiting..."
