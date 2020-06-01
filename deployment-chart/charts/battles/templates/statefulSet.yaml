@@ -10,12 +10,12 @@ spec:
   serviceName: {{$.Values.global.services.battles.serviceNameHeadless}}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{quote $.Values.global.services.battles.port}}
       labels:
         app: {{$.Values.global.services.battles.name}}
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/path: "/metrics"
-          prometheus.io/port: {{quote $.Values.global.services.battles.port}}
     spec:
       containers:
         - name: {{$.Values.global.services.battles.name}}

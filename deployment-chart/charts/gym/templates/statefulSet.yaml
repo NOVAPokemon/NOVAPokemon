@@ -2,10 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{$.Values.global.services.gym.name}}
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: "/metrics"
-    prometheus.io/port: {{quote $.Values.global.services.gym.port}}
 spec:
   serviceName: {{$.Values.global.services.gym.serviceNameHeadless}}
   selector:
@@ -14,12 +10,12 @@ spec:
   replicas: {{$.Values.global.services.gym.n_replicas}}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{quote $.Values.global.services.gym.port}}
       labels:
         app: {{$.Values.global.services.gym.name}}
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/path: "/metrics"
-          prometheus.io/port: {{quote $.Values.global.services.gym.port}}
     spec:
       containers:
         - name: {{$.Values.global.services.gym.name}}
