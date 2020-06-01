@@ -16,4 +16,7 @@ then
 fi
 
 startJobTime=$(cat $logs_dir/started_at.txt)
-mv $logs_dir "/tmp/client_logs_collected_$startJobTime"
+finalFolder="/tmp/client_logs_collected_$startJobTime"
+mv $logs_dir "$finalFolder"
+
+echo "saved client logs to $finalFolder"
