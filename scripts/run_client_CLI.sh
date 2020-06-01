@@ -3,7 +3,7 @@
 set -e
 
 if [[ $# -ne  1 ]]; then
-  echo "usage: ./scripts/run_client_CLI <clientName>"
+  echo "usage: ./scripts/run_client_CLI.sh <clientName>"
   exit 1
 fi
 
