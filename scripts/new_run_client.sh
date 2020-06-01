@@ -28,12 +28,6 @@ done
 
 echo "$header DELETING PVs $header"
 
-for pv in $(kubectl get pv | grep tester)
-do
-    echo "Deleting pv: $pv"
-    kubectl delete pv ${pv}
-done
-
 until ! kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>&1 | grep tester 2>&1 1>/dev/null
 do
 	echo "waiting for testers to finish"
@@ -86,7 +80,7 @@ do
 
     sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
     sed "s/${var_client_nums}/$number_clients/" | \
-    sed "s|${var_host_path}|/$dirname" > ${client_chart_name}
+    sed "s|${var_host_path}|/$dirname|" > ${client_chart_name}
 
     echo "Applying client-group-job-$group_num"
 
