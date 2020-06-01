@@ -2,6 +2,15 @@
 
 set -e
 
+clientsnode=$(kubectl get nodes --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --selector='clientsnode=true')
+hostname=$(hostname)
+
+if [[ hostname != clientsnode ]]
+then
+  echo "Running this on node $hostname, instead of $clientsnode. Exiting..."
+  exit 1
+fi
+
 test_run=false
 
 while getopts ":t" opt; do
