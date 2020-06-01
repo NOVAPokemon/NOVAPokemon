@@ -4,7 +4,7 @@ metadata:
   name: {{$.Values.global.services.location.name}}-app
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/path: /metrics
+    prometheus.io/path: "/metrics"
     prometheus.io/port: {{quote $.Values.global.services.location.port}}
 spec:
   selector:
