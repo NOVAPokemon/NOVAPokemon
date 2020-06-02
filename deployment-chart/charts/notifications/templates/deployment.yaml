@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{$.Values.global.services.notifications.name}}-app
+  name: {{$.Values.global.services.notifications.name}}
 spec:
   selector:
     matchLabels:
@@ -9,6 +9,10 @@ spec:
   replicas: {{$.Values.global.services.notifications.n_replicas}}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{quote $.Values.global.services.notifications.port}}
       labels:
         app: {{$.Values.global.services.notifications.name}}
     spec:

@@ -1,11 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{$.Values.global.services.location.name}}-app
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/path: /metrics
-    prometheus.io/port: {{quote $.Values.global.services.location.port}}
+  name: {{$.Values.global.services.location.name}}
 spec:
   selector:
     matchLabels:
@@ -14,6 +10,10 @@ spec:
   serviceName: {{$.Values.global.services.location.serviceName}}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{quote $.Values.global.services.location.port}}
       labels:
         app: {{$.Values.global.services.location.name}}
     spec:

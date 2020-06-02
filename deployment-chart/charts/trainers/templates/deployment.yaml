@@ -9,6 +9,10 @@ spec:
   replicas: {{$.Values.global.services.trainers.n_replicas}}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: {{quote $.Values.global.services.trainers.port}}
       labels:
         app: {{$.Values.global.services.trainers.name}}
     spec:

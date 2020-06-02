@@ -381,6 +381,7 @@ prometheus:
       runAsUser: 5026
   alertmanager:
     persistentVolume:
+      enabled: false
       existingClaim: "novapokemon-prometheus-alertmanager"
     nodeSelector:
       node-role.kubernetes.io/master: ""
@@ -395,16 +396,14 @@ prometheus:
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
-    service:
-      type: "NodePort"
-      nodePort : 30003
+    baseURL: "http://novapokemon-prometheus-server:80/"
 
 grafana:
   admin:
     existingSecret: "grafana-credentials"
   grafana.ini:
     server:
-      root_url: "http://localhost:3000/grafana"
+      root_url: "http://localhost:3000/grafana/"
 
 nginx-ingress:
   controller:
