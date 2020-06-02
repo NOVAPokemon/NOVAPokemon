@@ -18,14 +18,12 @@ test_run=false
 
 while getopts ":t" opt; do
 	case ${opt} in
-		t)
-			test_run=true
-			;;
-		\?)
-			echo "Invalid option: -$OPTARG" >&2
-			exit 1
-			;;
-	esac
+	t) test_run=true
+	;;
+	\?) echo "Invalid option: -$OPTARG" >&2
+		exit 1
+	;;
+esac
 done
 
 header="-------------------------"
@@ -34,8 +32,8 @@ echo "$header DELETING JOBS $header"
 
 for job in $(kubectl get job --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep tester)
 do
-		echo "Deleting job: $job"
-		kubectl delete job "${job}"
+	echo "Deleting job: $job"
+	kubectl delete job "${job}"
 done
 
 until ! kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>&1 | grep tester 1>/dev/null 2>&1
@@ -68,7 +66,7 @@ client_charts_dirname="client/client_charts"
 
 if [[ ! -d ${client_charts_dirname} ]]
 then
-		mkdir ${client_charts_dirname}
+	mkdir ${client_charts_dirname}
 fi
 
 time=$(date +%d_%m_%Y__%H_%M_%S)
@@ -92,27 +90,27 @@ cp client/client_groups.json $logs_dir
 group_num=0
 for number_clients in ${groups_out}
 do
-		echo "$header GROUP $group_num $header"
+	echo "$header GROUP $group_num $header"
 
-		dirname="$logs_dir/novapokemon_tester_${group_num}"
-		mkdir "$dirname"
+	dirname="$logs_dir/novapokemon_tester_${group_num}"
+	mkdir "$dirname"
 
-		echo "Creating job for client group $group_num with $number_clients clients"
-		
-		client_chart_name="${client_charts_dirname}/client-group-chart-${group_num}"
+	echo "Creating job for client group $group_num with $number_clients clients"
 
-		sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
-		sed "s/${var_client_nums}/$number_clients/" | \
-		sed "s|${var_host_path}|$dirname|" > ${client_chart_name}
+	client_chart_name="${client_charts_dirname}/client-group-chart-${group_num}"
 
-		echo "Applying client-group-job-$group_num"
+	sed "s/${var_image_name}/novapokemon-tester-${group_num}-${number_clients}/" ${jobs_file} | \
+	sed "s/${var_client_nums}/$number_clients/" | \
+	sed "s|${var_host_path}|$dirname|" > ${client_chart_name}
 
-		if [[ ${test_run} = false ]]
-		then
-			kubectl apply -f ${client_chart_name}
-		fi
+	echo "Applying client-group-job-$group_num"
 
-		group_num=$((group_num+1))
+	if [[ ${test_run} = false ]]
+	then
+		kubectl apply -f ${client_chart_name}
+	fi
+
+	group_num=$((group_num+1))
 done
 
 #bash scripts/build_client.sh
