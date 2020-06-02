@@ -7,7 +7,7 @@ ignored_scripts="scripts"
 for d in */; do
 	dirname_stripped=$(basename "$d")
 
-	if [[ "$dirname_stripped" == ${ignored_utils} ]] || [[ "$dirname_stripped" == ${ignored_scripts} ]]; then
+	if [[ "$dirname_stripped" == "${ignored_utils}" ]] || [[ "$dirname_stripped" == "${ignored_scripts}" ]]; then
 		continue
 	fi
 

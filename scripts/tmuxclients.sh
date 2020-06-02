@@ -17,7 +17,7 @@ runGoClient="go run github.com/NOVAPokemon/client"
 SESSIONEXISTS=$(tmux list-sessions | grep ${session})
 
 # Only create tmux session if it doesn't already exist
-if [[ "$SESSIONEXISTS" != "" ]]; then
+if [ "$SESSIONEXISTS" != "" ]; then
   tmux kill-session -t ${session}
 fi
 

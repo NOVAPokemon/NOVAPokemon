@@ -2,8 +2,6 @@
 
 set -e
 
-DOCKERIZE_VERSION=v0.6.1
-
 cd "$(go env GOPATH)"/src/github.com/NOVAPokemon/ || exit
 
 #MONGO

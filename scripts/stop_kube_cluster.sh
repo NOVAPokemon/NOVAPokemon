@@ -12,7 +12,7 @@ helm uninstall novapokemon
 until kubectl get pods 2>&1 | grep "No resources found"
 do
 	echo "waiting for pods to terminate:"
-	echo "$(kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')"
+	kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
 	sleep 5
 done
 

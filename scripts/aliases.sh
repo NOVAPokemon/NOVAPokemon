@@ -1,14 +1,18 @@
 #!/bin/bash
 
-NOVAPOKEMON_DIR="~/git/NOVAPokemon"
+NOVAPOKEMON_DIR="$HOME/git/NOVAPokemon"
+export NOVAPOKEMON_DIR
+
 NOVAPOKEMON_SCRIPTS_DIR="$NOVAPOKEMON_DIR/scripts"
+export NOVAPOKEMON_SCRIPTS_DIR
+
 NOVAPOKEMON_TEST_FILE="test.sh"
+export NOVAPOKEMON_TEST_FILE
 
-cdToDir="cd ${NOVAPOKEMON_DIR}"
-
-alias testNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/$NOVAPOKEMON_TEST_FILE; cd -"
-alias pullNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/pull.sh; cd -"
-alias pushNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/push.sh; cd -"
-alias buildNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/build_binaries.sh; cd -"
-alias runNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/run_servers.sh; cd -"
-alias masterNOVA="$cdToDir; bash $NOVAPOKEMON_SCRIPTS_DIR/checkout.sh; cd -"
+alias goToNOVAPOKEMON='cd $NOVAPOKEMON_DIR'
+alias testNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/$NOVAPOKEMON_TEST_FILE; cd -'
+alias pullNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/pull.sh; cd -'
+alias pushNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/push.sh; cd -'
+alias buildNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/build_binaries.sh; cd -'
+alias runNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/run_servers.sh; cd -'
+alias masterNOVA='goToNOVAPOKEMON && bash $NOVAPOKEMON_SCRIPTS_DIR/checkout.sh; cd -'

@@ -17,7 +17,7 @@ stopMongo="docker stop \$(docker ps -f \"ancestor=mongo\" -q -a)"
 SESSIONEXISTS=$(tmux list-sessions | grep ${session})
 
 # Only create tmux session if it doesn't already exist
-if [[ "$SESSIONEXISTS" != "" ]]; then
+if [ "$SESSIONEXISTS" != "" ]; then
   tmux kill-session -t ${session}
 fi
 
