@@ -5,7 +5,7 @@ set -e
 clientsnode=$(kubectl get nodes --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --selector='clientsnode=true')
 hostname=$(hostname)
 
-if [[ $hostname != "$clientsnode" ]]
+if [[ ${hostname} != "$clientsnode" ]]
 then
 	echo "Running this on node $hostname, instead of $clientsnode. Will ssh and run there."
 	echo "Provider username to ssh:"
@@ -72,10 +72,10 @@ fi
 time=$(date +%d_%m_%Y__%H_%M_%S)
 
 logs_dir="/tmp/current_client_logs"
-if [[ -d $logs_dir ]]; then
+if [[ -d ${logs_dir} ]]; then
 	echo "There are logs on the folder do you wish to save them?[y/n]"
 	read -r confirmation
-	if [[ $confirmation == "y" ]]; then
+	if [[ ${confirmation} == "y" ]]; then
 		bash scripts/save_client_logs.sh
 	else
 		echo "unexpected option $confirmation, exiting..."
@@ -85,7 +85,7 @@ fi
 
 mkdir "$logs_dir"
 echo "$time" > "$logs_dir/started_at.txt"
-cp client/client_groups.json $logs_dir
+cp client/client_groups.json ${logs_dir}
 
 group_num=0
 for number_clients in ${groups_out}

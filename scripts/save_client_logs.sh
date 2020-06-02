@@ -5,7 +5,7 @@ hostname=$(hostname)
 
 logs_dir="/tmp/current_client_logs" 
 
-if [[ $hostname != "$clientsnode" ]]
+if [[ ${hostname} != "$clientsnode" ]]
 then
 	echo "Running this on node $hostname, instead of $clientsnode. Will ssh and run there."
 	echo "Provide username for ssh:"
@@ -16,8 +16,8 @@ then
 	exit 0
 fi
 
-startJobTime=$(cat $logs_dir/started_at.txt)
+startJobTime=$(cat ${logs_dir}/started_at.txt)
 finalFolder="/tmp/client_logs_collected_$startJobTime"
-mv $logs_dir "$finalFolder"
+mv ${logs_dir} "$finalFolder"
 
 echo "saved client logs to $finalFolder"

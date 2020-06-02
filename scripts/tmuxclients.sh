@@ -14,20 +14,20 @@ lazygit="gg"
 runGoClient="go run github.com/NOVAPokemon/client"
 
 # Set Session Name
-SESSIONEXISTS=$(tmux list-sessions | grep $session)
+SESSIONEXISTS=$(tmux list-sessions | grep ${session})
 
 # Only create tmux session if it doesn't already exist
-if [ "$SESSIONEXISTS" != "" ]; then
-  tmux kill-session -t $session
+if [[ "$SESSIONEXISTS" != "" ]]; then
+  tmux kill-session -t ${session}
 fi
 
 # set up tmux
 tmux start-server
 
 # create a new tmux session
-tmux new-session -s $session -d -x "$(tput cols)" -y "$(tput lines)"
+tmux new-session -s ${session} -d -x "$(tput cols)" -y "$(tput lines)"
 
-tmux rename-window -t $session:0 clients
+tmux rename-window -t ${session}:0 clients
 
 tmux splitw -h -p 50
 tmux setw synchronize-panes on
@@ -36,11 +36,11 @@ tmux send-keys "$cdToClient;$runGoClient" C-m
 
 tmux setw synchronize-panes off
 
-tmux new-window -t $session:1 -n git
+tmux new-window -t ${session}:1 -n git
 tmux send-keys "$cdToRepo;$lazygit" C-m
 tmux splitw -h -p 50
 tmux send-keys "$cdToRepo" C-m
 
-tmux selectw -t $session:0
+tmux selectw -t ${session}:0
 
-tmux attach-session -t $session
+tmux attach-session -t ${session}

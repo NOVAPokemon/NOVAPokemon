@@ -3,7 +3,7 @@
 masterNode=$(kubectl get nodes --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' --selector='node-role.kubernetes.io/master=')
 hostnode=$(hostname)
 
-if [ $masterNode != $hostnode ]; then
+if [[ ${masterNode} != ${hostnode} ]]; then
 	echo "Running this in $hostnode, expected to run in master $masterNode. Will ssh and run there. Username?"
 	read -r username
 	ssh "$username"@"$masterNode" 'cd ~/git/NOVAPokemon/ && bash scripts/init.sh'
