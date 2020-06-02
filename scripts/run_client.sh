@@ -71,10 +71,12 @@ time=$(date +%d_%m_%Y__%H_%M_%S)
 
 logs_dir="/tmp/current_client_logs"
 if [[ -d ${logs_dir} ]]; then
-	echo "There are logs on the folder do you wish to save them?[y/n]"
+	echo "There are logs in the folder. Do you wish to save them?[y/n]"
 	read -r confirmation
 	if [[ ${confirmation} == "y" ]]; then
 		bash scripts/save_client_logs.sh
+	elif [[ ${confirmation} == "n" ]]; then
+		rm -rf "/tmp/current_client_logs/"
 	else
 		echo "unexpected option $confirmation, exiting..."
 		exit 1
