@@ -390,6 +390,7 @@ prometheus:
       runAsUser: 5026
   server:
     persistentVolume:
+      enabled: false
       existingClaim: "novapokemon-prometheus-server"
     nodeSelector:
       node-role.kubernetes.io/master: ""
