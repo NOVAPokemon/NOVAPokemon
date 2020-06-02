@@ -16,7 +16,7 @@ echo "------------------------------ BUILDING nova-server-base image -----------
 
 cd base_image
 
-if [ ! -e dockerize ]; then
+if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
 	wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-"$DOCKERIZE_VERSION".tar.gz \
 	-O dockerize.tar.gz
@@ -45,7 +45,7 @@ for d in */; do
 	cd "$d" || exit
 
 	#remove previous binary if already exists
-	if [ -e executable ]; then
+	if [[ -e executable ]]; then
 		rm executable
 	fi
 
@@ -60,7 +60,7 @@ for d in */; do
 	echo "done"
 
 	#remove binary after building
-	if [ -e executable ]; then
+	if [[ -e executable ]]; then
 		rm executable
 	fi
 

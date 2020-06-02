@@ -4,7 +4,7 @@ set -e
 
 cd client || exit
 
-echo "------------------------------ BUILDING $dirname_stripped ------------------------------"
+echo "------------------------------ BUILDING CLIENT ------------------------------"
 
 #remove previous binary if already exists
 if [[ -e executable ]]; then

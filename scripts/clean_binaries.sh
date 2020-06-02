@@ -7,7 +7,7 @@ ignored_scripts="scripts"
 for d in */; do
 	dirname_stripped=$(basename "$d")
 
-	if [ "$dirname_stripped" == $ignored_utils ] || [ "$dirname_stripped" == $ignored_scripts ]; then
+	if [[ "$dirname_stripped" == ${ignored_utils} ]] || [[ "$dirname_stripped" == ${ignored_scripts} ]]; then
 		continue
 	fi
 
@@ -18,7 +18,7 @@ for d in */; do
 	echo "Cleaning binary..."
 
 	#remove previous binary if already exists
-	if [ -e executable ]; then
+	if [[ -e executable ]]; then
 		rm executable
 	fi
 
