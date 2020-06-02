@@ -5,22 +5,22 @@ ignored_scripts="scripts"
 
 #build images
 for d in */; do
-  dirname_stripped=$(basename "$d")
+	dirname_stripped=$(basename "$d")
 
-  if [ "$dirname_stripped" == $ignored_utils ] || [ "$dirname_stripped" == $ignored_scripts ]; then
-    continue
-  fi
+	if [ "$dirname_stripped" == $ignored_utils ] || [ "$dirname_stripped" == $ignored_scripts ]; then
+		continue
+	fi
 
-  echo "------------------------------ CLEAN $dirname_stripped ------------------------------"
+	echo "------------------------------ CLEAN $dirname_stripped ------------------------------"
 
-  cd "$d" || exit
+	cd "$d" || exit
 
-  echo "Cleaning binary..."
+	echo "Cleaning binary..."
 
-  #remove previous binary if already exists
-  if [ -e executable ]; then
-    rm executable
-  fi
+	#remove previous binary if already exists
+	if [ -e executable ]; then
+		rm executable
+	fi
 
-  cd .. || exit
+	cd .. || exit
 done

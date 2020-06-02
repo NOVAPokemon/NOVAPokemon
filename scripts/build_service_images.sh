@@ -17,11 +17,11 @@ echo "------------------------------ BUILDING nova-server-base image -----------
 cd base_image
 
 if [ ! -e dockerize ]; then
-  echo "Downloading dockerize"
-  wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-"$DOCKERIZE_VERSION".tar.gz \
-    -O dockerize.tar.gz
-  tar -xzvf dockerize.tar.gz
-  rm dockerize.tar.gz
+	echo "Downloading dockerize"
+	wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-"$DOCKERIZE_VERSION".tar.gz \
+	-O dockerize.tar.gz
+	tar -xzvf dockerize.tar.gz
+	rm dockerize.tar.gz
 fi
 
 docker build . -t novapokemon/nova-server-base
@@ -30,40 +30,41 @@ cd ..
 
 #build images
 for d in */; do
-  dirname_stripped=$(basename "$d")
+	dirname_stripped=$(basename "$d")
 
-  if [ "$dirname_stripped" == $ignored_utils ] || [ "$dirname_stripped" == $ignored_scripts ] ||
-    [ "$dirname_stripped" == $ignored_client ] || [ "$dirname_stripped" == $ignored_mongo_swarm ] ||
-    [ "$dirname_stripped" == $ignored_base_image ] || [ "$dirname_stripped" == $ignored_deployment_config ] ||
-    [ "$dirname_stripped" == $ignored_logs ]; then
-    continue
-  fi
+	if [[ "$dirname_stripped" == "$ignored_utils" ]] || [[ "$dirname_stripped" == "$ignored_scripts" ]] ||
+		[[ "$dirname_stripped" == "$ignored_client" ]] || [[ "$dirname_stripped" == "$ignored_mongo_swarm" ]] ||
+		[[ "$dirname_stripped" == "$ignored_base_image" ]] || [[ "$dirname_stripped" == "$ignored_deployment_config" ]] ||
+		[[ "$dirname_stripped" == "$ignored_logs" ]]
+	then
+		continue
+	fi
 
-  echo "------------------------------ BUILDING $dirname_stripped executable ------------------------------"
+	echo "------------------------------ BUILDING $dirname_stripped executable ------------------------------"
 
-  cd "$d" || exit
+	cd "$d" || exit
 
-  #remove previous binary if already exists
-  if [ -e executable ]; then
-    rm executable
-  fi
+	#remove previous binary if already exists
+	if [ -e executable ]; then
+		rm executable
+	fi
 
-  # build new binary
-  echo "Building binary..."
-  GOOS=linux GOARCH=amd64 go build -v -o executable .
-  echo "done"
+	# build new binary
+	echo "Building binary..."
+	GOOS=linux GOARCH=amd64 go build -v -o executable .
+	echo "done"
 
-  echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
+	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
 
-  docker build . -t novapokemon/"$dirname_stripped":latest; docker push novapokemon/"$dirname_stripped":latest
-  echo "done"
+	docker build . -t novapokemon/"$dirname_stripped":latest; docker push novapokemon/"$dirname_stripped":latest
+	echo "done"
 
-  #remove binary after building
-  if [ -e executable ]; then
-    rm executable
-  fi
+	#remove binary after building
+	if [ -e executable ]; then
+		rm executable
+	fi
 
-  cd .. || exit
+	cd .. || exit
 done
 
 wait

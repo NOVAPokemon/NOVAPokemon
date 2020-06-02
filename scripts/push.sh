@@ -6,8 +6,8 @@ ignored_mongo_swarm="mongo-swarm/"
 
 for d in */; do
 	if [ "$d" == $ignored_scripts ] || [ "$d" == $ignored_base_image ] || [ "$d" == $ignored_mongo_swarm ]; then
-    continue
-  fi
+		continue
+	fi
 	cd "$d" || exit
 	git push
 	cd .. || exit
