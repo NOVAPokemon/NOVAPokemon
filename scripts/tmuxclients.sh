@@ -18,7 +18,7 @@ SESSIONEXISTS=$(tmux list-sessions | grep ${session})
 
 # Only create tmux session if it doesn't already exist
 if [ "$SESSIONEXISTS" != "" ]; then
-  tmux kill-session -t ${session}
+	tmux kill-session -t ${session}
 fi
 
 # set up tmux

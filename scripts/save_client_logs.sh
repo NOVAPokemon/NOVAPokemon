@@ -5,8 +5,7 @@ hostname=$(hostname)
 
 logs_dir="/tmp/current_client_logs"
 
-if [[ ${hostname} != "$clientsnode" ]]
-then
+if [[ ${hostname} != "$clientsnode" ]]; then
 	echo "Running this on node $hostname, instead of $clientsnode. Will ssh and run there."
 	echo "Provide username for ssh:"
 	read -r username

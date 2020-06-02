@@ -9,8 +9,7 @@ kubectl delete job novapokemon-tester || true
 helm uninstall novapokemon
 
 # wait for cluster to finish
-until kubectl get pods 2>&1 | grep "No resources found"
-do
+until kubectl get pods 2>&1 | grep "No resources found"; do
 	echo "waiting for pods to terminate:"
 	kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'
 	sleep 5

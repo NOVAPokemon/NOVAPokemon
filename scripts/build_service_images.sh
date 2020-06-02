@@ -19,7 +19,7 @@ cd base_image
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
 	wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-"$DOCKERIZE_VERSION".tar.gz \
-	-O dockerize.tar.gz
+		-O dockerize.tar.gz
 	tar -xzvf dockerize.tar.gz
 	rm dockerize.tar.gz
 fi
@@ -35,8 +35,7 @@ for d in */; do
 	if [[ "$dirname_stripped" == "$ignored_utils" ]] || [[ "$dirname_stripped" == "$ignored_scripts" ]] ||
 		[[ "$dirname_stripped" == "$ignored_client" ]] || [[ "$dirname_stripped" == "$ignored_mongo_swarm" ]] ||
 		[[ "$dirname_stripped" == "$ignored_base_image" ]] || [[ "$dirname_stripped" == "$ignored_deployment_config" ]] ||
-		[[ "$dirname_stripped" == "$ignored_logs" ]]
-	then
+		[[ "$dirname_stripped" == "$ignored_logs" ]]; then
 		continue
 	fi
 
@@ -56,7 +55,8 @@ for d in */; do
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
 
-	docker build . -t novapokemon/"$dirname_stripped":latest; docker push novapokemon/"$dirname_stripped":latest
+	docker build . -t novapokemon/"$dirname_stripped":latest
+	docker push novapokemon/"$dirname_stripped":latest
 	echo "done"
 
 	#remove binary after building

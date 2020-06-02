@@ -8,7 +8,7 @@ echo "------------------------------ BUILDING CLIENT ---------------------------
 
 #remove previous binary if already exists
 if [[ -e executable ]]; then
-  rm executable
+	rm executable
 fi
 
 # build new binary

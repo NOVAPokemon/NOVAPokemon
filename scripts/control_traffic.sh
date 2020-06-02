@@ -17,16 +17,21 @@ function print_usage() {
 
 while getopts 'l:b:r' flag; do
 	case "${flag}" in
-		l) 	l_flag=true
-			latency=${OPTARG}
+	l)
+		l_flag=true
+		latency=${OPTARG}
 		;;
-		b) 	b_flag=true
-			bandwidth=${OPTARG}
+	b)
+		b_flag=true
+		bandwidth=${OPTARG}
 		;;
-		r) r_flag=true
+	r)
+		r_flag=true
 		;;
-		*) print_usage
-			exit 1 ;;
+	*)
+		print_usage
+		exit 1
+		;;
 	esac
 done
 
@@ -38,7 +43,7 @@ function control_traffic_for_pod() {
 		return
 	fi
 
-	if [[ "$r_flag" = true ]]; then
+	if [[ "$r_flag" == true ]]; then
 		echo "removing latency from pod $pod"
 		kubectl exec "$pod" -- sh -c "tc qdisc del dev eth0 root"
 		return
@@ -46,15 +51,14 @@ function control_traffic_for_pod() {
 		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 root handle 1:0 htb default 10"
 	fi
 
-
-	if [[ "$b_flag" = true ]]; then
+	if [[ "$b_flag" == true ]]; then
 		echo "limiting bandwidth to $bandwidth on pod $pod"
 		kubectl exec "$pod" -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate $bandwidth prio 0"
 	else
 		kubectl exec "$pod" -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate 40gbit prio 0"
 	fi
 
-	if [[ "$l_flag" = true ]]; then
+	if [[ "$l_flag" == true ]]; then
 		echo "adding $latency to pod $pod"
 		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $latency"
 	fi
