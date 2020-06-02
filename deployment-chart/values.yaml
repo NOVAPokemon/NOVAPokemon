@@ -84,9 +84,10 @@ global:
       n_replicas: 4
       port: 8004
       image: "novapokemon/location:latest"
-      serviceName: "location-service"
       databaseName: "locationdb"
       databasePort: 27017
+      serviceName: "location-service"
+      serviceNameHeadless: "location-service-headless"
 
     microtransactions:
       name: "microtransactions"

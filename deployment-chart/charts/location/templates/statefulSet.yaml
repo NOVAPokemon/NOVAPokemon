@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: {{$.Values.global.services.location.name}}
   replicas: {{$.Values.global.services.location.n_replicas}}
-  serviceName: {{$.Values.global.services.location.serviceName}}
+  serviceName: {{$.Values.global.services.location.serviceNameHeadless}}
   template:
     metadata:
       annotations:
@@ -30,6 +30,8 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.location.databaseName}}:{{$.Values.global.services.location.databasePort}}"
+            - name: "HEADLESS_SERVICE_NAME"
+              value: {{$.Values.global.services.location.serviceNameHeadless}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{$.Values.global.services.location.serviceName}}
+  name: {{$.Values.global.services.location.serviceNameHeadless}}
 spec:
-  type: ClusterIP
   selector:
     app: {{$.Values.global.services.location.name}}
   ports:
     - protocol: TCP
       port: {{$.Values.global.services.location.port}}
       targetPort: {{$.Values.global.services.location.port}}
+  clusterIP: None
