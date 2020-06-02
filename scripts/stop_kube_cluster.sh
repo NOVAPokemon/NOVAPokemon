@@ -3,7 +3,14 @@
 set -e
 
 # kill client jobs
-kubectl delete job novapokemon-tester || true
+header="-------------------------"
+
+echo "$header DELETING JOBS $header"
+
+for job in $(kubectl get job --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep tester); do
+	echo "Deleting job: $job"
+	kubectl delete job "${job}"
+done
 
 # kill cluster
 helm uninstall novapokemon
