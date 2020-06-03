@@ -16,7 +16,7 @@ if [[ ${hostname} != "$clientsnode" ]]; then
 fi
 
 startJobTime=$(cat ${logs_dir}/started_at.txt)
-finalFolder="/tmp/client_logs_collected_$startJobTime"
+finalFolder="$HOME/client_logs_collected_$startJobTime"
 mv ${logs_dir} "$finalFolder"
 
 echo "saved client logs to $finalFolder"
