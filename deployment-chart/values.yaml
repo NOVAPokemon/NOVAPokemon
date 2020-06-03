@@ -54,7 +54,7 @@ global:
     password: "admin"
 
   client:
-    metricsPort : 8080
+    metricsPort: 8080
   services:
     auth:
       image: "novapokemon/authentication:latest"

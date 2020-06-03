@@ -1,14 +1,14 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-    name: {{$.Values.global.api_configmap.name}}
+  name: {{$.Values.global.api_configmap.name}}
 data:
-    AUTHENTICATION_URL: "{{$.Values.global.services.auth.serviceName}}:{{$.Values.global.services.auth.port}}"
-    BATTLES_URL: "{{$.Values.global.services.battles.serviceName}}:{{$.Values.global.services.battles.port}}"
-    GYM_URL: "{{$.Values.global.services.gym.serviceNameHeadless}}:{{$.Values.global.services.gym.port}}"
-    LOCATION_URL: "{{$.Values.global.services.location.serviceName}}:{{$.Values.global.services.location.port}}"
-    MICROTRANSACTIONS_URL: "{{$.Values.global.services.microtransactions.serviceName}}:{{$.Values.global.services.microtransactions.port}}"
-    NOTIFICATIONS_URL: "{{$.Values.global.services.notifications.serviceName}}:{{$.Values.global.services.notifications.port}}"
-    STORE_URL: "{{$.Values.global.services.store.serviceName}}:{{$.Values.global.services.store.port}}"
-    TRADES_URL: "{{$.Values.global.services.trades.serviceName}}:{{$.Values.global.services.trades.port}}"
-    TRAINERS_URL: "{{$.Values.global.services.trainers.serviceName}}:{{$.Values.global.services.trainers.port}}"
+  AUTHENTICATION_URL: "{{$.Values.global.services.auth.serviceName}}:{{$.Values.global.services.auth.port}}"
+  BATTLES_URL: "{{$.Values.global.services.battles.serviceName}}:{{$.Values.global.services.battles.port}}"
+  GYM_URL: "{{$.Values.global.services.gym.serviceNameHeadless}}:{{$.Values.global.services.gym.port}}"
+  LOCATION_URL: "{{$.Values.global.services.location.serviceName}}:{{$.Values.global.services.location.port}}"
+  MICROTRANSACTIONS_URL: "{{$.Values.global.services.microtransactions.serviceName}}:{{$.Values.global.services.microtransactions.port}}"
+  NOTIFICATIONS_URL: "{{$.Values.global.services.notifications.serviceName}}:{{$.Values.global.services.notifications.port}}"
+  STORE_URL: "{{$.Values.global.services.store.serviceName}}:{{$.Values.global.services.store.port}}"
+  TRADES_URL: "{{$.Values.global.services.trades.serviceName}}:{{$.Values.global.services.trades.port}}"
+  TRAINERS_URL: "{{$.Values.global.services.trainers.serviceName}}:{{$.Values.global.services.trainers.port}}"
