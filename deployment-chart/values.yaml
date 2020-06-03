@@ -84,9 +84,10 @@ global:
       n_replicas: 4
       port: 8004
       image: "novapokemon/location:latest"
-      serviceName: "location-service"
       databaseName: "locationdb"
       databasePort: 27017
+      serviceName: "location-service"
+      serviceNameHeadless: "location-service-headless"
 
     microtransactions:
       name: "microtransactions"
@@ -390,20 +391,29 @@ prometheus:
       runAsUser: 5026
   server:
     persistentVolume:
+      enabled: false
       existingClaim: "novapokemon-prometheus-server"
     nodeSelector:
       node-role.kubernetes.io/master: ""
     securityContext:
       runAsNonRoot: true
       runAsUser: 5026
-    baseURL: "http://novapokemon-prometheus-server:80/"
 
 grafana:
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus-1
+          type: prometheus
+          url: http://novapokemon-prometheus-server
+          access: proxy
+          isDefault: true
   admin:
     existingSecret: "grafana-credentials"
   grafana.ini:
     server:
-      root_url: "http://localhost:3000/grafana/"
+      root_url: "http://localhost:3000/grafana"
 
 nginx-ingress:
   controller:

@@ -19,5 +19,5 @@ kubectl run -i -t --image novapokemon/client:latest \
 	--env STORE_URL="store-service:8007" \
 	--env TRADES_URL="trades-service:8008" \
 	--env TRAINERS_URL="trainers-service:8009" \
-	"$1" --restart=Never \
-	--overrides='{ "apiVersion": "v1", "spec": { "template": { "spec": { "nodeSelector": { "clientsnode": "true" }, "containers": { "securityContext": { "capabilities": { "add": "NET_ADMIN" } } } } } } }'
+	--overrides='{ "apiVersion": "v1", "spec": { "template": { "spec": { "nodeSelector": { "clientsnode": "true" }, "containers": { "securityContext": { "capabilities": { "add": "NET_ADMIN" } } } } } } }' \
+	"$1" --restart=Never "./executable"

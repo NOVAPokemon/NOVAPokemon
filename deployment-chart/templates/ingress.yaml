@@ -3,8 +3,7 @@ kind: Ingress
 metadata:
   name: novapokemon-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
     - http:
@@ -63,14 +62,8 @@ spec:
               serviceName: {{$.Values.global.services.trainers.serviceName}}
               servicePort: {{$.Values.global.services.trainers.port}}
 
-          - path: /grafana/?(.*)
+          - path: /grafana(/|$)(.*)
             pathType: Prefix
             backend:
               serviceName: novapokemon-grafana
-              servicePort: 80
-
-          - path: /prometheus/?(.*)
-            pathType: Prefix
-            backend:
-              serviceName: novapokemon-prometheus-server
               servicePort: 80
