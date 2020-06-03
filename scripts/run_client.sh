@@ -76,6 +76,7 @@ if [[ -d ${logs_dir} ]]; then
 	if [[ ${confirmation} == "y" ]]; then
 		bash scripts/save_client_logs.sh
 	elif [[ ${confirmation} == "n" ]]; then
+		echo "Deleting logs..."
 		rm -rf "/tmp/current_client_logs/"
 	else
 		echo "unexpected option $confirmation, exiting..."
