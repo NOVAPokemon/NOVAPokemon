@@ -36,8 +36,9 @@ for job in $(kubectl get job --template '{{range .items}}{{.metadata.name}}{{"\n
 	kubectl delete job "${job}"
 done
 
+echo "Checking for running testers. Waiting for testers to finish..."
+
 until ! kubectl get pods --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>&1 | grep tester 1>/dev/null 2>&1; do
-	echo "waiting for testers to finish"
 	sleep 2
 done
 
