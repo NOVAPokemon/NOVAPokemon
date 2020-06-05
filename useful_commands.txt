@@ -9,3 +9,7 @@ kubectl create clusterrolebinding cluster-admin-dashboard-sa \
 --serviceaccount=default:cluster-admin-dashboard-sa
 kubectl get secret | grep cluster-admin-dashboard-sa
 kubectl describe secret cluster-admin-dashboard-sa-token-dc5k6
+
+
+tmux -CC -u -2
+tmux -CC -u -2 attach -t 0

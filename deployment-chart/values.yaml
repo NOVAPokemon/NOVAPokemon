@@ -392,6 +392,9 @@ prometheus:
       runAsNonRoot: true
       runAsUser: 5026
   server:
+    global:
+      scrape_interval: 10s
+      scrape_timeout: 3s
     persistentVolume:
       enabled: false
       existingClaim: "novapokemon-prometheus-server"
@@ -402,6 +405,9 @@ prometheus:
       runAsUser: 5026
 
 grafana:
+  sidecar:
+    dashboards:
+      enabled: true
   datasources:
     datasources.yaml:
       apiVersion: 1

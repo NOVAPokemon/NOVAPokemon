@@ -10,6 +10,11 @@ helm dependency update
 #kubectl taint nodes --all node-role.kubernetes.io/master- || true
 helm upgrade --install novapokemon . -f ./values.yaml
 
+# grafana dashboard
+kubectl delete cm grafana-dashboard-default | true
+kubectl create configmap grafana-dashboard-default --from-file="$(pwd)/utils/grafana_dashboard.json" -o yaml || true
+kubectl label cm grafana-dashboard-default grafana_dashboard=1
+
 # dashboard
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
 kubectl create serviceaccount dashboard -n default || true

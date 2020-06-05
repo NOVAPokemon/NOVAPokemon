@@ -747,18 +747,36 @@
       }
     },
     {
-      "datasource": "Prometheus-1",
+      "content": "",
+      "datasource": null,
       "gridPos": {
-        "h": 4,
-        "w": 6,
+        "h": 1,
+        "w": 24,
         "x": 0,
         "y": 14
       },
+      "id": 29,
+      "mode": "markdown",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": "Prometheus-1",
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 0,
+        "y": 15
+      },
       "id": 2,
       "options": {
+        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
-            "mean"
+            "last"
           ],
           "defaults": {
             "mappings": [],
@@ -775,15 +793,15 @@
           "overrides": [],
           "values": false
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal"
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "location_connected_clients",
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{statefulset_kubernetes_io_pod_name}}",
           "refId": "A"
@@ -792,21 +810,22 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Connected clients to location servers",
-      "type": "gauge"
+      "type": "stat"
     },
     {
       "datasource": "Prometheus-1",
       "gridPos": {
-        "h": 4,
+        "h": 10,
         "w": 6,
         "x": 6,
-        "y": 14
+        "y": 15
       },
       "id": 18,
       "options": {
+        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
-            "mean"
+            "lastNotNull"
           ],
           "defaults": {
             "mappings": [],
@@ -816,10 +835,6 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
@@ -827,16 +842,17 @@
           "overrides": [],
           "values": false
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto"
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "notifications_connected_clients",
-          "instant": true,
+          "instant": false,
           "interval": "",
+          "intervalFactor": 1,
           "legendFormat": "{{kubernetes_pod_name}}",
           "refId": "A"
         }
@@ -844,21 +860,22 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Connected clients to notification servers",
-      "type": "gauge"
+      "type": "stat"
     },
     {
       "datasource": "Prometheus-1",
       "gridPos": {
-        "h": 4,
+        "h": 10,
         "w": 6,
         "x": 12,
-        "y": 14
+        "y": 15
       },
       "id": 23,
       "options": {
+        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
-            "mean"
+            "lastNotNull"
           ],
           "defaults": {
             "mappings": [],
@@ -868,10 +885,6 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
@@ -879,15 +892,15 @@
           "overrides": [],
           "values": false
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal"
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "gym_raids_started-gym_raids_finished",
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{kubernetes_pod_name}}",
           "refId": "A"
@@ -896,62 +909,49 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Ongoing raids",
-      "type": "gauge"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
       "datasource": "Prometheus-1",
       "gridPos": {
-        "h": 4,
+        "h": 10,
         "w": 6,
         "x": 18,
-        "y": 14
+        "y": 15
       },
       "id": 20,
       "links": [],
       "options": {
+        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
-            "last"
+            "lastNotNull"
           ],
           "defaults": {
-            "mappings": [
-              {
-                "id": 0,
-                "op": "=",
-                "text": "N/A",
-                "type": 1,
-                "value": "null"
-              }
-            ],
-            "nullValueMode": "connected",
+            "mappings": [],
             "thresholds": {
               "mode": "absolute",
               "steps": [
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "#EAB839",
-                  "value": 50
                 }
               ]
-            },
-            "unit": "none"
+            }
           },
           "overrides": [],
           "values": false
         },
-        "orientation": "horizontal",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto"
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "battles_ongoing_battles",
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{statefulset_kubernetes_io_pod_name}}",
           "refId": "A"
@@ -960,7 +960,24 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Ongoing Battles",
-      "type": "gauge"
+      "type": "stat"
+    },
+    {
+      "content": "",
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 30,
+      "mode": "markdown",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
     },
     {
       "cacheTimeout": null,
@@ -969,7 +986,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 18
+        "y": 26
       },
       "id": 26,
       "links": [],
@@ -1029,7 +1046,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 18
+        "y": 26
       },
       "id": 22,
       "options": {
@@ -1045,10 +1062,6 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
@@ -1058,13 +1071,13 @@
         },
         "orientation": "auto",
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": false
       },
       "pluginVersion": "6.7.3",
       "targets": [
         {
           "expr": "gym_raids_started",
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{kubernetes_pod_name}}",
           "refId": "A"
@@ -1076,42 +1089,41 @@
       "type": "gauge"
     },
     {
+      "cacheTimeout": null,
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 18
+        "y": 26
       },
       "id": 17,
+      "links": [],
       "options": {
-        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
             "mean"
           ],
           "defaults": {
             "mappings": [],
+            "nullValueMode": "connected",
             "thresholds": {
               "mode": "absolute",
               "steps": [
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
-            }
+            },
+            "unit": "none"
           },
           "overrides": [],
-          "values": false
+          "values": true
         },
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto"
+        "orientation": "horizontal",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
       },
       "pluginVersion": "6.7.3",
       "targets": [
@@ -1126,7 +1138,7 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Started Battles",
-      "type": "stat"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
@@ -1135,7 +1147,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 22
+        "y": 30
       },
       "id": 25,
       "links": [],
@@ -1195,7 +1207,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 22
+        "y": 30
       },
       "id": 21,
       "options": {
@@ -1211,20 +1223,16 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
           },
           "overrides": [],
-          "values": false
+          "values": true
         },
-        "orientation": "auto",
+        "orientation": "horizontal",
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": false
       },
       "pluginVersion": "6.7.3",
       "targets": [
@@ -1247,11 +1255,10 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 22
+        "y": 30
       },
       "id": 19,
       "options": {
-        "colorMode": "value",
         "fieldOptions": {
           "calcs": [
             "mean"
@@ -1264,20 +1271,16 @@
                 {
                   "color": "green",
                   "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
                 }
               ]
             }
           },
           "overrides": [],
-          "values": false
+          "values": true
         },
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto"
+        "orientation": "horizontal",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
       },
       "pluginVersion": "6.7.3",
       "targets": [
@@ -1292,7 +1295,7 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Finished Battles",
-      "type": "stat"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
@@ -1301,7 +1304,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 26
+        "y": 34
       },
       "id": 24,
       "links": [],
@@ -1344,7 +1347,7 @@
       "repeat": null,
       "targets": [
         {
-          "expr": "rate(notifications_received_kafka[1m])",
+          "expr": "rate(notifications_sent_kafka[1m])",
           "instant": true,
           "interval": "",
           "legendFormat": "{{kubernetes_pod_name}}",
@@ -1388,5 +1391,5 @@
   "variables": {
     "list": []
   },
-  "version": 2
+  "version": 1
 }

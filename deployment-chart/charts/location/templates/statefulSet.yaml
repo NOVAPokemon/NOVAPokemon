@@ -36,8 +36,8 @@ spec:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
       initContainers:
-        - name: init-location
-          image: novapokemon/init-location:latest
+        - name: wait-mongo
+          image: novapokemon/wait-mongo:latest
           command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-locationdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]
       nodeSelector:
         serversnode: "true"
