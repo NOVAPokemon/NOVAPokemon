@@ -392,6 +392,9 @@ prometheus:
       runAsNonRoot: true
       runAsUser: 5026
   server:
+    global:
+      scrape_interval: 10s
+      scrape_timeout: 3s
     persistentVolume:
       enabled: false
       existingClaim: "novapokemon-prometheus-server"
