@@ -36,6 +36,9 @@ spec:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
       initContainers:
+        - name: wait-trainers
+          image: radial/busyboxplus:curl
+          command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'trainers-service:8009/trainers/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
         - name: wait-mongo
           image: novapokemon/wait-mongo:latest
           command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-locationdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]

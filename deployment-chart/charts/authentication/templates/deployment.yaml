@@ -16,6 +16,10 @@ spec:
       labels:
         app: {{$.Values.global.services.auth.name}}
     spec:
+      initContainers:
+        - name: wait-trainers
+          image: radial/busyboxplus:curl
+          command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'trainers-service:8009/location/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
       containers:
         - name: {{$.Values.global.services.auth.name}}
           image: {{$.Values.global.services.auth.image}}
