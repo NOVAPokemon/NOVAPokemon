@@ -2,6 +2,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:117",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -15,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -1388,5 +1389,5 @@
   "variables": {
     "list": []
   },
-  "version": 2
+  "version": 1
 }
