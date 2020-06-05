@@ -402,6 +402,9 @@ prometheus:
       runAsUser: 5026
 
 grafana:
+  sidecar:
+    dashboards:
+      enabled: true
   datasources:
     datasources.yaml:
       apiVersion: 1
