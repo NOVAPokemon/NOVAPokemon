@@ -20,7 +20,7 @@ spec:
       initContainers:
         - name: wait-mongo
           image: novapokemon/wait-mongo:latest
-          command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-gymdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]
+          command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-gymsdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]
         - name: wait-location
           image: radial/busyboxplus:curl
           command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'location-0.location-service-headless.default.svc.cluster.local:8004/location/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
