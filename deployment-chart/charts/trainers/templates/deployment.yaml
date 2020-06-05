@@ -16,6 +16,10 @@ spec:
       labels:
         app: {{$.Values.global.services.trainers.name}}
     spec:
+      initContainers:
+        - name: wait-mongo
+          image: novapokemon/wait-mongo:latest
+          command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-trainersdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]
       containers:
         - name: {{$.Values.global.services.trainers.name}}
           image: {{$.Values.global.services.trainers.image}}
