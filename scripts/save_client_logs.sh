@@ -11,7 +11,8 @@ if [[ ${hostname} != "$clientsnode" ]]; then
 	read -r username
 	started=$(ssh "$username"@"$clientsnode" 'cat /tmp/current_client_logs/started_at.txt')
 	ssh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon && bash scripts/save_client_logs.sh'
-	scp -r "$username"@"$clientsnode":/home/"$username"/client_logs_collected_"$started" /tmp/client_logs_collected_"$started"
+	dirname="/home/$username/client_logs_collected_$started"
+	scp -r "$username"@"$clientsnode":"$dirname" /tmp/client_logs_collected_"$started"
 	exit 0
 fi
 
