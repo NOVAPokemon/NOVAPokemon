@@ -12,6 +12,20 @@ DOCKERIZE_VERSION=v0.6.1
 
 set -e
 
+test_race=false
+
+while getopts 'r' flag; do
+	case "${flag}" in
+	r)
+		test_race=true
+		;;
+	*)
+		print_usage
+		exit 1
+		;;
+	esac
+done
+
 echo "------------------------------ BUILDING nova-server-base image ------------------------------"
 
 cd base_image
@@ -49,8 +63,15 @@ for d in */; do
 	fi
 
 	# build new binary
-	echo "Building binary..."
-	GOOS=linux GOARCH=amd64 go build -v -o executable .
+	race_flag=""
+	if [[ $test_race == true ]]; then
+		race_flag="--race"
+		echo "Building binary with RACE DETECTION..."
+	else
+		echo "Building binary..."
+	fi
+
+	GOOS=linux GOARCH=amd64 go build $race_flag -v -o executable .
 	echo "done"
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
