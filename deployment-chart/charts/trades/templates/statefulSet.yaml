@@ -20,7 +20,7 @@ spec:
       initContainers:
         - name: wait-trainers
           image: radial/busyboxplus:curl
-          command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'trainers-service:8009/trainers/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
+          command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'trainers-service.default.svc.cluster.local:8009/trainers/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
       containers:
         - name: {{$.Values.global.services.trades.name}}
           image: {{$.Values.global.services.trades.image}}
