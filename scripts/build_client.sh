@@ -25,6 +25,8 @@ done
 
 # build new binary
 race_flag=""
+os_flag=""
+arch_flag=""
 if [[ $test_race == true ]]; then
 	race_flag="--race"
 	echo "Building binary with RACE DETECTION..."

@@ -73,14 +73,18 @@ for d in */; do
 
 	# build new binary
 	race_flag=""
+	os_flag=""
+	arch_flag=""
 	if [[ $test_race == true ]]; then
 		race_flag="--race"
 		echo "Building binary with RACE DETECTION..."
 	else
+		os_flag="GOOS=linux"
+		arch_flag="GOARCH=amd64"
 		echo "Building binary..."
 	fi
 
-	GOOS=linux GOARCH=amd64 go build $race_flag -v -o executable .
+	$os_flag $arch_flag go build $race_flag -v -o executable .
 	echo "done"
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
