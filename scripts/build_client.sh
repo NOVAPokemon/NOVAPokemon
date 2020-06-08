@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 cd client || exit
 
 echo "------------------------------ BUILDING CLIENT ------------------------------"
@@ -34,7 +32,9 @@ else
 	echo "Building binary..."
 fi
 
+mv create_thread_clients.c ../
 GOOS=linux GOARCH=amd64 go build $race_flag -o executable .
+mv ../create_thread_clients.c .
 
 cd .. || exit
 
