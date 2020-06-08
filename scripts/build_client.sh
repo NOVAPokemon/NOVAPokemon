@@ -25,20 +25,20 @@ done
 
 # build new binary
 race_flag=""
-os_flag=""
-arch_flag=""
 if [[ $test_race == true ]]; then
 	race_flag="--race"
+	export GOOS=""
+	export GOARCH=""
 	echo "Building binary with RACE DETECTION..."
 	echo "WARNING: BE CAREFUL, THIS BUILDS WITHOUT OS AND ARCH FLAGS DUE TO INCOMPATIBILITY"
 else
-	os_flag="GOOS=linux"
-	arch_flag="GOARCH=amd64"
+	export GOOS=linux
+	export GOARCH=amd64
 	echo "Building binary..."
 fi
 
 mv create_thread_clients.c ../
-$os_flag $arch_flag go build $race_flag -o executable .
+go build $race_flag -o executable .
 mv ../create_thread_clients.c .
 
 cd .. || exit
