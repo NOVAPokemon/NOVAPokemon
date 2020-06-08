@@ -40,7 +40,16 @@ fi
 
 docker build . -t novapokemon/nova-server-base
 docker push novapokemon/nova-server-base:latest
+
 cd ..
+
+docker_tag=""
+
+if [[ $test_race == true ]]; then
+	docker_tag="race"
+else
+	docker_tag="latest"
+fi
 
 #build images
 for d in */; do
@@ -76,8 +85,11 @@ for d in */; do
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
 
-	docker build . -t novapokemon/"$dirname_stripped":latest
-	docker push novapokemon/"$dirname_stripped":latest
+	
+
+
+	docker build . -t novapokemon/"$dirname_stripped":$docker_tag
+	docker push novapokemon/"$dirname_stripped":$docker_tag
 	echo "done"
 
 	#remove binary after building
