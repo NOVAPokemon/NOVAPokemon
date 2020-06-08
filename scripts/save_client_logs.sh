@@ -8,7 +8,7 @@ logs_dir="/tmp/current_client_logs"
 if [[ ${hostname} != "$clientsnode" ]]; then
 	echo "Running this on node $hostname, instead of $clientsnode. Will ssh and run there."
 	echo "Provide username for ssh:"
-	read -r username
+	username=$(whoami)
 	started=$(ssh "$username"@"$clientsnode" 'cat /tmp/current_client_logs/started_at.txt')
 	ssh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon && bash scripts/save_client_logs.sh'
 	dirname="/home/$username/client_logs_collected_$started"
