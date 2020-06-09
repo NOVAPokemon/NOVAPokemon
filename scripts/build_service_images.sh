@@ -80,13 +80,14 @@ for d in */; do
 		export GOARCH=""
 		race_flag="--race"
 		echo "Building binary with RACE DETECTION..."
+		go-1.14 build $race_flag -v -o executable .
 	else
 		export GOOS=linux
 		export GOARCH=amd64
 		echo "Building binary..."
+		go build $race_flag -v -o executable .
 	fi
 
-	go build $race_flag -v -o executable .
 	echo "done"
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"

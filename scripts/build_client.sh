@@ -31,15 +31,16 @@ if [[ $test_race == true ]]; then
 	export GOARCH=""
 	echo "Building binary with RACE DETECTION..."
 	echo "WARNING: BE CAREFUL, THIS BUILDS WITHOUT OS AND ARCH FLAGS DUE TO INCOMPATIBILITY"
+
+	mv create_thread_clients.c ../
+	go-1.14 build $race_flag -o executable .
+	mv ../create_thread_clients.c .
 else
 	export GOOS=linux
 	export GOARCH=amd64
 	echo "Building binary..."
+	go build $race_flag -o executable .
 fi
-
-mv create_thread_clients.c ../
-go build $race_flag -o executable .
-mv ../create_thread_clients.c .
 
 cd .. || exit
 
