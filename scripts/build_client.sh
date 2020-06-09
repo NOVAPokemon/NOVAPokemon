@@ -45,7 +45,6 @@ cd .. || exit
 
 if [[ $test_race == true ]]; then
 	docker build client -t novapokemon/client:race
-	docker push novapokemon/client:race
 else
 	docker build client -t novapokemon/client:latest
 	docker push novapokemon/client:latest

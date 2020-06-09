@@ -90,7 +90,9 @@ for d in */; do
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
 
 	docker build . -t novapokemon/"$dirname_stripped":$docker_tag
-	docker push novapokemon/"$dirname_stripped":$docker_tag
+	if [[ $test_race == false ]]; then
+		docker push novapokemon/"$dirname_stripped":$docker_tag
+	fi
 	echo "done"
 
 	#remove binary after building
