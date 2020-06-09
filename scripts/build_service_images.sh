@@ -12,6 +12,20 @@ DOCKERIZE_VERSION=v0.6.1
 
 set -e
 
+test_race=false
+
+while getopts 'r' flag; do
+	case "${flag}" in
+	r)
+		test_race=true
+		;;
+	*)
+		print_usage
+		exit 1
+		;;
+	esac
+done
+
 echo "------------------------------ BUILDING nova-server-base image ------------------------------"
 
 cd base_image
@@ -26,7 +40,16 @@ fi
 
 docker build . -t novapokemon/nova-server-base
 docker push novapokemon/nova-server-base:latest
+
 cd ..
+
+docker_tag=""
+
+if [[ $test_race == true ]]; then
+	docker_tag="race"
+else
+	docker_tag="latest"
+fi
 
 #build images
 for d in */; do
@@ -49,14 +72,25 @@ for d in */; do
 	fi
 
 	# build new binary
-	echo "Building binary..."
-	GOOS=linux GOARCH=amd64 go build -v -o executable .
+	race_flag=""
+	if [[ $test_race == true ]]; then
+		export GOOS=""
+		export GOARCH=""
+		race_flag="--race"
+		echo "Building binary with RACE DETECTION..."
+	else
+		export GOOS=linux
+		export GOARCH=amd64
+		echo "Building binary..."
+	fi
+
+	go build $race_flag -v -o executable .
 	echo "done"
 
 	echo "------------------------------ BUILDING $dirname_stripped image ------------------------------"
 
-	docker build . -t novapokemon/"$dirname_stripped":latest
-	docker push novapokemon/"$dirname_stripped":latest
+	docker build . -t novapokemon/"$dirname_stripped":$docker_tag
+	docker push novapokemon/"$dirname_stripped":$docker_tag
 	echo "done"
 
 	#remove binary after building

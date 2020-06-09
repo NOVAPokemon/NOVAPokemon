@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 cd client || exit
 
 echo "------------------------------ BUILDING CLIENT ------------------------------"
@@ -11,11 +9,46 @@ if [[ -e executable ]]; then
 	rm executable
 fi
 
+test_race=false
+
+while getopts 'r' flag; do
+	case "${flag}" in
+	r)
+		test_race=true
+		;;
+	*)
+		print_usage
+		exit 1
+		;;
+	esac
+done
+
 # build new binary
-echo "Building binary..."
-GOOS=linux GOARCH=amd64 go build -o executable .
+race_flag=""
+if [[ $test_race == true ]]; then
+	race_flag="--race"
+	export GOOS=""
+	export GOARCH=""
+	echo "Building binary with RACE DETECTION..."
+	echo "WARNING: BE CAREFUL, THIS BUILDS WITHOUT OS AND ARCH FLAGS DUE TO INCOMPATIBILITY"
+else
+	export GOOS=linux
+	export GOARCH=amd64
+	echo "Building binary..."
+fi
+
+mv create_thread_clients.c ../
+go build $race_flag -o executable .
+mv ../create_thread_clients.c .
 
 cd .. || exit
 
-docker build client -t novapokemon/client:latest
-docker push novapokemon/client:latest
+if [[ $test_race == true ]]; then
+	docker build client -t novapokemon/client:race
+	docker push novapokemon/client:race
+else
+	docker build client -t novapokemon/client:latest
+	docker push novapokemon/client:latest
+fi
+
+
