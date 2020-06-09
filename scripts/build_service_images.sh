@@ -39,7 +39,9 @@ if [[ ! -e dockerize ]]; then
 fi
 
 docker build . -t novapokemon/nova-server-base
-docker push novapokemon/nova-server-base:latest
+if [[ $test_race == false ]]; then
+	docker push novapokemon/nova-server-base:latest
+fi
 
 cd ..
 
