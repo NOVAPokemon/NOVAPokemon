@@ -113,6 +113,10 @@ for d in */; do
     docker build . -t novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
     docker push novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
     echo "Done building and pushing image for service: ${dirname_stripped}"
+    if [[ -e executable ]]; then
+      rm executable
+    fi
+
   } &
 
   cd .. || exit
