@@ -1077,7 +1077,7 @@
       "targets": [
         {
           "expr": "gym_raids_started",
-          "instant": false,
+          "instant": true,
           "interval": "",
           "legendFormat": "{{kubernetes_pod_name}}",
           "refId": "A"
