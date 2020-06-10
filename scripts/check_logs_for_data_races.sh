@@ -14,6 +14,6 @@ for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n
 		fi
 
 		echo "FOUND DATA RACES IN $pod"
-		kubeclt logs "$pod" > "$dir_name"/"$pod"_data_race.log
+		kubectl logs "$pod" > "$dir_name"/"$pod"_data_race.log
 	fi
 done
