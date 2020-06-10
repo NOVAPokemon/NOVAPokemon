@@ -7,7 +7,8 @@ for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n
 	fi
 
 	echo "-------------------------- POD: $pod --------------------------"
-	result=$(kubectl logs "$pod" | grep "WARNING")
+	pod_logs=$(kubectl logs "$pod")
+	result=$( echo "$pod_logs" | grep "WARNING")
 	time=$(date +%d_%m_%Y__%H_%M_%S)
 	dir_name="data_race_logs_$time"
 
@@ -19,6 +20,6 @@ for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n
 		fi
 
 		echo "FOUND DATA RACES IN $pod"
-		kubectl logs "$pod" > "$dir_name"/"$pod"_data_race.log
+		echo "$pod_logs" > "$dir_name"/"$pod"_data_race.log
 	fi
 done
