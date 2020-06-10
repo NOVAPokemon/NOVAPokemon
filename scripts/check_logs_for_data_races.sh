@@ -1,6 +1,11 @@
 #!/bin/bash
 
 for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'); do
+	if [[ $pod =~ "novapokemon-" ]]
+	then
+		continue
+	fi
+
 	echo "-------------------------- POD: $pod --------------------------"
 	result=$(kubectl logs "$pod" | grep "WARNING")
 	time=$(date +%d_%m_%Y__%H_%M_%S)
