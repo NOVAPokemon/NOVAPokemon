@@ -87,7 +87,7 @@ for d in */; do
 			export GOOS=""
 			export GOARCH=""
 			race_flag="--race"
-			echo "Building binary with RACE DETECTION..."
+			echo "Building $dirname_stripped with RACE DETECTION..."
 			go-1.14 build $race_flag -v -o executable .
 		else
 			export GOOS=linux
@@ -106,8 +106,9 @@ for d in */; do
 		fi
 	} &
 
-cd .. || exit
+	cd .. || exit
 done
+
 echo "Waiting for finish..."
 wait
 
