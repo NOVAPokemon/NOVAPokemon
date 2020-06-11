@@ -70,41 +70,39 @@ for d in */; do
 
 	cd "$d" || exit
 
-	{
-		#remove previous binary if already exists
-		if [[ -e executable ]]; then
-			rm executable
-		fi
-		echo "Starting build and push of image for service: ${dirname_stripped}"
-		if [[ -e ../build_logs/"$dirname_stripped" ]]; then
-			rm ../build_logs/"$dirname_stripped"
-		fi
-		touch ../build_logs/"$dirname_stripped"
+	#remove previous binary if already exists
+	if [[ -e executable ]]; then
+		rm executable
+	fi
+	echo "Starting build and push of image for service: ${dirname_stripped}"
+	if [[ -e ../build_logs/"$dirname_stripped" ]]; then
+		rm ../build_logs/"$dirname_stripped"
+	fi
+	touch ../build_logs/"$dirname_stripped"
 
-		# build new binary
-		race_flag=""
-		if [[ $test_race == true ]]; then
-			export GOOS=""
-			export GOARCH=""
-			race_flag="--race"
-			echo "Building $dirname_stripped with RACE DETECTION..."
-			go-1.14 build $race_flag -v -o executable .
-		else
-			export GOOS=linux
-			export GOARCH=amd64
-			echo "Building $dirname_stripped..."
-			go build $race_flag -v -o executable .
-		fi
+	# build new binary
+	race_flag=""
+	if [[ $test_race == true ]]; then
+		export GOOS=""
+		export GOARCH=""
+		race_flag="--race"
+		echo "Building $dirname_stripped with RACE DETECTION..."
+		go-1.14 build $race_flag -v -o executable .
+	else
+		export GOOS=linux
+		export GOARCH=amd64
+		echo "Building $dirname_stripped..."
+		go build $race_flag -v -o executable .
+	fi
 
-		docker build . -t novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
-		if [[ $test_race == false ]]; then
-			docker push novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
-		fi
-		echo "Done building and pushing image for service: ${dirname_stripped}"
-		if [[ -e executable ]]; then
-			rm executable
-		fi
-	} &
+	docker build . -t novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
+	if [[ $test_race == false ]]; then
+		docker push novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
+	fi
+	echo "Done building and pushing image for service: ${dirname_stripped}"
+	if [[ -e executable ]]; then
+		rm executable
+	fi
 
 	cd .. || exit
 done
