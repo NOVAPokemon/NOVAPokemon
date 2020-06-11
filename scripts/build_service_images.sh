@@ -92,7 +92,7 @@ for d in */; do
 		else
 			export GOOS=linux
 			export GOARCH=amd64
-			echo "Building binary..."
+			echo "Building $dirname_stripped..."
 			go build $race_flag -v -o executable .
 		fi
 
