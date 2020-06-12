@@ -32,7 +32,7 @@ if [[ $test_race == true ]]; then
 	export GOARCH=""
 	echo "Building binary with RACE DETECTION..."
 	echo "WARNING: BE CAREFUL, THIS BUILDS WITHOUT OS AND ARCH FLAGS DUE TO INCOMPATIBILITY"
-	go_cmd="go-1.14"	
+	go_cmd="go-1.14"
 else
 	export GOOS=linux
 	export GOARCH=amd64
@@ -52,5 +52,3 @@ else
 	docker build client -t novapokemon/client:latest
 	docker push novapokemon/client:latest
 fi
-
-
