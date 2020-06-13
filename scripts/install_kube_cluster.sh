@@ -11,7 +11,7 @@ helm dependency update
 helm upgrade --install novapokemon . -f ./values.yaml
 
 # grafana dashboard
-kubectl delete cm grafana-dashboard-default | true
+kubectl delete cm grafana-dashboard-default || true
 kubectl create configmap grafana-dashboard-default --from-file="$(pwd)/utils/grafana_dashboard.json" -o yaml || true
 kubectl label cm grafana-dashboard-default grafana_dashboard=1
 
