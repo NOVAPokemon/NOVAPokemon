@@ -866,11 +866,60 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 10,
-        "w": 6,
+        "w": 4,
         "x": 12,
         "y": 15
       },
       "id": 23,
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal"
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "expr": "trades_trades_started-trades_trades_finished",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{kubernetes_pod_name}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Ongoing trades",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus-1",
+      "gridPos": {
+        "h": 10,
+        "w": 4,
+        "x": 16,
+        "y": 15
+      },
+      "id": 31,
       "options": {
         "colorMode": "value",
         "fieldOptions": {
@@ -916,8 +965,8 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 10,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 20,
         "y": 15
       },
       "id": 20,
@@ -1044,8 +1093,56 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 4,
-        "w": 6,
+        "w": 4,
         "x": 12,
+        "y": 26
+      },
+      "id": 33,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "expr": "trades_trades_started",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{kubernetes_pod_name}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Started trades",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus-1",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
         "y": 26
       },
       "id": 22,
@@ -1093,8 +1190,8 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 20,
         "y": 26
       },
       "id": 17,
@@ -1205,8 +1302,56 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 4,
-        "w": 6,
+        "w": 4,
         "x": 12,
+        "y": 30
+      },
+      "id": 32,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": true
+        },
+        "orientation": "horizontal",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "pluginVersion": "6.7.3",
+      "targets": [
+        {
+          "expr": "trades_trades_finished",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{kubernetes_pod_name}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Finished trades",
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus-1",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
         "y": 30
       },
       "id": 21,
@@ -1253,8 +1398,8 @@
       "datasource": "Prometheus-1",
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
+        "w": 4,
+        "x": 20,
         "y": 30
       },
       "id": 19,
