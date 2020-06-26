@@ -1,25 +1,5 @@
 dockerize_version: v0.6.1
 
-## prefixes
-dockerize:
-  http_prefix: "http : //"
-  tcp_prefix: "tcp : //"
-  wait_flag: "-wait"
-  wait_timeout_flag: "-timeout 60s"
-  retry_interval_flag: "-wait-retry-interval 5s"
-  default_flags: "$wait_timeout_flag $retry_interval_flag"
-
-  ## wait flags
-  wait_auth: "$wait_flag $http_prefix$auth_name:$auth_port"
-  wait_battles: "$wait_flag $http_prefix$battles_name:$battles_port"
-  wait_gym: "$wait_flag $http_prefix$gym_name:$gym_port"
-  wait_location: "$wait_flag $http_prefix$location_name:$location_port"
-  wait_microtransactions: "$wait_flag $http_prefix$microtransactions_name:$microtransactions_port"
-  wait_notifications: "$wait_flag $http_prefix$notifications_name:$notifications_port"
-  wait_store: "$wait_flag $http_prefix$store_name:$store_port"
-  wait_trades: "$wait_flag $http_prefix$trades_name:$trades_port"
-  wait_trainers: "$wait_flag $http_prefix$trainers_name:$trainers_port"
-
 kubernetes-dashboard:
   service:
     enableSkipLogin: true
@@ -32,7 +12,9 @@ kubernetes-dashboard:
     clusterAdminRole: true
 
 kafka:
-  replicaCount: 1
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  replicaCount: 2
   persistence:
     enabled: false
   readinessProbe:
