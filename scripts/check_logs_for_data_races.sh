@@ -45,32 +45,58 @@ done
 
 client_data_race_dir="clients"
 
-for tester in $(ls /tmp/current_client_logs/)
-do
+for tester in /tmp/current_client_logs/*; do
 	tester="/tmp/current_client_logs/$tester"
 	if ! [[ -d $tester ]]; then
 		continue
 	fi
 
-	for client in $(ls $tester)
-	do
-		
+	for client in "$tester"/*; do
+
 		echo "-------------------------- CLIENT: $client --------------------------"
 		client="$tester/$client"
 
-		result=$(cat $client | grep "WARNING")
+		result_races=$(grep "WARNING" "$client")
+		result_error=$(grep "error" "$client")
+		result_fatal=$(grep "fatal" "$client")
 
-		if [[ $result =~ "WARNING" ]]; then
+		if [[ $result_races =~ "WARNING" ]]; then
 			if ! [[ -d $dir_name ]]; then
-                        	mkdir "$dir_name"
-                	fi
+				mkdir "$dir_name"
+			fi
 
 			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
 
-                	echo "FOUND DATA RACES IN $client"
-                	cp $client $dir_name/$client_data_race_dir/
+			echo "FOUND DATA RACES IN $client"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_data_race.log
+		fi
+
+		if [[ $result_error =~ "error" ]]; then
+			if ! [[ -d $dir_name ]]; then
+				mkdir "$dir_name"
+			fi
+
+			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
+				mkdir "$dir_name/$client_data_race_dir"
+			fi
+
+			echo "FOUND ERRORS IN $client"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_errors.log
+		fi
+
+		if [[ $result_fatal =~ "fatal" ]]; then
+			if ! [[ -d $dir_name ]]; then
+				mkdir "$dir_name"
+			fi
+
+			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
+				mkdir "$dir_name/$client_data_race_dir"
+			fi
+
+			echo "FOUND FATAL IN $client"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_fatal.log
 		fi
 	done
 done
