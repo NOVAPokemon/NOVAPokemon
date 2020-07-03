@@ -9,10 +9,12 @@ for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n
 
 	echo "-------------------------- POD: $pod --------------------------"
 	pod_logs=$(kubectl logs "$pod")
-	result=$(echo "$pod_logs" | grep "WARNING")
-	dir_name="data_race_logs_$time"
+	result_races=$(echo "$pod_logs" | grep "WARNING")
+	result_error=$(echo "$pod_logs" | grep "error")
+	result_fatal=$(echo "$pod_logs" | grep "fatal")
 
-	if [[ $result =~ "WARNING" ]]; then
+	dir_name="error_logs_$time"
+	if [[ $result_races =~ "WARNING" ]]; then
 		if ! [[ -d $dir_name ]]; then
 			mkdir "$dir_name"
 		fi
@@ -20,6 +22,25 @@ for pod in $(kubectl get pod --template '{{range .items}}{{.metadata.name}}{{"\n
 		echo "FOUND DATA RACES IN $pod"
 		echo "$pod_logs" >"$dir_name"/"$pod"_data_race.log
 	fi
+
+	if [[ $result_error =~ "error" ]]; then
+		if ! [[ -d $dir_name ]]; then
+			mkdir "$dir_name"
+		fi
+
+		echo "FOUND ERRORS IN $pod"
+		echo "$pod_logs" >"$dir_name"/"$pod"_errors.log
+	fi
+
+	if [[ $result_fatal =~ "fatal" ]]; then
+		if ! [[ -d $dir_name ]]; then
+			mkdir "$dir_name"
+		fi
+
+		echo "FOUND FATAL IN $pod"
+		echo "$pod_logs" >"$dir_name"/"$pod"_fatal.log
+	fi
+
 done
 
 client_data_race_dir="clients"
