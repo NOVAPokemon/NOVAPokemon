@@ -46,15 +46,14 @@ done
 client_data_race_dir="clients"
 
 for tester in /tmp/current_client_logs/*; do
-	tester="/tmp/current_client_logs/$tester"
 	if ! [[ -d $tester ]]; then
 		continue
 	fi
 
 	for client in "$tester"/*; do
 
-		echo "-------------------------- CLIENT: $client --------------------------"
-		client="$tester/$client"
+		client_stripped=$(basename "$client")
+		echo "-------------------------- CLIENT: $client_stripped --------------------------"
 
 		result_races=$(grep "WARNING" "$client")
 		result_error=$(grep "error" "$client")
@@ -68,9 +67,9 @@ for tester in /tmp/current_client_logs/*; do
 			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
-
-			echo "FOUND DATA RACES IN $client"
-			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_data_race.log
+			
+			echo "FOUND DATA RACES IN $client_stripped"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client_stripped"_data_race.log
 		fi
 
 		if [[ $result_error =~ "error" ]]; then
@@ -81,9 +80,9 @@ for tester in /tmp/current_client_logs/*; do
 			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
-
-			echo "FOUND ERRORS IN $client"
-			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_errors.log
+			
+			echo "FOUND ERRORS IN $client_stripped"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client_stripped"_errors.log
 		fi
 
 		if [[ $result_fatal =~ "fatal" ]]; then
@@ -95,8 +94,8 @@ for tester in /tmp/current_client_logs/*; do
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
 
-			echo "FOUND FATAL IN $client"
-			cp "$client" "$dir_name"/$client_data_race_dir/"$client"_fatal.log
+			echo "FOUND FATAL IN $client_stripped"
+			cp "$client" "$dir_name"/$client_data_race_dir/"$client_stripped"_fatal.log
 		fi
 	done
 done
