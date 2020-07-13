@@ -1,25 +1,31 @@
 #!/bin/bash
 
-l_flag=false
+s_flag=false
 b_flag=false
 r_flag=false
 
-latency=0
+servicelatency=0
+client_latency=0
 bandwidth=0
 
 function print_usage() {
 	echo "bash control_latency.sh [OPTIONS]"
 	echo "[OPTIONS]"
-	echo "	-l 20ms	 	add 20ms of latency"
+	echo "	-s 20ms	 	add 20ms of latency to services"
+	echo "	-c 20ms		add 20ms of latency to clients"
 	echo "	-b 100mbit	limits egress bandwidth to 100mbit"
-	echo "	-r		remove latency and bandwidth"
+	echo "	-r			remove latency and bandwidth"
 }
 
-while getopts 'l:b:r' flag; do
+while getopts 's:c:b:r' flag; do
 	case "${flag}" in
-	l)
-		l_flag=true
-		latency=${OPTARG}
+	s)
+		s_flag=true
+		service_latency=${OPTARG}
+		;;
+	c)
+		c_flag=true
+		client_latency=${OPTARG}
 		;;
 	b)
 		b_flag=true
@@ -58,9 +64,16 @@ function control_traffic_for_pod() {
 		kubectl exec "$pod" -- sh -c "tc class add dev eth0 parent 1:0 classid 1:10 htb rate 40gbit prio 0"
 	fi
 
-	if [[ "$l_flag" == true ]]; then
-		echo "adding $latency to pod $pod"
-		kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $latency"
+	if [[ ${pod} =~ tester ]]; then
+		if [[ "$c_flag" == true ]]; then
+			echo "adding $client_latency to pod $pod"
+			kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $client_latency"
+		fi
+	else
+		if [[ "$s_flag" == true ]]; then
+			echo "adding $service_latency to pod $pod"
+			kubectl exec "$pod" -- sh -c "tc qdisc add dev eth0 parent 1:10 handle 110: netem delay $service_latency"
+		fi
 	fi
 
 	kubectl exec "$pod" -- sh -c "tc filter add dev eth0 parent 1:0 prio 0 protocol ip handle 10 fw flowid 1:10"
