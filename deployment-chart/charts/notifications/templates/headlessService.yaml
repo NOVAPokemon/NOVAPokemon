@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$.Values.global.services.notifications.serviceNameHeadless}}
+spec:
+  selector:
+    app: {{$.Values.global.services.notifications.name}}
+  ports:
+    - protocol: TCP
+      port: {{$.Values.global.services.notifications.port}}
+      targetPort: {{$.Values.global.services.notifications.port}}
+  clusterIP: None

@@ -7,6 +7,7 @@ spec:
     matchLabels:
       app: {{$.Values.global.services.store.name}}
   replicas: {{$.Values.global.services.store.n_replicas}}
+  serviceName: {{$.Values.global.services.store.serviceNameHeadless}}
   template:
     metadata:
       annotations:
