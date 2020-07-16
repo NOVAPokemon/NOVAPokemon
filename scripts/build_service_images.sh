@@ -29,6 +29,8 @@ done
 echo "------------------------------ BUILDING nova-server-base image ------------------------------"
 
 cd base_image
+cp ../location_tags.json .
+cp ../delays_config.json .
 
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
@@ -42,6 +44,9 @@ docker build . -t novapokemon/nova-server-base
 if [[ $test_race == false ]]; then
 	docker push novapokemon/nova-server-base:latest
 fi
+
+rm location_tags.json
+rm delays_config.json
 
 cd ..
 

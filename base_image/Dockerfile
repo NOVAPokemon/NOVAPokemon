@@ -6,5 +6,5 @@ WORKDIR /service
 COPY dockerize .
 RUN chmod +x dockerize
 
-COPY ../location_tags.json .
-COPY ../delays_config.json .
+COPY location_tags.json .
+COPY delays_config.json .
