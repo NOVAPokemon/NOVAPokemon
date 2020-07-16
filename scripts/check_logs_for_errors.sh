@@ -70,7 +70,7 @@ for tester in /tmp/current_client_logs/*; do
 			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
-			
+
 			echo "FOUND DATA RACES IN $client_stripped"
 			cp "$client" "$dir_name"/$client_data_race_dir/"$client_stripped"_data_race.log
 		fi
@@ -83,7 +83,7 @@ for tester in /tmp/current_client_logs/*; do
 			if ! [[ -d $dir_name/$client_data_race_dir ]]; then
 				mkdir "$dir_name/$client_data_race_dir"
 			fi
-			
+
 			echo "FOUND ERRORS IN $client_stripped"
 			cp "$client" "$dir_name"/$client_data_race_dir/"$client_stripped"_errors.log
 		fi

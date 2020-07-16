@@ -1,0 +1,23 @@
+{
+  "authentication-0": "eu-west-1",
+  "authentication-1": "eu-west-1",
+  "battles-1": "eu-west-1",
+  "battles-0": "eu-west-1",
+  "gym-0": "eu-west-1",
+  "gym-1": "eu-west-1",
+  "location-0": "eu-west-1",
+  "location-1": "eu-west-1",
+  "location-2": "eu-west-1",
+  "location-3": "eu-west-1",
+  "microtransactions-0": "eu-west-1",
+  "microtransactions-1": "eu-west-1",
+  "notifications-0": "eu-west-1",
+  "notifications-1": "eu-west-1",
+  "notifications-2": "eu-west-1",
+  "store-0": "eu-west-1",
+  "store-1": "eu-west-1",
+  "trades-0": "eu-west-1",
+  "trades-1": "eu-west-1",
+  "trainers-0": "eu-west-1",
+  "trainers-1": "eu-west-1"
+}
