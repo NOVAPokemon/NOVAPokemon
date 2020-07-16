@@ -1,38 +1,38 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{$.Values.global.services.auth.name}}
+  name: {{$.Values.global.services.microtransactions.name}}
 spec:
   selector:
     matchLabels:
-      app: {{$.Values.global.services.auth.name}}
-  replicas: {{$.Values.global.services.auth.n_replicas}}
+      app: {{$.Values.global.services.microtransactions.name}}
+  replicas: {{$.Values.global.services.microtransactions.n_replicas}}
   template:
     metadata:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
-        prometheus.io/port: {{quote $.Values.global.services.auth.port}}
+        prometheus.io/port: {{quote $.Values.global.services.microtransactions.port}}
       labels:
-        app: {{$.Values.global.services.auth.name}}
+        app: {{$.Values.global.services.microtransactions.name}}
     spec:
       initContainers:
         - name: wait-trainers
           image: radial/busyboxplus:curl
           command: ['sh', '-c', "set -x; while [[ $(curl -sw '%{http_code}' 'trainers-service.default.svc.cluster.local:8009/trainers/status' -o /dev/null) -ne 200 ]]; do sleep 15; done"]
       containers:
-        - name: {{$.Values.global.services.auth.name}}
-          image: {{$.Values.global.services.auth.image}}
+        - name: {{$.Values.global.services.microtransactions.name}}
+          image: {{$.Values.global.services.microtransactions.image}}
           command: ["sh", "-c", "./executable -l"]
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
           ports:
-            - containerPort: {{$.Values.global.services.auth.port}}
+            - containerPort: {{$.Values.global.services.microtransactions.port}}
           env:
             - name: MONGODB_URL
-              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.auth.databaseName}}:{{$.Values.global.services.auth.databasePort}}"
+              value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.microtransactions.databaseName}}:{{$.Values.global.services.microtransactions.databasePort}}"
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
