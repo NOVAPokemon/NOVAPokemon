@@ -24,7 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.trainers.name}}
           image: {{$.Values.global.services.trainers.image}}
-          command: ["sh", "-c", "./executable -l"]
+          command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
               add:

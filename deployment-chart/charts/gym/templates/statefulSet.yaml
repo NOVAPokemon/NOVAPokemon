@@ -30,7 +30,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.gym.name}}
           image: {{$.Values.global.services.gym.image}}
-          command: ["sh", "-c", "./executable -l"]
+          command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
               add:
