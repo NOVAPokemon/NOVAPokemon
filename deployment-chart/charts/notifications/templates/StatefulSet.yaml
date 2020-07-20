@@ -24,7 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.notifications.name}}
           image: {{$.Values.global.services.notifications.image}}
-          command: ["sh", "-c", "./executable -l -d"]
+          command: ["sh", "-c", "./executable -l"]
           securityContext:
             capabilities:
               add:
