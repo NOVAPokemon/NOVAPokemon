@@ -46,8 +46,8 @@ mv ../create_thread_clients.c .
 
 cd .. || exit
 
-cp location_tags.json .
-cp delays_config.json .
+cp location_tags.json client/
+cp delays_config.json client/
 
 if [[ $test_race == true ]]; then
 	docker build client -t novapokemon/client:race
@@ -56,5 +56,5 @@ else
 	docker push novapokemon/client:latest
 fi
 
-rm location_tags.json
-rm delays_config.json
+rm client/location_tags.json
+rm client/delays_config.json
