@@ -1,24 +1,5 @@
 {
-  "default": {
-    "us-east-1": 137,
-    "us-east-2": 157,
-    "us-west-1": 209,
-    "us-west-2": 213,
-    "ca-central-1": 143,
-    "eu-west-1": 46,
-    "eu-west-2": 35,
-    "eu-central-1": 51,
-    "eu-west-3": 50,
-    "eu-north-1": 64,
-    "me-south-1": 154,
-    "ap-east-1": 224,
-    "ap-south-1": 160,
-    "ap-northeast-2": 302,
-    "ap-southeast-1": 206,
-    "ap-southeast-2": 338,
-    "ap-northeast-1": 272,
-    "sa-east-1": 243
-  },
+  "default": 50.0,
   "multipliers": {
     "af-south-1": 1.0,
     "ap-east-1": 1.0,
