@@ -33,7 +33,6 @@ cp ../location_tags.json .
 cp ../delays_config.json .
 cp ../client_delays.json .
 
-
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
 	wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-"$DOCKERIZE_VERSION".tar.gz \
