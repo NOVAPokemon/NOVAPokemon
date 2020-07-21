@@ -31,6 +31,8 @@ echo "------------------------------ BUILDING nova-server-base image -----------
 cd base_image
 cp ../location_tags.json .
 cp ../delays_config.json .
+cp ../client_delays.json .
+
 
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
@@ -47,6 +49,7 @@ fi
 
 rm location_tags.json
 rm delays_config.json
+rm client_delays.json
 
 cd ..
 
