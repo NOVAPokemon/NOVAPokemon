@@ -42,3 +42,6 @@
 	path = gym
 	url = https://github.com/NOVAPokemon/gym.git
 	update = merge
+[submodule "map-viewer"]
+	path = map-viewer
+	url = https://github.com/NOVAPokemon/map-viewer.git
