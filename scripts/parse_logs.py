@@ -1,154 +1,134 @@
-import sys
 import os
-import re
-import json
 
-# PREFIXES
+import sys
 
-prefixTimeNotification = "time notification:"
-prefixAvgNotification = "average notification:"
+INFO_HEADER = "-----------------"
 
-prefixTimeBattle = "time battle:"
-prefixAvgBattle = "average battle:"
-prefixTimeStartBattle = "time start battle:"
-prefixAvgTimeStartBattle = "average start battle:"
+# FILE INFO
+CLIENT_NAME = "client_name"
+PATH = "path"
 
-prefixTimeTrade = "time trade:"
-prefixAvgTrade = "average trade:"
-prefixTimeStartTrade = "time start trade:"
-prefixAvgTimeStartTrade = "average start trade:"
+# RESULT FIELDS
+MSG_TYPE = "type"
+TIME_SENT = "time_sent"
+TIME_RECV = "time_recv"
+TIME_TOOK = "time_took"
+ID = "msg_id"
 
-prefixes = [
-    prefixTimeNotification,
-    prefixAvgNotification,
-    prefixTimeBattle,
-    prefixAvgBattle,
-    prefixTimeStartBattle,
-    prefixAvgTimeStartBattle,
-    prefixTimeTrade,
-    prefixAvgTrade,
-    prefixTimeStartTrade,
-    prefixAvgTimeStartTrade
-]
+# MERGED RESULT FIELDS\
+SERVICE = "service"
+SUM_TIME_TOOK = "time_took"
+NUM_ENTRIES = "num_entries"
 
-# HEADERS
+msg_type_to_service = {
+    "UPDATE_POKEMON": "battles",
+    "UPDATE": "trades",
+    "NOTIFICATION": "notifications"
+}
 
-headers = [
-    "notification_times",
-    "notification_avg",
-    "battle_messages_times",
-    "battle_messages_avg",
-    "battle_start_times",
-    "battle_start_avg",
-    "trade_messages_times",
-    "trade_messages_avg",
-    "trade_start_times",
-    "trade_start_avg"
-]
 
-info_header = "-----------------"
+def main():
+    if len(sys.argv) != 2:
+        print("usage: parse_logs.py path_to_logs_folder")
+        sys.exit(1)
 
-if len(sys.argv) != 2:
-    print("usage: parse_logs.py path_to_logs_folder")
-    sys.exit(1)
+    logs_folder = sys.argv[1]
 
-logs_folder = sys.argv[1]
-json_logs = {}
+    files = get_files_to_parse(logs_folder)
 
-for tester_dir in os.listdir(logs_folder):
-    tester_name = tester_dir
-    tester_dir = os.path.join(logs_folder, tester_dir)
+    results = []
+    print("\n{} PARSING FILES {}\n".format(INFO_HEADER * 2, INFO_HEADER * 2))
+    for file in files:
+        results += parse_file(file)
 
-    if not os.path.isdir(tester_dir):
-        continue
+    merged_results = merge_results(results)
 
-    tester_logs = {}
-    json_logs[tester_name] = tester_logs
+    print("\n{} RESULTS {}\n".format(INFO_HEADER * 2, INFO_HEADER * 2))
+    for key in merged_results:
+        num_entries = merged_results[key][NUM_ENTRIES]
+        total_latencies = merged_results[key][SUM_TIME_TOOK]
+        avg_latency = total_latencies / num_entries
+        print("{:<20}: num_samples: {:<3}, average: {:<3}ms".format(key, num_entries, avg_latency))
 
-    for log in os.listdir(tester_dir):
-        if not log.endswith(".log"):
+
+def merge_results(results):
+    merged_results = {}
+    for result in results:
+        msg_type = result[MSG_TYPE]
+        time_took = result[TIME_TOOK]
+        service = msg_type_to_service[msg_type]
+        try:
+            curr_results = merged_results[service]
+            curr_results[SUM_TIME_TOOK] += time_took
+            curr_results[NUM_ENTRIES] += 1
+        except KeyError:
+            merged_results[service] = {
+                SUM_TIME_TOOK: time_took,
+                NUM_ENTRIES: 1,
+            }
+    return merged_results
+
+
+def parse_file(log_file):
+    results = []
+    emitted = {}  # dict used to check if the received msg was sent by the user
+
+    with open(log_file[PATH], 'r') as file_data:
+
+        for lineUntrimmed in file_data:
+            line = lineUntrimmed.rstrip('\n')
+
+            if "[EMIT]" in line:
+                # print("[EMIT]", line)
+                parts = line.split(" ")
+                msg_id = parts[4]
+                time_sent = parts[5][:-1]
+                emitted[msg_id] = time_sent
+
+            if "[RECEIVE]" in line:
+                # print("[RECEIVE]", line)
+                parts = line.split(" ")
+                msg_type = parts[3]
+                #print(msg_type)
+                msg_id = parts[4]
+                time_recv = parts[5][:-1]
+                try:
+                    time_sent = emitted[msg_id]
+                    results.append({
+                        MSG_TYPE: msg_type,
+                        ID: msg_id,
+                        TIME_RECV: time_recv,
+                        TIME_SENT: time_sent,
+                        TIME_TOOK: int(time_recv) - int(time_sent)
+                    })
+                except KeyError:
+                    continue
+
+    print("{}.log : {} samples".format(log_file[CLIENT_NAME], len(results)))
+    return results
+
+
+def get_files_to_parse(logs_folder):
+    files = []
+    for tester_dir in os.listdir(logs_folder):
+        tester_dir = os.path.join(logs_folder, tester_dir)
+
+        if not os.path.isdir(tester_dir):
             continue
 
-        client_name = log.split(".")[0]
-        log = os.path.join(tester_dir, log)
+        for log in os.listdir(tester_dir):
+            if not log.endswith(".log"):
+                continue
 
-        client_logs = {}
-        tester_logs[client_name] = client_logs
+            client_name = log.split(".")[0]
+            log_path = os.path.join(tester_dir, log)
+            files.append({
+                CLIENT_NAME: client_name,
+                PATH: log_path
+            })
 
-        with open(log, 'r') as log_file:
-            print(f"{info_header} LOG {log} {info_header}")
-            log_content = log_file.read()
+    return files
 
-            for prefix, header in zip(prefixes, headers):
-                pattern = re.compile(f"{prefix} ([0-9]+[.]?[0-9]+|[0-9]+) ms")
-                results = pattern.findall(log_content)
-                client_logs[header] = results
-                print(f"Found {len(results)} results for {header} in client's {client_name} logs")
 
-json_filename = "logs.json"
-final_filename = os.path.join(logs_folder, json_filename)
-with open(final_filename, 'w') as final_file:
-    print(f"{info_header} FINISHING {info_header}")
-    print(f"Writing logs to file: {final_filename}")
-    json.dump(json_logs, final_file, indent=4, sort_keys=True)
-
-averageTradeMsg = 0
-averageStartTrade = 0
-averageBattleMsg = 0
-averageStartBattle = 0
-averageNotification = 0
-
-measurementHeaders = [
-    "notification_times",
-    "battle_messages_times",
-    "battle_start_times",
-    "trade_messages_times",
-    "trade_start_times",
-]
-
-averageHeaders = [
-    "notification_avg",
-    "battle_messages_avg",
-    "battle_start_avg",
-    "trade_messages_avg",
-    "trade_start_avg"
-]
-
-stats = {}
-
-for header in measurementHeaders:
-    measurementsTotal = 0
-    measurementCount = 0
-
-    for tester_name in json_logs:
-        tester = json_logs[tester_name]
-        for client_name in tester:
-            for measurement in tester[client_name][header]:
-                measurementsTotal += float(measurement)
-                measurementCount += 1
-
-    measurementAvg = measurementsTotal / measurementCount
-    stats[header] = measurementAvg
-
-    print(f"Found {measurementCount} measures of {header}")
-
-expectedStats = {}
-
-for header in averageHeaders:
-    measurementsTotal = 0
-    measurementCount = 0
-
-    for tester_name in json_logs:
-        tester = json_logs[tester_name]
-        for client_name in tester:
-            if len(tester[client_name][header]) > 0:
-                measurement = tester[client_name][header][-1]
-                measurementsTotal += float(measurement)
-                measurementCount += 1
-
-    measurementAvg = measurementsTotal / measurementCount
-    expectedStats[header] = measurementAvg
-
-print(f"{info_header} STATISTICS {info_header}")
-print(stats)
-print(expectedStats)
+if __name__ == '__main__':
+    main()
