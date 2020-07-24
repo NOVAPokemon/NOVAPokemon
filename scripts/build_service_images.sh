@@ -7,6 +7,7 @@ ignored_client="client"
 ignored_base_image="base_image"
 ignored_deployment_config="deployment-chart"
 ignored_logs="logs"
+ignored_map_viewer="map-viewer"
 
 DOCKERIZE_VERSION=v0.6.1
 
@@ -71,7 +72,8 @@ for d in */; do
 	if [[ "$dirname_stripped" == "$ignored_utils" ]] || [[ "$dirname_stripped" == "$ignored_scripts" ]] ||
 		[[ "$dirname_stripped" == "$ignored_client" ]] || [[ "$dirname_stripped" == "$ignored_mongo_swarm" ]] ||
 		[[ "$dirname_stripped" == "$ignored_base_image" ]] || [[ "$dirname_stripped" == "$ignored_deployment_config" ]] ||
-		[[ "$dirname_stripped" == "$ignored_logs" ]] || [[ "$dirname_stripped" == "build_logs" ]]; then
+		[[ "$dirname_stripped" == "$ignored_logs" ]] || [[ "$dirname_stripped" == "build_logs" ]] ||
+		[[ "$dirname_stripped" == "$ignored_map_viewer" ]]; then
 		continue
 	fi
 
