@@ -52,6 +52,8 @@ def main():
 
 
 def merge_results(results):
+    print("\n{} MERGING RESULTS {}\n".format(INFO_HEADER * 2, INFO_HEADER * 2))
+
     merged_results = {}
     for result in results:
         msg_type = result[MSG_TYPE]
@@ -66,6 +68,7 @@ def merge_results(results):
                 SUM_TIME_TOOK: time_took,
                 NUM_ENTRIES: 1,
             }
+    print("merged {} samples".format(len(results)))
     return merged_results
 
 
@@ -89,11 +92,11 @@ def parse_file(log_file):
                 # print("[RECEIVE]", line)
                 parts = line.split(" ")
                 msg_type = parts[3]
-                #print(msg_type)
+                # print(msg_type)
                 msg_id = parts[4]
                 time_recv = parts[5][:-1]
                 try:
-                    time_sent = emitted[msg_id]
+                    time_sent = emitted.pop(msg_id)  # means message was received in an emit
                     results.append({
                         MSG_TYPE: msg_type,
                         ID: msg_id,
