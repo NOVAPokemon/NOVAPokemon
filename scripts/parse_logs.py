@@ -21,9 +21,20 @@ SUM_TIME_TOOK = "time_took"
 NUM_ENTRIES = "num_entries"
 
 msg_type_to_service = {
+
+    "START_BATTLE": "battles",
+    "STATUS": "battles",
+    "REMOVE_ITEM": "battles",
     "UPDATE_POKEMON": "battles",
-    "UPDATE": "trades",
-    "NOTIFICATION": "notifications"
+
+    "SERVERS_RESPONSE": "location",
+    "CELLS_RESPONSE": "location",
+    "GYMS": "location",
+    "POKEMON": "location",
+    "CATCH_POKEMON_RESPONSE": "location",
+
+    "START_TRADE": "battles",
+    "UPDATE_TRADE": "trades",
 }
 
 
