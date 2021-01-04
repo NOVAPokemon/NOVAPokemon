@@ -5,16 +5,51 @@ import re
 import os
 
 ip_label = "cni.projectcalico.org/ipAddrs"
+
+ip_range_char = 'X'
+
+json_field_ips = "ips"
+json_field_pod = "pod"
+json_field_ip = "ip"
+
 json_field_rules = "rules"
 json_field_from = "from"
 json_field_to = "to"
 json_field_delay = "delay"
 json_field_bandwidth = "bandwidth"
 
-if len(sys.argv) != 2:
-    print("Usage: python3 control_traffic.py rules_file.json")
+apply_ips = False
+apply_rules = False
 
-rules_filename = sys.argv[1]
+if len(sys.argv) < 3:
+    print("Usage: python3 config_network_policy.py [OPTIONS] config_file.json\n"
+          "OPTIONS:\n"
+          "\t-i\tapply IPs from config file\n"
+          "\t-r\tapply traffic control rules from config file")
+
+
+def parse_flag(flag):
+    global apply_ips, apply_rules
+
+    if flag == "-i":
+        apply_ips = True
+    elif flag == "-r":
+        apply_rules = True
+    else:
+        print(f"invalid option '{flag}'")
+        sys.exit(1)
+
+
+if len(sys.argv) == 3:
+    parse_flag(sys.argv[1])
+    config_filename = sys.argv[2]
+elif len(sys.argv) == 4:
+    parse_flag(sys.argv[1])
+    parse_flag(sys.argv[2])
+    config_filename = sys.argv[3]
+else:
+    print(f"too many arguments {len(sys.argv)}")
+    sys.exit(1)
 
 
 def get_pods():
@@ -24,12 +59,11 @@ def get_pods():
     return output.stdout.split("\n")
 
 
-def load_rules_file(filename):
+def load_json_data(filename):
     with open(filename, 'r') as file:
         data = file.read()
 
-    json_data = json.loads(data)
-    return json_data[json_field_rules]
+    return json.loads(data)
 
 
 def get_matching_pods(podname):
@@ -105,12 +139,48 @@ def apply_all_rules(rules_to_apply):
             apply_rules(pod_to_apply, rule)
 
 
+def translate_ip_to_range(ip, range_size):
+    ip_range = []
+
+    for num in range(range_size):
+        ip_range.append(ip.replace(ip_range_char, num))
+
+    return ip_range
+
+def apply_ips(ips_config):
+    for ip_config in ips_config:
+        podname = ip_config[json_field_pod]
+        ip = ip_config[json_field_ip]
+
+        matching_pods = get_matching_pods(podname)
+
+        if len(matching_pods) > 1:
+            if not ip_range_char in ip:
+                print(f"can not assing same ip to multiple pods: {podname} -> {ip}")
+                sys.exit(1)
+            ip_range = translate_ip_to_range(ip, len(matching_pods))
+
+
+
 pods = get_pods()
+
 pod_ips = get_ips_per_pod()
-rules = load_rules_file(rules_filename)
+json_data = load_json_data(config_filename)
+
+ips = json_data[json_field_ips]
+
+if ips is None:
+    print("could not find ips property in specified json file")
+    sys.exit(1)
+
+rules = json_data[json_field_rules]
 
 if rules is None:
     print("could not find rules property in specified json file")
     sys.exit(1)
 
-apply_all_rules(rules)
+if apply_ips:
+    apply_ips(ips)
+
+if apply_rules:
+    apply_all_rules(rules)
