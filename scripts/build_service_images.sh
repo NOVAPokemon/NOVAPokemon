@@ -8,6 +8,7 @@ ignored_base_image="base_image"
 ignored_deployment_config="deployment-chart"
 ignored_logs="logs"
 ignored_map_viewer="map-viewer"
+ignored_results="results"
 
 DOCKERIZE_VERSION=v0.6.1
 
@@ -42,9 +43,9 @@ if [[ ! -e dockerize ]]; then
 	rm dockerize.tar.gz
 fi
 
-docker build . -t novapokemon/nova-server-base
+docker build . -t brunoanjos/nova-server-base
 if [[ $test_race == false ]]; then
-	docker push novapokemon/nova-server-base:latest
+	docker push brunoanjos/nova-server-base:latest
 fi
 
 rm location_tags.json
@@ -66,6 +67,8 @@ mkdir build_logs
 
 echo "------------------------------ BUILDING SERVICE IMAGES ------------------------------"
 
+rm -rf images/*
+
 for d in */; do
 	dirname_stripped=$(basename "$d")
 
@@ -73,7 +76,9 @@ for d in */; do
 		[[ "$dirname_stripped" == "$ignored_client" ]] || [[ "$dirname_stripped" == "$ignored_mongo_swarm" ]] ||
 		[[ "$dirname_stripped" == "$ignored_base_image" ]] || [[ "$dirname_stripped" == "$ignored_deployment_config" ]] ||
 		[[ "$dirname_stripped" == "$ignored_logs" ]] || [[ "$dirname_stripped" == "build_logs" ]] ||
-		[[ "$dirname_stripped" == "$ignored_map_viewer" ]]; then
+		[[ "$dirname_stripped" == "$ignored_map_viewer" ]] || [[ "$dirname_stripped" == "$ignored_results" ]] ||
+		[[ "$dirname_stripped" == "images" ]];
+		then
 		continue
 	fi
 
@@ -83,7 +88,7 @@ for d in */; do
 	if [[ -e executable ]]; then
 		rm executable
 	fi
-	echo "Starting build and push of image for service: ${dirname_stripped}"
+	echo "Starting build of image for service: ${dirname_stripped}"
 	if [[ -e ../build_logs/"$dirname_stripped" ]]; then
 		rm ../build_logs/"$dirname_stripped"
 	fi
@@ -104,10 +109,12 @@ for d in */; do
 		go build $race_flag -v -o executable .
 	fi
 
-	docker build . -t novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
-	if [[ $test_race == false ]]; then
-		docker push novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
-	fi
+	docker build . -t brunoanjos/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
+	if [ -f ../images/"$dirname_stripped".tar ]; then
+    rm ../images/"$dirname_stripped".tar
+  fi
+	docker save brunoanjos/"$dirname_stripped":$docker_tag > ../images/"$dirname_stripped".tar
+
 	echo "Done building and pushing image for service: ${dirname_stripped}"
 	if [[ -e executable ]]; then
 		rm executable

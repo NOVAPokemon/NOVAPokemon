@@ -1,12 +1,12 @@
 #!/bin/bash
 
-cd client || exit
-
 echo "------------------------------ BUILDING CLIENT ------------------------------"
+
+clientDir="$NOVAPOKEMON/client"
 
 #remove previous binary if already exists
 if [[ -e executable ]]; then
-	rm executable
+	rm "$clientDir"/executable
 fi
 
 test_race=false
@@ -40,23 +40,28 @@ else
 	go_cmd="go"
 fi
 
+cd "$clientDir" || exit
+
 mv create_thread_clients.c ../
 $go_cmd build $race_flag -o executable .
 mv ../create_thread_clients.c .
 
-cd .. || exit
+rm ./multiclient
+echo "Building multiclient"
+gcc -pthread -o multiclient create_thread_clients.c
 
-cp location_tags.json client/
-cp delays_config.json client/
-cp client_delays.json client/
+cd - || exit
+
+cp "$NOVAPOKEMON"/location_tags.json "$clientDir"/
+cp "$NOVAPOKEMON"/delays_config.json "$clientDir"/
+cp "$NOVAPOKEMON"/client_delays.json "$clientDir"/
 
 if [[ $test_race == true ]]; then
-	docker build client -t novapokemon/client:race
+	docker build "$clientDir" -t brunoanjos/client:race
 else
-	docker build client -t novapokemon/client:latest
-	docker push novapokemon/client:latest
+	docker build "$clientDir" -t brunoanjos/client:latest
 fi
 
-rm client/location_tags.json
-rm client/delays_config.json
-rm client/client_delays.json
+rm "$clientDir"/location_tags.json
+rm "$clientDir"/delays_config.json
+rm "$clientDir"/client_delays.json
