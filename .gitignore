@@ -4,3 +4,4 @@ base_image/dockerize
 deployment-chart/Chart.lock
 deployment-chart/charts/kafka-10.3.3.tgz
 *.tgz
+venv/
