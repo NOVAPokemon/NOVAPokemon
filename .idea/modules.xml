@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/NOVAPokemon.iml" filepath="$PROJECT_DIR$/.idea/NOVAPokemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NOVAPokemon2.iml" filepath="$PROJECT_DIR$/.idea/NOVAPokemon2.iml" />
     </modules>
   </component>
 </project>
