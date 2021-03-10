@@ -37,6 +37,7 @@ cd base_image
 cp ../location_tags.json .
 cp ../delays_config.json .
 cp ../client_delays.json .
+cp ../cells_to_region.json .
 
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
@@ -54,16 +55,11 @@ fi
 rm location_tags.json
 rm delays_config.json
 rm client_delays.json
+rm cells_to_region.json
 
 cd ..
 
-docker_tag=""
-
-if [[ $test_race == true ]]; then
-	docker_tag="race"
-else
-	docker_tag="latest"
-fi
+docker_tag="latest"
 
 rm -rf build_logs || true
 mkdir build_logs
@@ -104,7 +100,7 @@ for d in */; do
 		export GOARCH=""
 		race_flag="--race"
 		echo "Building $dirname_stripped with RACE DETECTION..."
-		go-1.14 build $race_flag -v -o executable .
+		go build $race_flag -v -o executable .
 	else
 		export GOOS=linux
 		export GOARCH=amd64
