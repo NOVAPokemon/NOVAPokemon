@@ -1,6 +1,9 @@
 import json
 import os
 import sys
+from multiprocessing import Pool
+
+import matplotlib.pyplot as plt
 
 INFO_HEADER = "-----------------"
 
@@ -18,7 +21,7 @@ EMMITTER = "emitter"
 REMOTE = "remote"
 SERVER = "server"
 
-# MERGED RESULT FIELDS\
+# MERGED RESULT FIELDS
 SERVICE = "service"
 SUM_TIME_TOOK = "time_took"
 NUM_ENTRIES = "num_entries"
@@ -53,12 +56,15 @@ msg_type_to_service = {
     "UPDATE_LOCATION": "location",
 
     "START_TRADE": "trades",
+    "JOIN_TRADE": "trades",
     "UPDATE_TRADE": "trades",
     "REJECT_TRADE": "trades",
     "CREATE_TRADE": "trades",
     "TRADE": "trades",
     "ACCEPT": "trades",
 }
+
+plots_dir = os.path.expanduser('~/plots')
 
 
 def main():
@@ -86,6 +92,9 @@ def main():
         elif logs_folder == "":
             logs_folder = arg
 
+    if not os.path.exists(plots_dir):
+        os.mkdir(plots_dir)
+
     files = get_files_to_parse(logs_folder, only_one)
 
     dummy_infos = {}
@@ -111,6 +120,9 @@ def main():
     for file in files:
         results[file[CLIENT_NAME]] = parse_file_for_results(file, print_list, ips_to_nodes, emitted)
 
+    with open(os.path.expanduser('~/logs_results.json'), 'w') as results_fp:
+        json.dump(results, results_fp)
+
     process_results(results)
 
 
@@ -126,65 +138,170 @@ def add_entry_if_missing(receiver, key, time_took):
         value[NUM_ENTRIES] += 1
 
 
-def process_results(all_results):
-    server_results = {}
+def sort_axis(x_axis, y_axis):
+    lists = sorted(zip(*[x_axis, y_axis]))
+    new_x, new_y = list(zip(*lists))
+    return new_x, new_y
 
-    for client_name, (results_per_server, msgs_per_server) in all_results.items():
-        client_result = {}
-        client_result_remotes = {}
-        client_avgs = {}
-        client_remote_avgs = {}
+
+def normalize_x_axis(result):
+    return (int(result[TIME_RECV]) - MIN_TIMESTAMP) / 1000
+
+
+def plot_avg_latency_for_clients(all_results):
+    print("Plotting average latency for clients...")
+
+    measurements = 0
+
+    for client_name, (results_per_server, _) in all_results.items():
+        x_axis = []
+        y_axis = []
+
+        for _, results in results_per_server.items():
+            for result in results:
+                x_axis.append(normalize_x_axis(result))
+                y_axis.append(result[TIME_TOOK])
+
+        new_x, new_y = sort_axis(x_axis, y_axis)
+        measurements += len(new_x)
+
+        plt.plot(new_x, new_y, label=client_name)
+        print(f"plotting {client_name}")
+
+    print(f"\tplotting ({measurements} measurements)...")
+
+    plot_path = f"{plots_dir}/clients.png"
+    print(f"Saving image to {plot_path}")
+    plt.legend()
+    plt.savefig(plot_path)
+    print("Done!")
+
+    plt.clf()
+
+
+def plot_aux_1(info):
+    client_name, results_per_server = info
+    services = {}
+
+    measurements = 0
+
+    for _, results in results_per_server.items():
+        for result in results:
+            service = msg_type_to_service[result[MSG_TYPE]]
+            if service in services:
+                print(f'[{result[MSG_TYPE]}] {client_name} {result[ID]} {result[TIME_TOOK]}')
+                services[service]['x_axis'].append(normalize_x_axis(result))
+                services[service]['y_axis'].append(result[TIME_TOOK])
+            else:
+                services[service] = {'x_axis': [normalize_x_axis(result)], 'y_axis': [result[TIME_TOOK]]}
+
+    for service in services:
+        measurements += len(services[service]['x_axis'])
+        new_x, new_y = sort_axis(services[service]['x_axis'], services[service]['y_axis'])
+        plt.plot(new_x, new_y, '-o', label=service)
+
+    client_dir = f"{plots_dir}/{client_name}"
+    if not os.path.exists(client_dir):
+        os.mkdir(client_dir)
+
+    print(f"\tplotting {client_name} ({measurements} measurements)...")
+
+    plot_path = f'{client_dir}/services.png'
+    print(f"Saving image to {plot_path}")
+    plt.legend()
+    plt.savefig(plot_path)
+    plt.clf()
+
+
+def plot_latency_for_client_per_service(all_results):
+    print("Plotting latency for clients per service...")
+
+    infos = []
+    for c, (r, _) in all_results.items():
+        infos.append((c, r))
+
+    with Pool(os.cpu_count()) as p:
+        p.map(plot_aux_1, infos)
+
+    print("Done!")
+
+
+def plot_latency_for_client_per_server(all_results):
+    print("Plotting latency for clients per server...")
+
+    for client_name, (results_per_server, _) in all_results.items():
+        client_dir = f"{plots_dir}/{client_name}"
+        if not os.path.exists(client_dir):
+            os.mkdir(client_dir)
 
         for server, results in results_per_server.items():
-            if server not in server_results:
-                server_results[server] = {}
+            measurements = 0
 
-            service_result_for_client = {}
-            service_result_for_client_remote = {}
+            x_axis = []
+            y_axis = []
 
             for result in results:
+                x_axis.append(result[TIME_RECV])
+                y_axis.append(result[TIME_TOOK])
+
+            measurements += len(x_axis)
+
+            print(f"\tplotting {server} for {client_name} ({measurements} measurements)...")
+
+            plt.plot(x_axis, y_axis, label=server)
+
+            plot_path = f'{client_dir}/servers.png'
+            plt.savefig(plot_path)
+            print(f"Saving image to {plot_path}")
+
+            plt.clf()
+
+    print("Done!")
+
+
+def plot_latency_per_service(all_results):
+    print("Plotting latency per service...")
+
+    services = {}
+    measurements = 0
+
+    for client_name, (results_per_server, _) in all_results.items():
+        for server, results in results_per_server.items():
+            for result in results:
                 service = msg_type_to_service[result[MSG_TYPE]]
-                time_took = result[TIME_TOOK]
-                if result[REMOTE]:
-                    add_entry_if_missing(service_result_for_client_remote, service, time_took)
-                    add_entry_if_missing(client_remote_avgs, service, time_took)
+                if service in services:
+                    services[service]['x_axis'].append(result[TIME_RECV])
+                    services[service]['y_axis'].append(result[TIME_TOOK])
                 else:
-                    add_entry_if_missing(service_result_for_client, service, time_took)
-                    add_entry_if_missing(client_avgs, service, time_took)
+                    services[service] = {'x_axis': [result[TIME_RECV]], 'y_axis': [result[TIME_TOOK]]}
 
-                add_entry_if_missing(server_results[server], service, time_took)
+    for service in services:
+        measurements += len(services[service]['x_axis'])
+        plt.plot(services[service]['x_axis'], services[service]['y_axis'], label=service)
 
-            client_result[server] = service_result_for_client
-            client_result_remotes[server] = service_result_for_client_remote
+    print(f"\tplotting ({measurements} measurements)...")
 
-        print(f"------------------------- {client_name} -------------------------")
-        print(f"\t-------------- LOCAL --------------")
-        print(f"\t---- Servers ----")
+    plot_path = f'{plots_dir}/services.png'
+    plt.savefig()
+    print(f"Saving image to {plot_path}")
 
-        for server, results in client_result.items():
-            print(f"\t\tServer {server}:")
-            print(f"\t\tNumMsgs: {msgs_per_server[server]}")
-            for service, result in results.items():
-                print(f"\t\t\t{service}: {result[TIME_TOOK] / result[NUM_ENTRIES]}")
+    plt.clf()
 
-        print("\t---- Averages ----")
-        for service, result in client_avgs.items():
-            print(f"\t\t{service}: {result[TIME_TOOK] / result[NUM_ENTRIES]}")
+    print("Done!")
 
-        print("\t-------------- REMOTE --------------")
-        for server, results in client_result_remotes.items():
-            print(f"\t\tServer {server}:")
-            for service, result in results.items():
-                print(f"\t\t\t{service}: {result[TIME_TOOK] / result[NUM_ENTRIES]}")
 
-        print("\t---- Averages ----")
-        for service, result in client_remote_avgs.items():
-            print(f"\t\t{service}: {result[TIME_TOOK] / result[NUM_ENTRIES]}")
+# To plot:
+#   - latency for clients (ignore server, service)
+#   - latency for client per service (ignore server)
+#   - latency for client per server (ignore server)
+#   - latency for service (ignore server, client)
+#   - histogram with messages sent per client
+#   - histogram with messages sent for client per server
 
-    for server, results in server_results.items():
-        print(f"------------------------- SERVER {server} -------------------------")
-        for service, result in results.items():
-            print(f"\t{service}: {result[TIME_TOOK] / result[NUM_ENTRIES]}")
+def process_results(all_results):
+    plt.figure(figsize=(25, 15))
+    plot_avg_latency_for_clients(all_results)
+    plot_latency_for_client_per_service(all_results)
 
 
 def parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server, results, line, line_num):
@@ -237,7 +354,12 @@ def parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server,
         results[server].append(result)
 
 
+MIN_TIMESTAMP = -1
+
+
 def parse_emit(client_name, emitted, line):
+    global MIN_TIMESTAMP
+
     parts = line.split(" ")
 
     msg_type = parts[3]
@@ -252,6 +374,9 @@ def parse_emit(client_name, emitted, line):
         EMMITTER: client_name,
         MSG_TYPE: msg_type
     }
+
+    if MIN_TIMESTAMP == -1 or int(time_sent) < MIN_TIMESTAMP:
+        MIN_TIMESTAMP = int(time_sent)
 
 
 def parse_resolved(current_hosts, line, ips_to_nodes):
@@ -302,16 +427,16 @@ def get_files_to_parse(client_logs_folder, only_one):
             })
     else:
         for tester_dir in os.listdir(client_logs_folder):
-            tester_dir = os.path.join(client_logs_folder, tester_dir)
+            tester_dir_full_path = os.path.join(client_logs_folder, tester_dir)
 
-            if not os.path.isdir(tester_dir):
+            if not os.path.isdir(tester_dir_full_path):
                 continue
 
-            for log in os.listdir(tester_dir):
+            for log in os.listdir(tester_dir_full_path):
                 client_name = log.split(".")[0]
-                log_path = os.path.join(tester_dir, log)
+                log_path = os.path.join(tester_dir_full_path, log)
                 files.append({
-                    CLIENT_NAME: client_name,
+                    CLIENT_NAME: f'{tester_dir}_{client_name}',
                     PATH: log_path
                 })
 
