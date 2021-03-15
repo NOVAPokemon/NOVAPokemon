@@ -55,7 +55,7 @@ cp "$NOVAPOKEMON"/delays_config.json "$clientDir"/
 cp "$NOVAPOKEMON"/client_delays.json "$clientDir"/
 cp "$NOVAPOKEMON"/cells_to_region.json "$clientDir"/
 
-docker build "$clientDir" -t brunoanjos/client:latest
+docker build "$clientDir" -t novapokemon/client:latest
 
 rm "$clientDir"/location_tags.json
 rm "$clientDir"/delays_config.json
