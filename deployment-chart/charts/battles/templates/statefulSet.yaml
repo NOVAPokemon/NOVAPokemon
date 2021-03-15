@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.battles.name}}
           image: {{$.Values.global.services.battles.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -37,5 +38,7 @@ spec:
           env:
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.battles.serviceNameHeadless}}
+            - name: LOCATION
+              value: {{$.Values.global.location}}
       nodeSelector:
         serversnode: "true"

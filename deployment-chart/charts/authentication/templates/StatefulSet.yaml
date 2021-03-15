@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.auth.name}}
           image: {{$.Values.global.services.auth.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -34,6 +35,8 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.auth.databaseName}}:{{$.Values.global.services.auth.databasePort}}"
+            - name: LOCATION
+              value: {{$.Values.global.location}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

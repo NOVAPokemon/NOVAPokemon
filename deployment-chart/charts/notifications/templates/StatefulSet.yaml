@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.notifications.name}}
           image: {{$.Values.global.services.notifications.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -34,6 +35,8 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.notifications.databaseName}}:{{$.Values.global.services.notifications.databasePort}}"
+            - name: LOCATION
+              value: {{$.Values.global.location}}
             - name: KAFKA_URL
               value: "novapokemon-kafka:9092"
           envFrom:

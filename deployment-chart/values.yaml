@@ -25,6 +25,7 @@ kafka:
       enabled: false
 
 global:
+  location: "47e66e27320fa19b"
   api_configmap:
     name: "services-api"
   database:
@@ -39,7 +40,7 @@ global:
     metricsPort: 8080
   services:
     auth:
-      image: "novapokemon/authentication:race"
+      image: "novapokemon/authentication:latest"
       name: "authentication"
       port: 8001
       n_replicas: 2
@@ -52,7 +53,7 @@ global:
       name: "battles"
       n_replicas: 2
       port: 8002
-      image: "novapokemon/battles:race"
+      image: "novapokemon/battles:latest"
       serviceName: "battles-service"
       serviceNameHeadless: "battles-service-headless"
 
@@ -60,7 +61,7 @@ global:
       name: "gym"
       n_replicas: 2
       port: 8003
-      image: "novapokemon/gym:race"
+      image: "novapokemon/gym:latest"
       serviceNameHeadless: "gym-service-headless"
       databaseName: "gymsdb"
 
@@ -68,7 +69,7 @@ global:
       name: "location"
       n_replicas: 4
       port: 8004
-      image: "novapokemon/location:race"
+      image: "novapokemon/location:latest"
       databaseName: "locationdb"
       databasePort: 27017
       serviceName: "location-service"
@@ -78,7 +79,7 @@ global:
       name: "microtransactions"
       n_replicas: 2
       port: 8005
-      image: "novapokemon/microtransactions:race"
+      image: "novapokemon/microtransactions:latest"
       serviceName: "microtransactions-service"
       databaseName: "microtransactionsdb"
       databasePort: 27017
@@ -88,7 +89,7 @@ global:
       name: "notifications"
       port: 8006
       n_replicas: 3
-      image: "novapokemon/notifications:race"
+      image: "novapokemon/notifications:latest"
       serviceName: "notifications-service"
       databaseName: "notificationsdb"
       databasePort: 27017
@@ -98,7 +99,7 @@ global:
       name: "store"
       n_replicas: 2
       port: 8007
-      image: "novapokemon/store:race"
+      image: "novapokemon/store:latest"
       serviceName: "store-service"
       serviceNameHeadless: "store-service-headless"
 
@@ -106,15 +107,15 @@ global:
       name: "trades"
       n_replicas: 2
       port: 8008
-      image: "novapokemon/trades:race"
+      image: "novapokemon/trades:latest"
       serviceName: "trades-service"
       serviceNameHeadless: "trades-service-headless"
 
     trainers:
-      image: "novapokemon/trainers:race"
       name: "trainers"
-      port: 8009
       n_replicas: 2
+      port: 8009
+      image: "novapokemon/trainers:latest"
       serviceName: "trainers-service"
       databaseName: "trainersdb"
       databasePort: 27017

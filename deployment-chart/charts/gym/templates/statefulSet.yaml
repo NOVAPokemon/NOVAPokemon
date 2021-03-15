@@ -30,6 +30,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.gym.name}}
           image: {{$.Values.global.services.gym.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -45,5 +46,7 @@ spec:
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.gym.databaseName}}:{{$.Values.global.services.location.databasePort}}"
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.gym.serviceNameHeadless}}
+            - name: LOCATION
+              value: {{$.Values.global.location}}
       nodeSelector:
         serversnode: "true"

@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.microtransactions.name}}
           image: {{$.Values.global.services.microtransactions.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -34,6 +35,8 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.microtransactions.databaseName}}:{{$.Values.global.services.microtransactions.databasePort}}"
+            - name: LOCATION
+              value: {{$.Values.global.location}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.trades.name}}
           image: {{$.Values.global.services.trades.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -37,5 +38,7 @@ spec:
           env:
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.trades.serviceNameHeadless}}
+            - name: LOCATION
+              value: {{$.Values.global.location}}
       nodeSelector:
         serversnode: "true"

@@ -24,6 +24,7 @@ spec:
       containers:
         - name: {{$.Values.global.services.store.name}}
           image: {{$.Values.global.services.store.image}}
+          imagePullPolicy: Never
           command: ["sh", "-c", "./executable -l -d"]
           securityContext:
             capabilities:
@@ -31,6 +32,9 @@ spec:
                 - NET_ADMIN
           ports:
             - containerPort: {{$.Values.global.services.store.port}}
+          env:
+            - name: LOCATION
+              value: {{$.Values.global.location}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
