@@ -47,9 +47,9 @@ if [[ ! -e dockerize ]]; then
 	rm dockerize.tar.gz
 fi
 
-docker build . -t brunoanjos/nova-server-base
+docker build . -t novapokemon/nova-server-base
 if [[ $test_race == false ]]; then
-	docker push brunoanjos/nova-server-base:latest
+	docker push novapokemon/nova-server-base:latest
 fi
 
 rm location_tags.json
@@ -108,11 +108,11 @@ for d in */; do
 		go build $race_flag -v -o executable .
 	fi
 
-	docker build . -t brunoanjos/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
+	docker build . -t novapokemon/"$dirname_stripped":$docker_tag >../build_logs/"$dirname_stripped"
 	if [ -f ../images/"$dirname_stripped".tar ]; then
     rm ../images/"$dirname_stripped".tar
   fi
-	docker save brunoanjos/"$dirname_stripped":$docker_tag > ../images/"$dirname_stripped".tar
+	docker save novapokemon/"$dirname_stripped":$docker_tag > ../images/"$dirname_stripped".tar
 
 	echo "Done building and pushing image for service: ${dirname_stripped}"
 	if [[ -e executable ]]; then
