@@ -35,8 +35,10 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.microtransactions.databaseName}}:{{$.Values.global.services.microtransactions.databasePort}}"
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

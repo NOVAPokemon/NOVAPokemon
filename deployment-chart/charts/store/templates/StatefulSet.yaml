@@ -33,8 +33,10 @@ spec:
           ports:
             - containerPort: {{$.Values.global.services.store.port}}
           env:
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

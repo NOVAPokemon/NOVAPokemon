@@ -38,7 +38,9 @@ spec:
           env:
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.trades.serviceNameHeadless}}
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
       nodeSelector:
         serversnode: "true"

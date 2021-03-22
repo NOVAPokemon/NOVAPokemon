@@ -33,8 +33,10 @@ spec:
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.location.databaseName}}:{{$.Values.global.services.location.databasePort}}"
             - name: "HEADLESS_SERVICE_NAME"
               value: {{$.Values.global.services.location.serviceNameHeadless}}
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 INFO_HEADER = "-----------------"
 
 # FILE INFO
+CLIENT_DIR = "client_dir"
 CLIENT_NAME = "client_name"
+CLIENT_ID = "client_id"
 PATH = "path"
 
 # RESULT FIELDS
@@ -32,6 +34,13 @@ ignored = {
     "START_TRADE",
     "REJECT_TRADE",
 }
+
+services = [
+    "battles",
+    "location",
+    "trades",
+    "notifications"
+]
 
 msg_type_to_service = {
     "START_BATTLE": "battles",
@@ -66,64 +75,7 @@ msg_type_to_service = {
 
 plots_dir = os.path.expanduser('~/plots')
 
-
-def main():
-    args = sys.argv[1:]
-    max_args = 4
-    min_args = 1
-    if len(args) < min_args or len(args) > max_args:
-        print("usage: parse_logs.py <client_logs_folder> [--only-one] [--print=trades,battles] [--dummy-infos="
-              "/tmp/dummy_infos.json]")
-        sys.exit(1)
-
-    logs_folder = ""
-    only_one = False
-    print_list = []
-    dummy_infos_path = ""
-
-    for arg in args:
-        if arg == "--only-one":
-            only_one = True
-        elif "--print" in arg:
-            print_list = arg.split("=")[1].split(",")
-        elif "--dummy-infos" in arg:
-            dummy_infos_path = os.path.expanduser(arg.split("=")[1])
-            print(f"dummy_infos set to {dummy_infos_path}")
-        elif logs_folder == "":
-            logs_folder = arg
-
-    if not os.path.exists(plots_dir):
-        os.mkdir(plots_dir)
-
-    files = get_files_to_parse(logs_folder, only_one)
-
-    dummy_infos = {}
-    ips_to_nodes = {}
-    if dummy_infos_path == "":
-        dummy_infos_path = '/tmp/dummy_infos.json'
-
-    if os.path.exists(dummy_infos_path):
-        with open(dummy_infos_path, 'r') as dummy_infos_fp:
-            infos = json.load(dummy_infos_fp)
-            for info in infos:
-                dummy_infos[info["name"]] = info
-                ips_to_nodes[info["ip"]] = info["name"]
-
-    results = {}
-    print("\n{} PARSING FILES {}\n".format(INFO_HEADER * 2, INFO_HEADER * 2))
-
-    emitted = {}
-
-    for file in files:
-        emitted = parse_file_for_emits(file, emitted)
-
-    for file in files:
-        results[file[CLIENT_NAME]] = parse_file_for_results(file, print_list, ips_to_nodes, emitted)
-
-    with open(os.path.expanduser('~/logs_results.json'), 'w') as results_fp:
-        json.dump(results, results_fp)
-
-    process_results(results)
+DEBUG = False
 
 
 def add_entry_if_missing(receiver, key, time_took):
@@ -153,7 +105,7 @@ def plot_avg_latency_for_clients(all_results):
 
     measurements = 0
 
-    for client_name, (results_per_server, _) in all_results.items():
+    for client_id, (results_per_server, _, _, _) in all_results.items():
         x_axis = []
         y_axis = []
 
@@ -162,11 +114,12 @@ def plot_avg_latency_for_clients(all_results):
                 x_axis.append(normalize_x_axis(result))
                 y_axis.append(result[TIME_TOOK])
 
+        print(x_axis, y_axis)
         new_x, new_y = sort_axis(x_axis, y_axis)
         measurements += len(new_x)
 
-        plt.plot(new_x, new_y, label=client_name)
-        print(f"plotting {client_name}")
+        plt.plot(new_x, new_y, label=client_id)
+        print(f"plotting {client_id}")
 
     print(f"\tplotting ({measurements} measurements)...")
 
@@ -180,7 +133,7 @@ def plot_avg_latency_for_clients(all_results):
 
 
 def plot_aux_1(info):
-    client_name, results_per_server = info
+    client_id, results_per_server, aux_client_dir, client_name = info
     services = {}
 
     measurements = 0
@@ -189,7 +142,8 @@ def plot_aux_1(info):
         for result in results:
             service = msg_type_to_service[result[MSG_TYPE]]
             if service in services:
-                print(f'[{result[MSG_TYPE]}] {client_name} {result[ID]} {result[TIME_TOOK]}')
+                if DEBUG:
+                    print(f'[{result[MSG_TYPE]}] {client_id} {result[ID]} {result[TIME_TOOK]}')
                 services[service]['x_axis'].append(normalize_x_axis(result))
                 services[service]['y_axis'].append(result[TIME_TOOK])
             else:
@@ -200,11 +154,11 @@ def plot_aux_1(info):
         new_x, new_y = sort_axis(services[service]['x_axis'], services[service]['y_axis'])
         plt.plot(new_x, new_y, '-o', label=service)
 
-    client_dir = f"{plots_dir}/{client_name}"
+    client_dir = f"{plots_dir}/{aux_client_dir}/{client_name}"
     if not os.path.exists(client_dir):
         os.mkdir(client_dir)
 
-    print(f"\tplotting {client_name} ({measurements} measurements)...")
+    print(f"\tplotting {client_id} ({measurements} measurements)...")
 
     plot_path = f'{client_dir}/services.png'
     print(f"Saving image to {plot_path}")
@@ -217,8 +171,11 @@ def plot_latency_for_client_per_service(all_results):
     print("Plotting latency for clients per service...")
 
     infos = []
-    for c, (r, _) in all_results.items():
-        infos.append((c, r))
+    for c, (r, _, client_dir, client_name) in all_results.items():
+        clients_dir = f"{plots_dir}/{client_dir}/"
+        if not os.path.exists(clients_dir):
+            os.mkdir(clients_dir)
+        infos.append((c, r, client_dir, client_name))
 
     with Pool(os.cpu_count()) as p:
         p.map(plot_aux_1, infos)
@@ -320,12 +277,14 @@ def parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server,
     time_sent = emitted_msg[TIME_SENT]
     if msg_type not in msg_type_to_service:
         if emitted_msg[MSG_TYPE] not in msg_type_to_service:
-            print(f"Found key {msg_type} or {emitted_msg[MSG_TYPE]} in {log_file[PATH]} at line {line_num}")
+            if DEBUG:
+                print(f"Found key {msg_type} or {emitted_msg[MSG_TYPE]} in {log_file[PATH]} at line {line_num}")
         else:
             msg_type = emitted_msg[MSG_TYPE]
     else:
-        if msg_type_to_service[msg_type] in print_list:
-            print(f"[{msg_type}] {msg_id} {int(time_recv) - int(time_sent)} {time_sent} -> {time_recv}")
+        if DEBUG:
+            if msg_type_to_service[msg_type] in print_list:
+                print(f"[{msg_type}] {msg_id} {int(time_recv) - int(time_sent)} {time_sent} -> {time_recv}")
 
     service = msg_type_to_service[msg_type]
 
@@ -386,13 +345,42 @@ def parse_resolved(current_hosts, line, ips_to_nodes):
     current_hosts[service] = ips_to_nodes[host_ip]
 
 
-def parse_file_for_emits(log_file, emitted):
+def parse_requests(requests, line):
+    msg = line.split('msg=')[1][1:-1]
+    splits = msg.split(" ")
+
+    timestamp = int(splits[1])
+    count = int(splits[2])
+
+    requests[timestamp] = count
+
+
+def parse_retries(retries, line):
+    msg = line.split('msg=')[1][1:-1]
+    splits = msg.split(" ")
+
+    timestamp = int(splits[1])
+    count = int(splits[2])
+
+    retries[timestamp] = count
+
+
+def parse_file_for_emits(log_file, emitted, retries, requests):
+    client_retries, client_requests = {}, {}
+
     with open(log_file[PATH], 'r') as file_data:
         for lineNum, lineUntrimmed in enumerate(file_data.readlines()):
             line = lineUntrimmed.rstrip('\n')
 
-            if "[EMIT]" in line:
+            if "[RET]" in line:
+                parse_retries(client_retries, line)
+            elif "[REQ]" in line:
+                parse_requests(client_requests, line)
+            elif "[EMIT]" in line:
                 parse_emit(log_file[CLIENT_NAME], emitted, line)
+
+    retries[log_file[CLIENT_ID]] = client_retries
+    requests[log_file[CLIENT_ID]] = client_requests
 
     return emitted
 
@@ -400,6 +388,9 @@ def parse_file_for_emits(log_file, emitted):
 def parse_file_for_results(log_file, print_list, ips_to_nodes, emitted):
     results = {}
     current_hosts = {}
+    for service in services:
+        current_hosts[service] = "fallback"
+
     msgs_per_server = {}
 
     with open(log_file[PATH], 'r') as file_data:
@@ -411,7 +402,7 @@ def parse_file_for_results(log_file, print_list, ips_to_nodes, emitted):
             elif "resolved" in line:
                 parse_resolved(current_hosts, line, ips_to_nodes)
 
-    return results, msgs_per_server
+    return results, msgs_per_server, log_file[CLIENT_DIR], log_file[CLIENT_NAME]
 
 
 def get_files_to_parse(client_logs_folder, only_one):
@@ -419,7 +410,11 @@ def get_files_to_parse(client_logs_folder, only_one):
 
     if only_one:
         for log in os.listdir(client_logs_folder):
+            if log[-4:] != '.log':
+                continue
+
             client_name = log.split(".")[0]
+
             log_path = os.path.join(client_logs_folder, log)
             files.append({
                 CLIENT_NAME: client_name,
@@ -433,14 +428,114 @@ def get_files_to_parse(client_logs_folder, only_one):
                 continue
 
             for log in os.listdir(tester_dir_full_path):
+                if log[-4:] != '.log':
+                    continue
+
                 client_name = log.split(".")[0]
+
                 log_path = os.path.join(tester_dir_full_path, log)
                 files.append({
-                    CLIENT_NAME: f'{tester_dir}_{client_name}',
+                    CLIENT_DIR: tester_dir,
+                    CLIENT_NAME: client_name,
+                    CLIENT_ID: f'{tester_dir}_{client_name}',
                     PATH: log_path
                 })
 
     return files
+
+
+def process_requests_retries(requests, retries):
+    plt.figure(figsize=(25, 15))
+
+    last_percentage = 0.
+
+    for client_id in requests:
+        x_axis = []
+        y_axis = []
+
+        reqs = requests[client_id]
+        rets = retries[client_id]
+
+        for ts, count in reqs:
+            if ts in rets:
+                x_axis.append(ts-MIN_TIMESTAMP)
+                y_axis.append(rets[ts] / count)
+            else:
+                x_axis.append(ts-MIN_TIMESTAMP)
+                y_axis.append(last_percentage)
+
+        plt.plot(x_axis, y_axis, label=client_id)
+
+    plt.legend()
+    plt.savefig(f'{plots_dir}/retries.png')
+
+
+def main():
+    global DEBUG
+
+    args = sys.argv[1:]
+    max_args = 4
+    min_args = 1
+    if len(args) < min_args or len(args) > max_args:
+        print("usage: parse_logs.py <client_logs_folder> [--only-one] [--print=trades,battles] [--dummy-infos="
+              "/tmp/dummy_infos.json] [--debug]")
+        sys.exit(1)
+
+    logs_folder = ""
+    only_one = False
+    print_list = []
+    dummy_infos_path = ""
+
+    for arg in args:
+        if arg == "--only-one":
+            only_one = True
+        elif "--print" in arg:
+            print_list = arg.split("=")[1].split(",")
+        elif "--dummy-infos" in arg:
+            dummy_infos_path = os.path.expanduser(arg.split("=")[1])
+            print(f"dummy_infos set to {dummy_infos_path}")
+        elif "--debug" == arg:
+            DEBUG = True
+            print("debug mode is on")
+        elif logs_folder == "":
+            logs_folder = arg
+
+    if not os.path.exists(plots_dir):
+        os.mkdir(plots_dir)
+
+    files = get_files_to_parse(logs_folder, only_one)
+
+    print(f"Files to parse: {files}")
+
+    dummy_infos = {}
+    ips_to_nodes = {}
+    if dummy_infos_path == "":
+        dummy_infos_path = '/tmp/dummy_infos.json'
+
+    if os.path.exists(dummy_infos_path):
+        with open(dummy_infos_path, 'r') as dummy_infos_fp:
+            infos = json.load(dummy_infos_fp)
+            for info in infos:
+                dummy_infos[info["name"]] = info
+                ips_to_nodes[info["ip"]] = info["name"]
+
+    results = {}
+    print("\n{} PARSING FILES {}\n".format(INFO_HEADER * 2, INFO_HEADER * 2))
+
+    emitted, retries, requests = {}, {}, {}
+
+    for file in files:
+        emitted = parse_file_for_emits(file, emitted, retries, requests)
+
+    for file in files:
+        results[file[CLIENT_ID]] = parse_file_for_results(file, print_list, ips_to_nodes, emitted)
+
+    with open(os.path.expanduser('~/logs_results.json'), 'w') as results_fp:
+        json.dump(results, results_fp)
+
+    process_results(results)
+
+    process_requests_retries(requests, retries)
 
 
 if __name__ == '__main__':

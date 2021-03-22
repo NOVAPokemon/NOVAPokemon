@@ -20,12 +20,12 @@ spec:
       initContainers:
         - name: wait-mongo
           image: novapokemon/wait-mongo:latest
-          command: ['sh', '-c', "until mongostat -vvvvv --host=novapokemon-trainersdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done"]
+          command: [ 'sh', '-c', "until mongostat -vvvvv --host=novapokemon-trainersdb --port=27017 --username=root --password=secretpassword --authenticationDatabase=admin -n 1 2>&1 | grep successfully ; do echo waiting for my db; sleep 2; done" ]
       containers:
         - name: {{$.Values.global.services.trainers.name}}
           image: {{$.Values.global.services.trainers.image}}
           imagePullPolicy: Never
-          command: ["sh", "-c", "./executable -l -d"]
+          command: [ "sh", "-c", "./executable -l -d" ]
           securityContext:
             capabilities:
               add:
@@ -35,8 +35,10 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.trainers.databaseName}}:{{$.Values.global.services.trainers.databasePort}}"
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}

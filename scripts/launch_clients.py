@@ -8,8 +8,6 @@ import sys
 import time
 from multiprocessing import Pool
 
-NUM_ARGS = 1
-
 NOVAPOKEMON_DIR = os.path.expanduser('~/go/src/github.com/NOVAPokemon')
 CLI_SCENARIOS_PATH = os.path.expanduser('~/ced-client-scenarios')
 CLI_TEMPLATE = f'{NOVAPOKEMON_DIR}/client/client-jobs-template.yaml'
@@ -30,44 +28,27 @@ DICT_TIMEOUT = "duration"
 DICT_WAIT_TIME = "wait_time"
 
 
-def main():
-    args = sys.argv[1:]
-    if len(args) != NUM_ARGS:
-        print("Usage: python3 launch_clients.py <client-scenario.json>")
-        exit(1)
+def get_client_nodes():
+    cmd = "kubectl get nodes -l clientsnode -o go-template --template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}" \
+          "{{end}}'"
 
-    client_scenario_filename = args[0]
-    with open(f"{CLI_SCENARIOS_PATH}/{client_scenario_filename}.json", 'r') as cli_scenario_fp:
-        cli_scenario = json.load(cli_scenario_fp)
-
-    setup_client_node_dirs(cli_scenario)
-    create_job_templates(cli_scenario)
-
-    pool = Pool(processes=os.cpu_count())
-
-    async_waits = []
-    for cli_job_name, cli_job in cli_scenario.items():
-        print(f'Launching {cli_job_name}...')
-        async_waits.append(pool.apply_async(launch_cli_job, (cli_job_name, cli_job)))
-
-    for w in async_waits:
-        w.get()
-
-    pool.terminate()
-    pool.close()
+    return [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
 
 
 def setup_client_node_dirs(cli_scenario):
-    clients_node = get_client_kube_node()
+    print("Will setup client dirs...")
 
-    clean_dir_or_create_on_node(CLI_LOGS_DIR, clients_node)
-    clean_dir_or_create_on_node(CLI_SERVICES_DIR, clients_node)
+    client_nodes = get_client_nodes()
 
-    for cli_job_name in cli_scenario:
-        group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
-        clean_dir_or_create_on_node(group_logs_dir, clients_node)
-        group_services_dir = f'{CLI_SERVICES_DIR}/{cli_job_name}'
-        clean_dir_or_create_on_node(group_services_dir, clients_node)
+    for node in client_nodes:
+        clean_dir_or_create_on_node(CLI_LOGS_DIR, node)
+        clean_dir_or_create_on_node(CLI_SERVICES_DIR, node)
+
+        for cli_job_name in cli_scenario:
+            group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
+            clean_dir_or_create_on_node(group_logs_dir, node)
+            group_services_dir = f'{CLI_SERVICES_DIR}/{cli_job_name}'
+            clean_dir_or_create_on_node(group_services_dir, node)
 
 
 def create_job_templates(cli_scenario):
@@ -116,7 +97,7 @@ def clean_dir_or_create_on_node(path, node):
     if socket.gethostname() == node:
         clean_dir_or_create(path)
     else:
-        cmd = f'ssh {node} "(rm -rf {path} && mkdir {path}) || mkdir {path}"'
+        cmd = f'ssh {node} \"(rm -rf {path} && mkdir {path}) || mkdir {path}\"'
         run_with_log_and_exit(cmd)
 
 
@@ -139,11 +120,35 @@ def process_time_string(time_string):
     return time_in_seconds
 
 
-def get_client_kube_node():
-    cmd = "kubectl get nodes -l clientsnode -o go-template --template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}" \
-          "{{end}}'"
+def main():
+    num_args = 1
 
-    return subprocess.getoutput(cmd).strip()
+    args = sys.argv[1:]
+    if len(args) != num_args:
+        print("Usage: python3 launch_clients.py <client-scenario.json>")
+        exit(1)
+
+    client_scenario_filename = args[0]
+    with open(f"{CLI_SCENARIOS_PATH}/{client_scenario_filename}", 'r') as cli_scenario_fp:
+        cli_scenario = json.load(cli_scenario_fp)
+
+    print(f"Launching scenario: {client_scenario_filename}")
+
+    setup_client_node_dirs(cli_scenario)
+    create_job_templates(cli_scenario)
+
+    pool = Pool(processes=os.cpu_count())
+
+    async_waits = []
+    for cli_job_name, cli_job in cli_scenario.items():
+        print(f'Launching {cli_job_name}...')
+        async_waits.append(pool.apply_async(launch_cli_job, (cli_job_name, cli_job)))
+
+    for w in async_waits:
+        w.get()
+
+    pool.terminate()
+    pool.close()
 
 
 if __name__ == '__main__':

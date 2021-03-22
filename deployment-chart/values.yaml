@@ -26,6 +26,7 @@ kafka:
 
 global:
   location: "47e66e27320fa19b"
+  nodeNum: "7"
   api_configmap:
     name: "services-api"
   database:
@@ -358,9 +359,9 @@ kibana:
     type: NodePort
     port: 5601
     nodePort: "30001"
-    labels: {}
-    annotations: {}
-    loadBalancerSourceRanges: []
+    labels: { }
+    annotations: { }
+    loadBalancerSourceRanges: [ ]
   nodeSelector:
     serversnode: "true"
 

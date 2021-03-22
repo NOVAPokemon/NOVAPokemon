@@ -35,10 +35,12 @@ spec:
           env:
             - name: MONGODB_URL
               value: "mongodb://{{$.Values.global.database.user}}:{{$.Values.global.database.mongodbRootPassword}}@{{$.Values.global.database.prefix}}-{{$.Values.global.services.notifications.databaseName}}:{{$.Values.global.services.notifications.databasePort}}"
-            - name: LOCATION
-              value: {{$.Values.global.location}}
+            - name: "LOCATION"
+              value: {{quote $.Values.global.location}}
             - name: KAFKA_URL
               value: "novapokemon-kafka:9092"
+            - name: "NODE_NUM"
+              value: {{quote $.Values.global.nodeNum}}
           envFrom:
             - configMapRef:
                 name: {{$.Values.global.api_configmap.name}}
