@@ -83,13 +83,13 @@ def stop_cluster():
     print("Done!")
 
 
-def build_novapokemon():
+def build_novapokemon(race):
     print("Building NOVAPokemon...")
 
-    cmd = f"bash {SCRIPTS_DIR}/build_service_images.sh -r"
+    cmd = f"bash {SCRIPTS_DIR}/build_service_images.sh{' -r' if race else ''}"
     run_with_log_and_exit(cmd)
 
-    cmd = f"bash {SCRIPTS_DIR}/build_client.sh -r"
+    cmd = f"bash {SCRIPTS_DIR}/build_client.sh{' -r' if race else ''}"
     run_with_log_and_exit(cmd)
 
     print("Done!")
@@ -321,12 +321,15 @@ def main():
     num_args = 3
 
     if len(args) > num_args:
-        print("Usage: python3 run_experiment.py <experiment.json> [--stats-only experiment_dir]")
+        print("Usage: python3 run_experiment.py <experiment.json> [--stats-only experiment_dir] [--build-only] ["
+              "--race]")
         exit(1)
 
     stats_only = False
     experiment_dir = ""
     experiment_path = ""
+    build_only = False
+    race = False
 
     skip = False
 
@@ -338,6 +341,10 @@ def main():
             stats_only = True
             experiment_dir = os.path.expanduser(args[i + 1])
             skip = True
+        elif arg == "--build-only":
+            build_only = True
+        elif arg == "--race":
+            race = True
         elif experiment_path == "":
             experiment_path = args[0]
 
@@ -367,8 +374,11 @@ def main():
     nodes = get_nodes()
     print(f'Got nodes: {nodes}')
 
-    build_novapokemon()
+    build_novapokemon(race)
     load_images(nodes)
+
+    if build_only:
+        return
 
     experiment_dir = create_experiment_dir()
 

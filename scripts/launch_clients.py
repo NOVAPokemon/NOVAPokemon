@@ -9,11 +9,12 @@ import time
 from multiprocessing import Pool
 
 NOVAPOKEMON_DIR = os.path.expanduser('~/go/src/github.com/NOVAPokemon')
+CLI_DIR = f'{NOVAPOKEMON_DIR}/client'
 CLI_SCENARIOS_PATH = os.path.expanduser('~/ced-client-scenarios')
-CLI_TEMPLATE = f'{NOVAPOKEMON_DIR}/client/client-jobs-template.yaml'
+CLI_TEMPLATE = f'{CLI_DIR}/client-jobs-template.yaml'
 CLI_LOGS_DIR = f'/tmp/client_logs'
-CLI_SERVICES_DIR = f'/tmp/services'
-CLI_CHARTS_DIR = f'{NOVAPOKEMON_DIR}/client/client_group_charts'
+CLI_FILES_DIR = f'/tmp/files'
+CLI_CHARTS_DIR = f'{CLI_DIR}/client_group_charts'
 
 VAR_IMAGE_NAME = "VAR_IMAGE_NAME"
 VAR_CLIENT_NUM = "VAR_CLIENT_NUMS"
@@ -29,8 +30,8 @@ DICT_WAIT_TIME = "wait_time"
 
 
 def get_client_nodes():
-    cmd = "kubectl get nodes -l clientsnode -o go-template --template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}" \
-          "{{end}}'"
+    cmd = "kubectl get nodes -l clientsnode -o go-template " \
+        "--template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}{{end}}'"
 
     return [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
 
@@ -42,46 +43,27 @@ def setup_client_node_dirs(cli_scenario):
 
     for node in client_nodes:
         clean_dir_or_create_on_node(CLI_LOGS_DIR, node)
-        clean_dir_or_create_on_node(CLI_SERVICES_DIR, node)
+        clean_dir_or_create_on_node(CLI_FILES_DIR, node)
 
         for cli_job_name in cli_scenario:
             group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
             clean_dir_or_create_on_node(group_logs_dir, node)
-            group_services_dir = f'{CLI_SERVICES_DIR}/{cli_job_name}'
-            clean_dir_or_create_on_node(group_services_dir, node)
 
 
-def create_job_templates(cli_scenario):
-    clean_dir_or_create(CLI_CHARTS_DIR)
-    for cli_job_name, cli_job in cli_scenario.items():
-        group_num = cli_job_name.split("_")[1]
-        number_clients = cli_job[DICT_NUM_CLI]
-        region = cli_job[DICT_REGION]
-        timeout = cli_job[DICT_TIMEOUT]
-        group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
-        group_services_dir = f'{CLI_SERVICES_DIR}/{cli_job_name}'
-
-        group_chart_name = f'{CLI_CHARTS_DIR}/{cli_job_name}_chart.yaml'
-
-        sed_cmd = f'sed "s/{VAR_IMAGE_NAME}/clients-{group_num}-{number_clients}/" {CLI_TEMPLATE} |' \
-                  f'sed "s/{VAR_CLIENT_NUM}/{number_clients}/" |' \
-                  f'sed "s/{VAR_REGION}/{region}/" |' \
-                  f'sed "s/{VAR_CLI_TIMEOUT}/{timeout}/" |' \
-                  f'sed "s|{VAR_LOGS_HOST_PATH}|{group_logs_dir}|" |' \
-                  f'sed "s|{VAR_SERVICES_HOST_PATH}|{group_services_dir}|" >{group_chart_name}'
-
-        run_with_log_and_exit(sed_cmd)
-
-        print(f'Finished setup for {cli_job_name}!')
-
-
-def launch_cli_job(cli_job_name, cli_job):
+def launch_cli_job(cli_job_name, cli_job, env_vars):
     time.sleep(process_time_string(cli_job[DICT_WAIT_TIME]))
 
-    cli_chart = f'{CLI_CHARTS_DIR}/{cli_job_name}_chart.yaml'
-    launch_cmd = f'kubectl apply -f {cli_chart}'
+    env_vars['REGION'] = cli_job[DICT_REGION]
+    env_vars['CLIENTS_TIMEOUT'] = cli_job[DICT_TIMEOUT]
+    env_vars['NUM_CLIENTS'] = cli_job[DICT_NUM_CLI]
+    env_vars['LOGS_DIR'] = f'{CLI_LOGS_DIR}/{cli_job_name}'
 
-    run_with_log_and_exit(launch_cmd)
+    spread_env_vars = []
+    for var_id, var_value in env_vars.items():
+        spread_env_vars.append(f'{var_id}={var_value}')
+
+    cmd = f'sh -c "{NOVAPOKEMON_DIR}/client/multiclient"'
+    subprocess.run(f'{" ".join(spread_env_vars)} {cmd}', shell=True)
 
 
 # AUX FUNCTIONS
@@ -120,6 +102,31 @@ def process_time_string(time_string):
     return time_in_seconds
 
 
+def get_ingress_port():
+    cmd = 'kubectl get service/voyager-novapokemon-ingress ' \
+        '--template=\'{{index .spec.ports 0 "nodePort"}}\''
+
+    return subprocess.getoutput(cmd).strip()
+
+
+def get_ingress_hostname():
+    cmd = 'kubectl get node -l node-role.kubernetes.io/master= ' \
+        '--template=\'{{index .items 0 "metadata" "name"}}\''
+
+    return subprocess.getoutput(cmd).strip()
+
+
+def get_ingress():
+    port = get_ingress_port()
+    hostname = get_ingress_hostname()
+    return f'{hostname}:{port}'
+
+
+def build_clients():
+    cmd = f'bash {NOVAPOKEMON_DIR}/scripts/build_client.sh'
+    subprocess.run(cmd, shell=True)
+
+
 def main():
     num_args = 1
 
@@ -128,6 +135,8 @@ def main():
         print("Usage: python3 launch_clients.py <client-scenario.json>")
         exit(1)
 
+    build_clients()
+
     client_scenario_filename = args[0]
     with open(f"{CLI_SCENARIOS_PATH}/{client_scenario_filename}", 'r') as cli_scenario_fp:
         cli_scenario = json.load(cli_scenario_fp)
@@ -135,14 +144,38 @@ def main():
     print(f"Launching scenario: {client_scenario_filename}")
 
     setup_client_node_dirs(cli_scenario)
-    create_job_templates(cli_scenario)
+
+    ingress = get_ingress()
+
+    env_vars = {
+        "AUTHENTICATION_URL": ingress,
+        "BATTLES_URL": ingress,
+        "GYM_URL": ingress,
+        "LOCATION_URL": ingress,
+        "MICROTRANSACTIONS_URL": ingress,
+        "NOTIFICATIONS_URL": ingress,
+        "STORE_URL": ingress,
+        "TRADES_URL": ingress,
+        "TRAINERS_URL": ingress,
+        "INGRESS_URL": ingress,
+        "NOVAPOKEMON": NOVAPOKEMON_DIR,
+        "LOCATION_TAGS": f'{CLI_DIR}/location_tags.json',
+        "DELAYS_CONFIG": f'{CLI_DIR}/delays_config.json',
+        "CLIENT_DELAYS": f'{CLI_DIR}/client_delays.json',
+        "CELLS_TO_REGION": f'{CLI_DIR}/cells_to_region.json',
+        "REGIONS_TO_AREA": f'{CLI_DIR}/regions_to_area.json',
+        "CONFIGS": f'{CLI_DIR}/configs.json',
+        "LAT": f'{CLI_DIR}/lat.txt',
+        "LOCATIONS": f'{CLI_DIR}/locations.json'
+    }
 
     pool = Pool(processes=os.cpu_count())
 
     async_waits = []
     for cli_job_name, cli_job in cli_scenario.items():
         print(f'Launching {cli_job_name}...')
-        async_waits.append(pool.apply_async(launch_cli_job, (cli_job_name, cli_job)))
+        async_waits.append(pool.apply_async(
+            launch_cli_job, (cli_job_name, cli_job, env_vars)))
 
     for w in async_waits:
         w.get()

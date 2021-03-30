@@ -1,0 +1,44 @@
+apiVersion: voyager.appscode.com/v1beta1
+kind: Ingress
+metadata:
+  namespace: default
+  name: novapokemon-ingress
+  annotations:
+    ingress.appscode.com/type: NodePort
+    ingress.appscode.com/annotations-pod: '{"kubernetes.io/ingress-bandwidth": "15M"}'
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /authentication
+            backend:
+              serviceName: {{$.Values.global.services.auth.serviceName}}
+              servicePort: {{$.Values.global.services.auth.port}}
+          - path: /battles
+            backend:
+              serviceName: {{$.Values.global.services.battles.serviceName}}
+              servicePort: {{$.Values.global.services.battles.port}}
+          - path: /location
+            backend:
+              serviceName: {{$.Values.global.services.location.serviceName}}
+              servicePort: {{$.Values.global.services.location.port}}
+          - path: /microtransactions
+            backend:
+              serviceName: {{$.Values.global.services.microtransactions.serviceName}}
+              servicePort: {{$.Values.global.services.microtransactions.port}}
+          - path: /notifications
+            backend:
+              serviceName: {{$.Values.global.services.notifications.serviceName}}
+              servicePort: {{$.Values.global.services.notifications.port}}
+          - path: /store
+            backend:
+              serviceName: {{$.Values.global.services.store.serviceName}}
+              servicePort: {{$.Values.global.services.store.port}}
+          - path: /trades
+            backend:
+              serviceName: {{$.Values.global.services.trades.serviceName}}
+              servicePort: {{$.Values.global.services.trades.port}}
+          - path: /trainers
+            backend:
+              serviceName: {{$.Values.global.services.trainers.serviceName}}
+              servicePort: {{$.Values.global.services.trainers.port}}

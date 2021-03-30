@@ -48,7 +48,7 @@ global:
       serviceName: "authentication-service"
       databaseName: "usersdb"
       databasePort: 27017
-      serviceNameHeadless: "auth-service-headless"
+      serviceNameHeadless: "authentication-service-headless"
 
     battles:
       name: "battles"
@@ -412,13 +412,3 @@ grafana:
   grafana.ini:
     server:
       root_url: "http://localhost:3000/grafana"
-
-nginx-ingress:
-  controller:
-    nodeSelector:
-      node-role.kubernetes.io/master: ""
-    service:
-      type: "NodePort"
-      nodePorts:
-        http: 30002
-        https: 30443

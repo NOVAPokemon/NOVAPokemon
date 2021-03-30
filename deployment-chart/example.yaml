@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: ft-ingress-demo-deploy-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: ft-ingress-demo-deploy-v2
+  template:
+    metadata:
+      labels:
+        run: ft-ingress-demo-deploy-v2
+    spec:
+      volumes:
+        - name: webdata
+          emptyDir: {}
+      initContainers:
+        - name: web-content
+          image: busybox
+          volumeMounts:
+            - name: webdata
+              mountPath: "/webdata"
+          command: ["/bin/sh", "-c", 'echo "<h1><font color=blue>Get away!</font></h1>" > /webdata/index.html']
+        - name: web-content-2
+          image: busybox
+          volumeMounts:
+            - name: webdata
+              mountPath: "/webdata"
+          command: ["/bin/sh", "-c", 'dd if=/dev/urandom of="/webdata/1mb.bin" bs=1M count=1']
+      containers:
+        - image: nginx
+          name: nginx
+          volumeMounts:
+            - name: webdata
+              mountPath: "/usr/share/nginx/html"

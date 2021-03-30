@@ -4,16 +4,14 @@ set -e
 
 #bash scripts/build_service_images.sh
 helm uninstall novapokemon 2>/dev/null || true
+helm uninstall voyager-operator || true
 
 cd deployment-chart
 helm dependency update
 #kubectl taint nodes --all node-role.kubernetes.io/master- || true
-helm upgrade --install novapokemon . -f ./values.yaml
 
-# grafana dashboard
-kubectl delete cm grafana-dashboard-default || true
-kubectl create configmap grafana-dashboard-default --from-file="$(pwd)/utils/grafana_dashboard.json" -o yaml || true
-kubectl label cm grafana-dashboard-default grafana_dashboard=1
+helm install voyager-operator appscode/voyager --version v12.0.0 --set cloudProvider=baremetal
+helm upgrade --install novapokemon . -f ./values.yaml
 
 # dashboard
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
