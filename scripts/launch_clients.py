@@ -49,8 +49,12 @@ def setup_client_node_dirs(cli_scenario):
             group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
             clean_dir_or_create_on_node(group_logs_dir, node)
 
+    print("Finished.")
+
 
 def launch_cli_job(cli_job_name, cli_job, env_vars):
+    print(f'Launching {cli_job_name} async...')
+
     time.sleep(process_time_string(cli_job[DICT_WAIT_TIME]))
 
     env_vars['REGION'] = cli_job[DICT_REGION]
@@ -128,16 +132,17 @@ def build_clients():
 
 
 def main():
-    num_args = 1
+    num_args = 2
 
     args = sys.argv[1:]
     if len(args) != num_args:
-        print("Usage: python3 launch_clients.py <client-scenario.json>")
+        print("Usage: python3 launch_clients.py <client-scenario.json> <client_keys_to_run>\n"
+              "Example: python3 launch_clients.py scenario1.json clients1,clients2,clients3")
         exit(1)
 
-    build_clients()
-
     client_scenario_filename = args[0]
+    groups = args[1].split(",")
+
     with open(f"{CLI_SCENARIOS_PATH}/{client_scenario_filename}", 'r') as cli_scenario_fp:
         cli_scenario = json.load(cli_scenario_fp)
 
@@ -145,7 +150,11 @@ def main():
 
     setup_client_node_dirs(cli_scenario)
 
+    print("Finished setting up dirs")
+
     ingress = get_ingress()
+
+    print(f"Got ingress {ingress}")
 
     env_vars = {
         "AUTHENTICATION_URL": ingress,
@@ -169,10 +178,17 @@ def main():
         "LOCATIONS": f'{CLI_DIR}/locations.json'
     }
 
+    print(f'Created env vars!')
+
     pool = Pool(processes=os.cpu_count())
+
+    print("Will launch clients...")
 
     async_waits = []
     for cli_job_name, cli_job in cli_scenario.items():
+        if cli_job_name not in groups:
+            print(f"{cli_job_name} not in list")
+            continue
         print(f'Launching {cli_job_name}...')
         async_waits.append(pool.apply_async(
             launch_cli_job, (cli_job_name, cli_job, env_vars)))

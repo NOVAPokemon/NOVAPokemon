@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 import json
 import os
 import socket
@@ -6,13 +6,16 @@ import subprocess
 import sys
 import threading
 import time
+import pandas
 from datetime import datetime
 
 import matplotlib.pyplot as plt
 
-MAPS_DIR = os.path.expanduser('~/go/src/github.com/bruno-anjos/cloud-edge-deployment/latency_maps')
+MAPS_DIR = os.path.expanduser(
+    '~/go/src/github.com/bruno-anjos/cloud-edge-deployment/latency_maps')
 NOVAPOKEMON_DIR = os.path.expanduser('~/go/src/github.com/NOVAPokemon')
 SCRIPTS_DIR = f'{NOVAPOKEMON_DIR}/scripts'
+CLIENT_SCENARIOS_DIR = os.path.expanduser('~/ced-client-scenarios')
 
 hostname = socket.gethostname()
 
@@ -107,10 +110,41 @@ def start_cluster():
 def deploy_clients(client_scenario):
     print("Deploying clients...")
 
-    cmd = f'python3 {SCRIPTS_DIR}/launch_clients.py {client_scenario}'
-    run_with_log_and_exit(cmd)
+    with open(f'{CLIENT_SCENARIOS_DIR}/{client_scenario}') as f:
+        cli_scenario = json.load(f)
+
+    client_nodes = get_client_nodes()
+
+    number_of_groups_per_node = len(cli_scenario) // len(client_nodes)
+    remaining_groups = len(cli_scenario) % len(client_nodes)
+    number_of_groups_assigned = 0
+    groups = []
+    node = client_nodes[0]
+    node_idx = 0
+
+    client_threads = []
+
+    for client_groups_name in cli_scenario:
+        groups.append(client_groups_name)
+        number_of_groups_assigned += 1
+
+        if number_of_groups_assigned == (number_of_groups_per_node + remaining_groups):
+            cmd = f'python3 {SCRIPTS_DIR}/launch_clients.py {client_scenario} {",".join(groups)}'
+            t = run_in_node_with_fork(cmd, node)
+
+            if t is not None:
+                client_threads.append(t)
+
+            if node_idx+1 < len(client_nodes):
+                node_idx += 1
+                node = client_nodes[node_idx]
+                remaining_groups = 0
+                groups.clear()
+                number_of_groups_assigned = 0
 
     print("Done!")
+
+    return client_threads
 
 
 def save_logs(experiment_dir):
@@ -145,7 +179,8 @@ def get_nodes():
 def get_server_nodes():
     cmd = 'kubectl get nodes --selector serversnode=true --template=\'{{range .items}}{{.metadata.name}}{{"\\n"}}{{ \
         end}}\''
-    server_nodes = [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
+    server_nodes = [node.strip()
+                    for node in subprocess.getoutput(cmd).split("\n")]
 
     return server_nodes
 
@@ -153,7 +188,8 @@ def get_server_nodes():
 def get_client_nodes():
     cmd = 'kubectl get nodes --selector clientsnode=true --template=\'{{range .items}}{{.metadata.name}}{{"\\n"}}{{ \
         end}}\''
-    server_nodes = [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
+    server_nodes = [node.strip()
+                    for node in subprocess.getoutput(cmd).split("\n")]
 
     return server_nodes
 
@@ -181,7 +217,7 @@ def start_recording(duration, time_between, experiment_dir, nodes):
     return threads_to_wait_for
 
 
-def create_experiment_dir():
+def create_experiment_dir(server_nodes, client_nodes):
     date = datetime.now()
     timestamp = date.strftime("%m-%d-%H-%M")
     target_path = os.path.expanduser(f'~/experiment_{timestamp}')
@@ -191,6 +227,14 @@ def create_experiment_dir():
 
     os.mkdir(f'{target_path}/plots')
     os.mkdir(f'{target_path}/stats')
+
+    with open(f'{target_path}/nodes.json', 'w') as f:
+        nodes = {
+            "server": server_nodes,
+            "client": client_nodes
+        }
+
+        json.dump(nodes, f)
 
     return target_path
 
@@ -211,109 +255,15 @@ def find_lowest_timestamp(results):
     return lowest_timestamp
 
 
-def plot_bandwidths(experiment_dir, nodes, prefix):
-    print("Plotting stats...")
-
-    server_results = {}
-    for node in nodes:
-        with open(f'{experiment_dir}/stats/{node}_bandwidth_results.json', 'r') as f:
-            results = json.load(f)
-            server_results[node] = results
-
-    min_timestamp = 0.
-    for server, results in server_results.items():
-        lowest_timestamp = find_lowest_timestamp(results)
-        if lowest_timestamp < min_timestamp:
-            min_timestamp = lowest_timestamp
-
-    plt.figure(figsize=(25, 15))
-
-    for node in nodes:
-        x_axis = []
-        y_axis = []
-
-        for i, result in enumerate(server_results[node]):
-            x_axis.append(result[TIMESTAMP] - min_timestamp)
-            y_axis.append(result[BITS_TOTAL] / 1_000_000)
-
-        plt.plot(x_axis, y_axis, label=node)
-
-    prev_len = -1
-    for node in nodes:
-        curr_len = len(server_results[node])
-        if prev_len != -1 and curr_len != prev_len:
-            print("!different lengths!")
-            prev_len = min(prev_len, curr_len)
-
-    all_results = []
-    for node in nodes:
-        for i, result in enumerate(server_results[node]):
-            if i == prev_len:
-                break
-            if len(all_results) < i + 1:
-                all_results.append({
-                    TIMESTAMP: result[TIMESTAMP],
-                    BITS_TOTAL: result[BITS_TOTAL]
-                })
-            else:
-                all_results[i][BITS_TOTAL] += result[BITS_TOTAL]
-
-    x_axis = []
-    y_axis = []
-
-    for result in all_results:
-        x_axis.append(result[TIMESTAMP] - min_timestamp)
-        y_axis.append(result[BITS_TOTAL] / 1_000_000)
-
-    plt.plot(x_axis, y_axis, label='all')
-
-    prefix_dir = f'{experiment_dir}/plots/{prefix}'
-    if not os.path.exists(prefix_dir):
-        os.mkdir(prefix_dir)
-
-    plt.ylabel("Megabits p/ second")
-    plt.legend()
-    plt.savefig(f'{prefix_dir}/bandwidths.png')
-
-    print("Done!")
+def format_ingress():
+    cmd = f'python3 {SCRIPTS_DIR}/format_ingress.py'
+    run_with_log_and_exit(cmd)
 
 
-def plot_cpu_mem_stats(experiment_dir, nodes, prefix):
-    server_results = {}
-    for node in nodes:
-        with open(f'{experiment_dir}/stats/{node}_cpu_mem.json', 'r') as f:
-            results = json.load(f)
-        server_results[node] = results
+def plot_stats(experiment_dir):
+    cmd = f'python3 {SCRIPTS_DIR}/plot_stats.py {experiment_dir}'
 
-    plt.figure(figsize=(25, 15))
-    plt.xlabel('seconds')
-    plt.ylabel('CPU (%)')
-
-    for node, results in server_results.items():
-        cpus = results['cpu']
-
-        plt.plot(cpus.keys(), cpus.values(), label=node)
-
-    plt.ylim([0, 100])
-    plt.legend()
-    plt.savefig(f'{experiment_dir}/plots/cpu_stats.png')
-
-    plt.figure(figsize=(25, 15))
-    plt.xlabel('seconds')
-    plt.ylabel('MEMORY (%)')
-
-    for node, results in server_results.items():
-        mems = results['mem']
-
-        plt.plot(mems.keys(), mems.values(), label=node)
-
-    prefix_dir = f'{experiment_dir}/{prefix}'
-    if not os.path.exists(prefix_dir):
-        os.mkdir(prefix_dir)
-
-    plt.ylim([0, 100])
-    plt.legend()
-    plt.savefig(f'{prefix_dir}/plots/mem_stats.png')
+    run_with_log_and_exit(cmd)
 
 
 def main():
@@ -321,27 +271,16 @@ def main():
     num_args = 3
 
     if len(args) > num_args:
-        print("Usage: python3 run_experiment.py <experiment.json> [--stats-only experiment_dir] [--build-only] ["
-              "--race]")
+        print("Usage: python3 run_experiment.py <experiment.json>"
+              "[--build-only] [--race]")
         exit(1)
 
-    stats_only = False
-    experiment_dir = ""
     experiment_path = ""
     build_only = False
     race = False
 
-    skip = False
-
-    for i, arg in enumerate(args):
-        if skip:
-            skip = False
-            continue
-        if arg == "--stats-only":
-            stats_only = True
-            experiment_dir = os.path.expanduser(args[i + 1])
-            skip = True
-        elif arg == "--build-only":
+    for arg in args:
+        if arg == "--build-only":
             build_only = True
         elif arg == "--race":
             race = True
@@ -350,18 +289,6 @@ def main():
 
     server_nodes = get_server_nodes()
     client_nodes = get_client_nodes()
-
-    server_nodes_prefix = 'server_nodes'
-    client_nodes_prefix = 'client_nodes'
-
-    if stats_only:
-        plot_bandwidths(experiment_dir, server_nodes, server_nodes_prefix)
-        plot_cpu_mem_stats(experiment_dir, server_nodes, server_nodes_prefix)
-
-        plot_bandwidths(experiment_dir, client_nodes, client_nodes_prefix)
-        plot_cpu_mem_stats(experiment_dir, client_nodes, client_nodes_prefix)
-
-        return
 
     with open(os.path.expanduser(experiment_path), 'r') as f:
         experiment = json.load(f)
@@ -380,13 +307,16 @@ def main():
     if build_only:
         return
 
-    experiment_dir = create_experiment_dir()
+    experiment_dir = create_experiment_dir(server_nodes, client_nodes)
+
+    format_ingress()
 
     start_cluster()
 
     time_after_stack = experiment['time_after_stack']
     time_after_deploy = experiment['time_after_deploy']
-    print(f"Sleeping {time_after_stack}+{time_after_deploy} after deploying stack...")
+    print(
+        f"Sleeping {time_after_stack}+{time_after_deploy} after deploying stack...")
     sleep_time = process_time_string_in_sec(time_after_stack)
     time.sleep(sleep_time)
     sleep_time = process_time_string_in_sec(time_after_deploy)
@@ -395,8 +325,7 @@ def main():
     threads_to_wait = start_recording(experiment["duration"], experiment["time_between_snapshots"], experiment_dir,
                                       nodes)
 
-    cli_thread = threading.Thread(target=deploy_clients, args=(experiment["clients_scenario"],))
-    cli_thread.start()
+    client_threads = deploy_clients(experiment["clients_scenario"])
 
     duration = experiment['duration']
     sleep_time = process_time_string_in_sec(duration)
@@ -405,18 +334,15 @@ def main():
     # wait for stats recording to finish
     time.sleep(60)
 
+    for c_thread in client_threads:
+        c_thread.join()
+
     save_logs(experiment_dir)
 
-    plot_bandwidths(experiment_dir, server_nodes, server_nodes_prefix)
-    plot_cpu_mem_stats(experiment_dir, server_nodes, server_nodes_prefix)
-
-    plot_bandwidths(experiment_dir, client_nodes, client_nodes_prefix)
-    plot_cpu_mem_stats(experiment_dir, client_nodes, client_nodes_prefix)
+    plot_stats(experiment_dir)
 
     for thread_to_wait in threads_to_wait:
         thread_to_wait.join()
-
-    cli_thread.join()
 
 
 if __name__ == '__main__':

@@ -12,10 +12,10 @@ if [[ ${masterNode} != "${hostnode}" ]]; then
 	exit 0
 fi
 
+rm /tmp/logs_elastic
 mkdir /tmp/logs_elastic
 
 python3 "$NOVAPOKEMON"/scripts/setup_nodes.py $numclientnodes
 
 # VOLUME
 kubectl apply -f "${HOME}"/git/NOVAPokemon/deployment-chart/persistentVolumes/elasticSearch-pv.yaml
-

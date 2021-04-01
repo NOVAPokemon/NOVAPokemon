@@ -13,10 +13,10 @@ done
 
 # kill cluster
 helm uninstall novapokemon || true
+helm uninstall voyager-operator || true
 
 # wait for cluster to finish
 echo "waiting for pods to terminate"
 until kubectl get pods 2>&1 | grep "No resources found"; do
 	sleep 5
-	kubectl get pods 2>&1
 done

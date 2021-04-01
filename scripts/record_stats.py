@@ -41,35 +41,44 @@ BITS_TOTAL = "BYTES_TOTAL"
 
 
 def record_bandwidth(interval, count, experiment_dir):
-    cmd = f'bwm-ng -t {interval * 1000} -I cni0 -o csv -c {count} -u bits -T rate ' \
-          f'-F {experiment_dir}/stats/{HOSTNAME}_bandwidth.csv'
+    file_path = f'{experiment_dir}/stats/{HOSTNAME}_bandwidth.csv'
+
+    with open(file_path, 'w') as f:
+        f.write('timestamp;iface_name;bytes_out_s;bytes_in_s;bytes_total_s;'
+                'bytes_in;bytes_out;packets_out_s;packets_in_s;packets_total_s;'
+                'packets_in;packets_out;errors_out_s;errors_in_s;errors_in;'
+                'errors_out;bits_out_s;bits_in_s;bits_total_s;bits_in;'
+                'bits_out\n')
+
+    cmd = f'bwm-ng -t {interval * 1000} -o csv -c {count} -u bits -T rate ' \
+          f'-F {file_path}'
     subprocess.run(cmd, shell=True)
 
-    results = []
-    with open(f"{experiment_dir}/stats/{HOSTNAME}_bandwidth.csv") as bandwidth_fp:
-        measures = 0
+    # results = []
+    # with open(f"{experiment_dir}/stats/{HOSTNAME}_bandwidth.csv") as bandwidth_fp:
+    #     measures = 0
 
-        for line in bandwidth_fp.readlines():
-            measures += 1
-            splits = line.split(";")
+    #     for line in bandwidth_fp.readlines():
+    #         measures += 1
+    #         splits = line.split(";")
 
-            timestamp = float(splits[0])
-            bits_out_s = float(splits[-5])
-            bits_in_s = float(splits[-4])
-            bits_total_s = float(splits[-3])
+    #         timestamp = float(splits[0])
+    #         bits_out_s = float(splits[-5])
+    #         bits_in_s = float(splits[-4])
+    #         bits_total_s = float(splits[-3])
 
-            results.append({
-                TIMESTAMP: timestamp,
-                BITS_OUT: bits_out_s,
-                BITS_IN: bits_in_s,
-                BITS_TOTAL: bits_total_s
-            })
+    #         results.append({
+    #             TIMESTAMP: timestamp,
+    #             BITS_OUT: bits_out_s,
+    #             BITS_IN: bits_in_s,
+    #             BITS_TOTAL: bits_total_s
+    #         })
 
-    results_path = f'{experiment_dir}/stats/{HOSTNAME}_bandwidth_results.json'
-    with open(results_path, 'w') as results_fp:
-        json.dump(results, results_fp, indent=4)
+    # results_path = f'{experiment_dir}/stats/{HOSTNAME}_bandwidth_results.json'
+    # with open(results_path, 'w') as results_fp:
+    #     json.dump(results, results_fp, indent=4)
 
-    print(f"Wrote bandwidth results to {results_path}!")
+    # print(f"Wrote bandwidth results to {results_path}!")
 
 
 def record_cpu_and_mem(interval, count, experiment_dir):
@@ -113,14 +122,13 @@ def main():
 
     count = duration // interval
 
-    t = threading.Thread(target=record_bandwidth, args=(interval, count, experiment_dir))
+    t = threading.Thread(target=record_bandwidth,
+                         args=(interval, count, experiment_dir))
     t.start()
 
     record_cpu_and_mem(interval, count, experiment_dir)
 
     t.join()
-
-    subprocess.run(f'python3 {SCRIPTS_DIR}/plot_stats.py {experiment_dir}', shell=True)
 
 
 if __name__ == '__main__':

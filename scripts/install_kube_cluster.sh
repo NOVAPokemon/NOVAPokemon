@@ -11,6 +11,7 @@ helm dependency update
 #kubectl taint nodes --all node-role.kubernetes.io/master- || true
 
 helm install voyager-operator appscode/voyager --version v12.0.0 --set cloudProvider=baremetal
+sleep 30
 helm upgrade --install novapokemon . -f ./values.yaml
 
 # dashboard

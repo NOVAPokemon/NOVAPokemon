@@ -1,7 +1,12 @@
+# This script would probably be way simpler if it used pandas. So it happened i
+# only discovered pandas a few scripts down the road, and this is one of the first
+# ones where i didn't know about.
+
 import json
 import os
 import sys
 from multiprocessing import Pool
+from icecream import ic
 
 import matplotlib.pyplot as plt
 
@@ -75,8 +80,6 @@ msg_type_to_service = {
 
 plots_dir = os.path.expanduser('~/plots')
 
-DEBUG = False
-
 
 def add_entry_if_missing(receiver, key, time_took):
     if key not in receiver:
@@ -125,6 +128,7 @@ def plot_avg_latency_for_clients(all_results):
 
     plot_path = f"{plots_dir}/clients.png"
     print(f"Saving image to {plot_path}")
+    plt.grid()
     plt.legend()
     plt.savefig(plot_path)
     print("Done!")
@@ -142,16 +146,17 @@ def plot_aux_1(info):
         for result in results:
             service = msg_type_to_service[result[MSG_TYPE]]
             if service in services:
-                if DEBUG:
-                    print(f'[{result[MSG_TYPE]}] {client_id} {result[ID]} {result[TIME_TOOK]}')
+                ic(result[MSG_TYPE], client_id, result[ID], result[TIME_TOOK])
                 services[service]['x_axis'].append(normalize_x_axis(result))
                 services[service]['y_axis'].append(result[TIME_TOOK])
             else:
-                services[service] = {'x_axis': [normalize_x_axis(result)], 'y_axis': [result[TIME_TOOK]]}
+                services[service] = {'x_axis': [normalize_x_axis(result)], 'y_axis': [
+                    result[TIME_TOOK]]}
 
     for service in services:
         measurements += len(services[service]['x_axis'])
-        new_x, new_y = sort_axis(services[service]['x_axis'], services[service]['y_axis'])
+        new_x, new_y = sort_axis(
+            services[service]['x_axis'], services[service]['y_axis'])
         plt.plot(new_x, new_y, '-o', label=service)
 
     client_dir = f"{plots_dir}/{aux_client_dir}/{client_name}"
@@ -162,6 +167,7 @@ def plot_aux_1(info):
 
     plot_path = f'{client_dir}/services.png'
     print(f"Saving image to {plot_path}")
+    plt.grid()
     plt.legend()
     plt.savefig(plot_path)
     plt.clf()
@@ -203,8 +209,10 @@ def plot_latency_for_client_per_server(all_results):
 
             measurements += len(x_axis)
 
-            print(f"\tplotting {server} for {client_name} ({measurements} measurements)...")
+            print(
+                f"\tplotting {server} for {client_name} ({measurements} measurements)...")
 
+            plt.grid()
             plt.plot(x_axis, y_axis, label=server)
 
             plot_path = f'{client_dir}/servers.png'
@@ -230,15 +238,18 @@ def plot_latency_per_service(all_results):
                     services[service]['x_axis'].append(result[TIME_RECV])
                     services[service]['y_axis'].append(result[TIME_TOOK])
                 else:
-                    services[service] = {'x_axis': [result[TIME_RECV]], 'y_axis': [result[TIME_TOOK]]}
+                    services[service] = {'x_axis': [
+                        result[TIME_RECV]], 'y_axis': [result[TIME_TOOK]]}
 
     for service in services:
         measurements += len(services[service]['x_axis'])
-        plt.plot(services[service]['x_axis'], services[service]['y_axis'], label=service)
+        plt.plot(services[service]['x_axis'],
+                 services[service]['y_axis'], label=service)
 
     print(f"\tplotting ({measurements} measurements)...")
 
     plot_path = f'{plots_dir}/services.png'
+    plt.grid()
     plt.savefig()
     print(f"Saving image to {plot_path}")
 
@@ -277,14 +288,13 @@ def parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server,
     time_sent = emitted_msg[TIME_SENT]
     if msg_type not in msg_type_to_service:
         if emitted_msg[MSG_TYPE] not in msg_type_to_service:
-            if DEBUG:
-                print(f"Found key {msg_type} or {emitted_msg[MSG_TYPE]} in {log_file[PATH]} at line {line_num}")
+            ic(msg_type, emitted_msg[MSG_TYPE], log_file[PATH], line_num)
         else:
             msg_type = emitted_msg[MSG_TYPE]
     else:
-        if DEBUG:
-            if msg_type_to_service[msg_type] in print_list:
-                print(f"[{msg_type}] {msg_id} {int(time_recv) - int(time_sent)} {time_sent} -> {time_recv}")
+        if msg_type_to_service[msg_type] in print_list:
+            time_took = int(time_recv) - int(time_sent)
+            ic(msg_type, msg_id, time_took, time_sent, time_recv)
 
     service = msg_type_to_service[msg_type]
 
@@ -398,7 +408,8 @@ def parse_file_for_results(log_file, print_list, ips_to_nodes, emitted):
             line = lineUntrimmed.rstrip('\n')
 
             if "[RECEIVE]" in line:
-                parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server, results, line, lineNum)
+                parse_receive(log_file, print_list, emitted, current_hosts,
+                              msgs_per_server, results, line, lineNum)
             elif "resolved" in line:
                 parse_resolved(current_hosts, line, ips_to_nodes)
 
@@ -420,26 +431,27 @@ def get_files_to_parse(client_logs_folder, only_one):
                 CLIENT_NAME: client_name,
                 PATH: log_path
             })
-    else:
-        for tester_dir in os.listdir(client_logs_folder):
-            tester_dir_full_path = os.path.join(client_logs_folder, tester_dir)
+        return files
 
-            if not os.path.isdir(tester_dir_full_path):
+    for tester_dir in os.listdir(client_logs_folder):
+        tester_dir_full_path = os.path.join(client_logs_folder, tester_dir)
+
+        if not os.path.isdir(tester_dir_full_path):
+            continue
+
+        for log in os.listdir(tester_dir_full_path):
+            if log[-4:] != '.log':
                 continue
 
-            for log in os.listdir(tester_dir_full_path):
-                if log[-4:] != '.log':
-                    continue
+            client_name = log.split(".")[0]
 
-                client_name = log.split(".")[0]
-
-                log_path = os.path.join(tester_dir_full_path, log)
-                files.append({
-                    CLIENT_DIR: tester_dir,
-                    CLIENT_NAME: client_name,
-                    CLIENT_ID: f'{tester_dir}_{client_name}',
-                    PATH: log_path
-                })
+            log_path = os.path.join(tester_dir_full_path, log)
+            files.append({
+                CLIENT_DIR: tester_dir,
+                CLIENT_NAME: client_name,
+                CLIENT_ID: f'{tester_dir}_{client_name}',
+                PATH: log_path
+            })
 
     return files
 
@@ -456,7 +468,9 @@ def process_requests_retries(requests, retries):
         reqs = requests[client_id]
         rets = retries[client_id]
 
-        for ts, count in reqs:
+        ic(reqs)
+
+        for ts, count in reqs.items():
             if ts in rets:
                 x_axis.append(ts-MIN_TIMESTAMP)
                 y_axis.append(rets[ts] / count)
@@ -466,25 +480,27 @@ def process_requests_retries(requests, retries):
 
         plt.plot(x_axis, y_axis, label=client_id)
 
+    plt.grid()
     plt.legend()
     plt.savefig(f'{plots_dir}/retries.png')
 
 
 def main():
-    global DEBUG
-
     args = sys.argv[1:]
     max_args = 4
     min_args = 1
     if len(args) < min_args or len(args) > max_args:
-        print("usage: parse_logs.py <client_logs_folder> [--only-one] [--print=trades,battles] [--dummy-infos="
-              "/tmp/dummy_infos.json] [--debug]")
+        print("usage: parse_logs.py <client_logs_folder> [--only-one]"
+              "[--print=trades,battles] [--dummy-infos=/tmp/dummy_infos.json]"
+              " [--debug]")
         sys.exit(1)
 
     logs_folder = ""
     only_one = False
     print_list = []
     dummy_infos_path = ""
+
+    ic.disable()
 
     for arg in args:
         if arg == "--only-one":
@@ -495,8 +511,7 @@ def main():
             dummy_infos_path = os.path.expanduser(arg.split("=")[1])
             print(f"dummy_infos set to {dummy_infos_path}")
         elif "--debug" == arg:
-            DEBUG = True
-            print("debug mode is on")
+            ic.enable()
         elif logs_folder == "":
             logs_folder = arg
 
@@ -528,7 +543,8 @@ def main():
         emitted = parse_file_for_emits(file, emitted, retries, requests)
 
     for file in files:
-        results[file[CLIENT_ID]] = parse_file_for_results(file, print_list, ips_to_nodes, emitted)
+        results[file[CLIENT_ID]] = parse_file_for_results(
+            file, print_list, ips_to_nodes, emitted)
 
     with open(os.path.expanduser('~/logs_results.json'), 'w') as results_fp:
         json.dump(results, results_fp)
