@@ -1,0 +1,214 @@
+apiVersion: voyager.appscode.com/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.appscode.com/type: NodePort
+  name: novapokemon-ingress
+  namespace: default
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: authentication-service
+          servicePort: 8001
+        path: /authentication
+      - backend:
+          serviceName: battles-service
+          servicePort: 8002
+        path: /battles
+      - backend:
+          serviceName: location-service
+          servicePort: 8004
+        path: /location
+      - backend:
+          serviceName: microtransactions-service
+          servicePort: 8005
+        path: /microtransactions
+      - backend:
+          serviceName: notifications-service
+          servicePort: 8006
+        path: /notifications
+      - backend:
+          serviceName: store-service
+          servicePort: 8007
+        path: /store
+      - backend:
+          serviceName: trades-service
+          servicePort: 8008
+        path: /trades
+      - backend:
+          serviceName: trainers-service
+          servicePort: 8009
+        path: /trainers
+  - host: authentication-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - authentication-0
+          serviceName: authentication-service-headless
+          servicePort: 8001
+        path: /authentication
+  - host: authentication-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - authentication-1
+          serviceName: authentication-service-headless
+          servicePort: 8001
+        path: /authentication
+  - host: battles-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - battles-0
+          serviceName: battles-service-headless
+          servicePort: 8002
+        path: /battles
+  - host: battles-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - battles-1
+          serviceName: battles-service-headless
+          servicePort: 8002
+        path: /battles
+  - host: location-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - location-0
+          serviceName: location-service-headless
+          servicePort: 8004
+        path: /location
+  - host: location-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - location-1
+          serviceName: location-service-headless
+          servicePort: 8004
+        path: /location
+  - host: location-2
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - location-2
+          serviceName: location-service-headless
+          servicePort: 8004
+        path: /location
+  - host: location-3
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - location-3
+          serviceName: location-service-headless
+          servicePort: 8004
+        path: /location
+  - host: microtransactions-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - microtransactions-0
+          serviceName: microtransactions-service-headless
+          servicePort: 8005
+        path: /microtransactions
+  - host: microtransactions-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - microtransactions-1
+          serviceName: microtransactions-service-headless
+          servicePort: 8005
+        path: /microtransactions
+  - host: notifications-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - notifications-0
+          serviceName: notifications-service-headless
+          servicePort: 8006
+        path: /notifications
+  - host: notifications-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - notifications-1
+          serviceName: notifications-service-headless
+          servicePort: 8006
+        path: /notifications
+  - host: notifications-2
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - notifications-2
+          serviceName: notifications-service-headless
+          servicePort: 8006
+        path: /notifications
+  - host: store-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - store-0
+          serviceName: store-service-headless
+          servicePort: 8007
+        path: /store
+  - host: store-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - store-1
+          serviceName: store-service-headless
+          servicePort: 8007
+        path: /store
+  - host: trades-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - trades-0
+          serviceName: trades-service-headless
+          servicePort: 8008
+        path: /trades
+  - host: trades-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - trades-1
+          serviceName: trades-service-headless
+          servicePort: 8008
+        path: /trades
+  - host: trainers-0
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - trainers-0
+          serviceName: trainers-service-headless
+          servicePort: 8009
+        path: /trainers
+  - host: trainers-1
+    http:
+      paths:
+      - backend:
+          hostNames:
+          - trainers-1
+          serviceName: trainers-service-headless
+          servicePort: 8009
+        path: /trainers
