@@ -5,6 +5,7 @@ import subprocess
 import sys
 import os
 import pandas
+from icecream import ic
 
 import matplotlib.pyplot as plt
 
@@ -37,40 +38,43 @@ BITS_IN = "BYTES_IN"
 BITS_TOTAL = "BYTES_TOTAL"
 
 
-def plot_cpu_mem_stats(experiment_dir, nodes, prefix):
+def plot_cpu_mem_stats(min_timestamp, experiment_dir, nodes, prefix):
     server_results = {}
     for node in nodes:
-        with open(f'{experiment_dir}/stats/{node}_cpu_mem.json', 'r') as f:
-            results = json.load(f)
+        results = pandas.read_csv(
+            f'{experiment_dir}/stats/{node}_cpu_mem.csv', delimiter=';')
         server_results[node] = results
 
     plt.figure(figsize=(25, 15))
     plt.xlabel('seconds')
     plt.ylabel('CPU (%)')
 
-    for node, results in server_results.items():
-        cpus = results['cpu']
+    if min_timestamp == 0:
+        for node, results in server_results.items():
+            timestamp = results['timestamp'].min()
+            if timestamp < min_timestamp or min_timestamp == 0:
+                min_timestamp = timestamp
 
-        plt.plot([int(time) for time in cpus.keys()],
-                 cpus.values(), label=node)
+    for node, results in server_results.items():
+        plt.plot(results['timestamp'].apply(lambda x: x -
+                                            min_timestamp), results['cpu'], label=node)
+
+    prefix_dir = f'{experiment_dir}/plots/{prefix}'
+    if not os.path.exists(prefix_dir):
+        os.mkdir(prefix_dir)
 
     plt.ylim([0, 100])
     plt.legend()
     plt.grid()
-    plt.savefig(f'{experiment_dir}/plots/cpu_stats.png')
+    plt.savefig(f'{prefix_dir}/cpu_stats.png')
 
     plt.figure(figsize=(25, 15))
     plt.xlabel('seconds')
     plt.ylabel('MEMORY (%)')
 
     for node, results in server_results.items():
-        mems = results['mem']
-
-        plt.plot([int(mem) for mem in mems.keys()], mems.values(), label=node)
-
-    prefix_dir = f'{experiment_dir}/plots/{prefix}'
-    if not os.path.exists(prefix_dir):
-        os.mkdir(prefix_dir)
+        plt.plot(results['timestamp'].apply(lambda x: x -
+                                            min_timestamp), results['mem'], label=node)
 
     plt.ylim([0, 100])
     plt.legend()
@@ -78,41 +82,61 @@ def plot_cpu_mem_stats(experiment_dir, nodes, prefix):
     plt.savefig(f'{prefix_dir}/mem_stats.png')
 
 
-def plot_bandwidths(experiment_dir, nodes, prefix):
+def plot_bandwidths(min_timestamp, experiment_dir, nodes, prefix):
     print("Plotting stats...")
 
     iface_header = 'iface_name'
     bits_header = 'bits_total_s'
+    fixed_bits_header = 'fixed_bits_total_s'
+    rolling_bits_header = 'rolling_bits_total_s'
     timestamp_header = 'timestamp'
 
     prefix_dir = f'{experiment_dir}/plots/{prefix}'
     if not os.path.exists(prefix_dir):
         os.mkdir(prefix_dir)
 
+    interface_regex = r''
+    if prefix == 'server_nodes':
+        interface_regex = r'bwp'
+
     for node in nodes:
         plt.figure(figsize=(25, 15))
 
         file_path = f'{experiment_dir}/stats/{node}_bandwidth.csv'
         bandwidth_data = pandas.read_csv(file_path, delimiter=';')
-        to_keep = bandwidth_data[iface_header].str.match('bond0')
+
+        to_keep = bandwidth_data[iface_header].str.contains(
+            interface_regex, regex=True)
         bandwidth_data = bandwidth_data[to_keep]
+        bandwidth_data.index = pandas.to_datetime(
+            bandwidth_data[timestamp_header], unit='s')
+        bandwidth_data.index.name = None
 
-        bandwidth_per_interface = bandwidth_data.groupby(iface_header)
+        bandwidth_per_interface = bandwidth_data.groupby(iface_header,
+                                                         as_index=False)
 
-        min_timestamp = bandwidth_data[timestamp_header].min()
-
-        print(min_timestamp)
+        if min_timestamp == 0:
+            min_timestamp = bandwidth_data[timestamp_header].min()
 
         ifaces = bandwidth_data[iface_header].unique()
 
         for iface in ifaces:
-            x = bandwidth_per_interface.get_group(iface)[timestamp_header].apply(
+            iface_bandwidth = bandwidth_per_interface.get_group(iface).copy()
+            ic(iface_bandwidth)
+            x = iface_bandwidth[timestamp_header].apply(
                 lambda time: time - min_timestamp
             )
-            y = bandwidth_per_interface.get_group(iface)[bits_header].apply(
-                lambda val: val / 1_000_000
-            )
-            plt.plot(x, y, label=iface)
+
+            iface_bandwidth[fixed_bits_header] = iface_bandwidth[bits_header].apply(
+                lambda x: x / 1_000_000)
+            ic(iface_bandwidth)
+
+            iface_bandwidth[rolling_bits_header] = iface_bandwidth.rolling('2s').mean()[
+                fixed_bits_header]
+            ic(iface_bandwidth)
+
+            y = iface_bandwidth[rolling_bits_header]
+            plt.plot(x, y, label=f'{iface}_mean')
 
         image_path = f'{prefix_dir}/{node}_bandwidths.png'
 
@@ -127,27 +151,49 @@ def plot_bandwidths(experiment_dir, nodes, prefix):
 def main():
     args = sys.argv[1:]
 
-    num_args = 1
-    if len(args) != num_args:
-        print("Usage: python3 plot_stats.py <experiment_dir>")
+    max_num_args = 3
+    if len(args) > max_num_args:
+        print(
+            "Usage: python3 plot_stats.py <experiment_dir> [--ts=min_timestamp] [--debug]")
         exit(1)
 
-    experiment_dir = args[0]
+    experiment_dir = ""
+    min_timestamp = 0
+    debug = False
+
+    for arg in args:
+        if '--ts=' in arg:
+            min_timestamp = float(arg.split('=')[1])
+        elif '--debug' == arg:
+            debug = True
+        elif experiment_dir == "":
+            experiment_dir = arg
+
+    if debug:
+        ic.enable()
+    else:
+        ic.disable()
 
     server_nodes_prefix = 'server_nodes'
     client_nodes_prefix = 'client_nodes'
 
-    with open(f'{experiment_dir}/nodes.json', 'r') as f:
-        nodes = json.load(f)
+    with open(f'{experiment_dir}/info.json', 'r') as f:
+        info = json.load(f)
+
+    nodes = info['nodes']
 
     server_nodes = nodes['server']
     client_nodes = nodes['client']
 
-    plot_bandwidths(experiment_dir, server_nodes, server_nodes_prefix)
-    plot_cpu_mem_stats(experiment_dir, server_nodes, server_nodes_prefix)
+    plot_bandwidths(min_timestamp, experiment_dir,
+                    server_nodes, server_nodes_prefix)
+    plot_cpu_mem_stats(min_timestamp, experiment_dir,
+                       server_nodes, server_nodes_prefix)
 
-    plot_bandwidths(experiment_dir, client_nodes, client_nodes_prefix)
-    plot_cpu_mem_stats(experiment_dir, client_nodes, client_nodes_prefix)
+    plot_bandwidths(min_timestamp, experiment_dir,
+                    client_nodes, client_nodes_prefix)
+    plot_cpu_mem_stats(min_timestamp, experiment_dir,
+                       client_nodes, client_nodes_prefix)
 
 
 if __name__ == '__main__':
