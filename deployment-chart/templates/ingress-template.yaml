@@ -5,8 +5,12 @@ metadata:
   name: novapokemon-ingress
   annotations:
     ingress.appscode.com/type: NodePort
-    ingress.appscode.com/annotations-pod: '{"kubernetes.io/ingress-bandwidth": "15M"}'
+    ingress.appscode.com/annotations-pod: '{"kubernetes.io/ingress-bandwidth": "10M", "kubernetes.io/egress-bandwidth": "10M"}'
+    ingress.appscode.com/max-connections: '10000'
+    ingress.appscode.com/default-timeout: '{"http-request": "3s"}'
 spec:
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
   rules:
     - http:
         paths:
