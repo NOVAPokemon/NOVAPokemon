@@ -7,6 +7,7 @@ import sys
 import threading
 import time
 import pandas
+import yaml
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -33,14 +34,17 @@ def run_with_log(cmd):
     subprocess.run(cmd, shell=True)
 
 
+def run_cmd_in_node(cmd, node):
+    cmd = f'ssh {node} "{cmd}"'
+    run_with_log(cmd)
+
+
 def run_in_node_with_fork(cmd, node):
-    t = None
-    if node == hostname:
-        t = threading.Thread(target=run_with_log, args=(cmd,))
-        t.start()
-    else:
-        ssh_cmd = f'ssh -f {node} "{cmd}"'
-        run_with_log(ssh_cmd)
+    if node != hostname:
+        cmd = f'ssh {node} "{cmd}"'
+
+    t = threading.Thread(target=run_with_log, args=(cmd,))
+    t.start()
 
     return t
 
@@ -107,40 +111,36 @@ def start_cluster():
     print("Done!")
 
 
-def deploy_clients(client_scenario):
+def get_client_nodes():
+    cmd = 'kubectl get nodes --selector clientsnode=true --template=\'{{range .items}}{{.metadata.name}}{{"\\n"}}{{ \
+        end}}\''
+    server_nodes = [node.strip()
+                    for node in subprocess.getoutput(cmd).split("\n")]
+
+    return server_nodes
+
+
+def deploy_clients(scenario_name, cli_scenario):
     print("Deploying clients...")
 
-    with open(f'{CLIENT_SCENARIOS_DIR}/{client_scenario}') as f:
-        cli_scenario = json.load(f)
-
     client_nodes = get_client_nodes()
+    groups_per_client_node = {}
 
-    number_of_groups_per_node = len(cli_scenario) // len(client_nodes)
-    remaining_groups = len(cli_scenario) % len(client_nodes)
-    number_of_groups_assigned = 0
-    groups = []
-    node = client_nodes[0]
-    node_idx = 0
+    for client_node in client_nodes:
+        groups_per_client_node[client_node] = []
+
+    index = 0
+    for client_groups_name in cli_scenario:
+        client_node = client_nodes[index % len(client_nodes)]
+        groups_per_client_node[client_node].append(client_groups_name)
+        index += 1
 
     client_threads = []
-
-    for client_groups_name in cli_scenario:
-        groups.append(client_groups_name)
-        number_of_groups_assigned += 1
-
-        if number_of_groups_assigned == (number_of_groups_per_node + remaining_groups):
-            cmd = f'python3 {SCRIPTS_DIR}/launch_clients.py {client_scenario} {",".join(groups)}'
-            t = run_in_node_with_fork(cmd, node)
-
-            if t is not None:
-                client_threads.append(t)
-
-            if node_idx+1 < len(client_nodes):
-                node_idx += 1
-                node = client_nodes[node_idx]
-                remaining_groups = 0
-                groups.clear()
-                number_of_groups_assigned = 0
+    for client_node, groups in groups_per_client_node.items():
+        cmd = f'python3 {SCRIPTS_DIR}/launch_clients.py {scenario_name} {",".join(groups)}'
+        t = run_in_node_with_fork(cmd, client_node)
+        if t is not None:
+            client_threads.append(t)
 
     print("Done!")
 
@@ -185,15 +185,6 @@ def get_server_nodes():
     return server_nodes
 
 
-def get_client_nodes():
-    cmd = 'kubectl get nodes --selector clientsnode=true --template=\'{{range .items}}{{.metadata.name}}{{"\\n"}}{{ \
-        end}}\''
-    server_nodes = [node.strip()
-                    for node in subprocess.getoutput(cmd).split("\n")]
-
-    return server_nodes
-
-
 def load_images(nodes):
     for node in nodes:
         if node != hostname:
@@ -206,9 +197,9 @@ def start_recording(duration, time_between, experiment_dir, nodes):
 
     threads_to_wait_for = []
 
-    for client_node in nodes:
+    for node in nodes:
         cmd = f'python3 {SCRIPTS_DIR}/record_stats.py {time_between} {duration} {experiment_dir}'
-        t = run_in_node_with_fork(cmd, client_node)
+        t = run_in_node_with_fork(cmd, node)
         if t is not None:
             threads_to_wait_for.append(t)
 
@@ -217,7 +208,7 @@ def start_recording(duration, time_between, experiment_dir, nodes):
     return threads_to_wait_for
 
 
-def create_experiment_dir(server_nodes, client_nodes):
+def create_experiment_dir(server_nodes, client_nodes, cli_scenario, experiment_scenario, bandwidth):
     date = datetime.now()
     timestamp = date.strftime("%m-%d-%H-%M")
     target_path = os.path.expanduser(f'~/experiment_{timestamp}')
@@ -228,13 +219,18 @@ def create_experiment_dir(server_nodes, client_nodes):
     os.mkdir(f'{target_path}/plots')
     os.mkdir(f'{target_path}/stats')
 
-    with open(f'{target_path}/nodes.json', 'w') as f:
-        nodes = {
-            "server": server_nodes,
-            "client": client_nodes
+    with open(f'{target_path}/info.json', 'w') as f:
+        info = {
+            "nodes": {
+                "server": server_nodes,
+                "client": client_nodes
+            },
+            "clients_scenario": cli_scenario,
+            "experiment_scenario": experiment_scenario,
+            "bandwidth": bandwidth
         }
 
-        json.dump(nodes, f)
+        json.dump(info, f, indent=4)
 
     return target_path
 
@@ -243,6 +239,19 @@ TIMESTAMP = "TIMESTAMP"
 BITS_OUT = "BYTES_OUT"
 BITS_IN = "BYTES_IN"
 BITS_TOTAL = "BYTES_TOTAL"
+
+
+def save_ingress_bandwidth(experiment_dir, bandwidth_annotations):
+    with open(f'{experiment_dir}/bandwidths.json', 'w') as f:
+        json.dump(bandwidth_annotations, f)
+
+
+def get_ingress_bandwidth():
+    ingress_filename = f'{NOVAPOKEMON_DIR}/deployment-chart/templates/ingress.yaml'
+    with open(ingress_filename) as f:
+        yaml_content = yaml.load(f, Loader=yaml.FullLoader)
+    bandwidth_limits = yaml_content['metadata']['annotations']['ingress.appscode.com/annotations-pod']
+    return json.loads(bandwidth_limits)
 
 
 def find_lowest_timestamp(results):
@@ -260,10 +269,25 @@ def format_ingress():
     run_with_log_and_exit(cmd)
 
 
-def plot_stats(experiment_dir):
-    cmd = f'python3 {SCRIPTS_DIR}/plot_stats.py {experiment_dir}'
-
+def plot_stats(experiment_dir, min_timestamp):
+    cmd = f'python3 {SCRIPTS_DIR}/plot_stats.py {experiment_dir} --ts={min_timestamp}'
     run_with_log_and_exit(cmd)
+
+    cmd = f'python3 {SCRIPTS_DIR}/parse_logs.py {experiment_dir}/clients '\
+        f'{experiment_dir}/servers --output={experiment_dir}/plots --ts={min_timestamp}'
+    run_with_log_and_exit(cmd)
+
+
+def load_min_timestamp(experiment_dir):
+    cmd = f'python3 {SCRIPTS_DIR}/get_experiment_min_timestamp.py {experiment_dir}'
+    min_timestamp = float(subprocess.getoutput(cmd).strip())
+    return min_timestamp
+
+
+def stop_clients(client_nodes):
+    cmd = 'killall multiclient; killall executable'
+    for node in client_nodes:
+        run_cmd_in_node(cmd, node)
 
 
 def main():
@@ -307,9 +331,18 @@ def main():
     if build_only:
         return
 
-    experiment_dir = create_experiment_dir(server_nodes, client_nodes)
+    client_scenario_name = experiment["clients_scenario"]
+    with open(f'{CLIENT_SCENARIOS_DIR}/{client_scenario_name}') as f:
+        cli_scenario = json.load(f)
 
     format_ingress()
+
+    bandwidth = get_ingress_bandwidth()
+
+    experiment_dir = create_experiment_dir(
+        server_nodes, client_nodes, cli_scenario, experiment, bandwidth)
+
+    save_ingress_bandwidth(experiment_dir, bandwidth)
 
     start_cluster()
 
@@ -322,27 +355,44 @@ def main():
     sleep_time = process_time_string_in_sec(time_after_deploy)
     time.sleep(sleep_time)
 
-    threads_to_wait = start_recording(experiment["duration"], experiment["time_between_snapshots"], experiment_dir,
-                                      nodes)
+    threads_to_wait = start_recording(
+        experiment["duration"], experiment["time_between_snapshots"],
+        experiment_dir, nodes)
 
-    client_threads = deploy_clients(experiment["clients_scenario"])
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    print(f'Launching clients at {current_time}')
+
+    client_threads = deploy_clients(client_scenario_name, cli_scenario)
 
     duration = experiment['duration']
     sleep_time = process_time_string_in_sec(duration)
+
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    print(f'Starting sleep at {current_time}')
     time.sleep(sleep_time)
 
     # wait for stats recording to finish
     time.sleep(60)
+
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    print(f"Finished sleeping at {current_time}")
+
+    stop_clients(client_nodes)
 
     for c_thread in client_threads:
         c_thread.join()
 
     save_logs(experiment_dir)
 
-    plot_stats(experiment_dir)
-
     for thread_to_wait in threads_to_wait:
         thread_to_wait.join()
+
+    min_timestamp = load_min_timestamp(experiment_dir)
+
+    plot_stats(experiment_dir, min_timestamp)
 
 
 if __name__ == '__main__':
