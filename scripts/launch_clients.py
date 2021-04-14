@@ -36,18 +36,17 @@ def get_client_nodes():
     return [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
 
 
-def setup_client_node_dirs(cli_scenario):
+def setup_client_node_dirs(cli_scenario, groups):
     print("Will setup client dirs...")
 
-    client_nodes = get_client_nodes()
+    clean_dir_or_create_on_node(CLI_LOGS_DIR, HOSTNAME)
+    clean_dir_or_create_on_node(CLI_FILES_DIR, HOSTNAME)
 
-    for node in client_nodes:
-        clean_dir_or_create_on_node(CLI_LOGS_DIR, node)
-        clean_dir_or_create_on_node(CLI_FILES_DIR, node)
-
-        for cli_job_name in cli_scenario:
-            group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
-            clean_dir_or_create_on_node(group_logs_dir, node)
+    for cli_job_name in cli_scenario:
+        if cli_job_name not in groups:
+            continue
+        group_logs_dir = f'{CLI_LOGS_DIR}/{cli_job_name}'
+        clean_dir_or_create_on_node(group_logs_dir, HOSTNAME)
 
     print("Finished.")
 
@@ -56,6 +55,10 @@ def launch_cli_job(cli_job_name, cli_job, env_vars):
     print(f'Launching {cli_job_name} async...')
 
     time.sleep(process_time_string(cli_job[DICT_WAIT_TIME]))
+
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    print(f'Really launching {cli_job_name} at {current_time}', flush=True)
 
     env_vars['REGION'] = cli_job[DICT_REGION]
     env_vars['CLIENTS_TIMEOUT'] = cli_job[DICT_TIMEOUT]
@@ -68,6 +71,7 @@ def launch_cli_job(cli_job_name, cli_job, env_vars):
 
     cmd = f'sh -c "{NOVAPOKEMON_DIR}/client/multiclient"'
     subprocess.run(f'{" ".join(spread_env_vars)} {cmd}', shell=True)
+    return cli_job_name
 
 
 # AUX FUNCTIONS
@@ -79,8 +83,11 @@ def clean_dir_or_create(path):
     os.mkdir(path)
 
 
+HOSTNAME = socket.gethostname()
+
+
 def clean_dir_or_create_on_node(path, node):
-    if socket.gethostname() == node:
+    if HOSTNAME == node:
         clean_dir_or_create(path)
     else:
         cmd = f'ssh {node} \"(rm -rf {path} && mkdir {path}) || mkdir {path}\"'
@@ -148,7 +155,7 @@ def main():
 
     print(f"Launching scenario: {client_scenario_filename}")
 
-    setup_client_node_dirs(cli_scenario)
+    setup_client_node_dirs(cli_scenario, groups)
 
     print("Finished setting up dirs")
 
@@ -189,12 +196,15 @@ def main():
         if cli_job_name not in groups:
             print(f"{cli_job_name} not in list")
             continue
-        print(f'Launching {cli_job_name}...')
+        t = time.localtime()
+        current_time = time.strftime("%H:%M:%S", t)
+        print(f'Launching {cli_job_name} at {current_time}...', flush=True)
         async_waits.append(pool.apply_async(
             launch_cli_job, (cli_job_name, cli_job, env_vars)))
 
     for w in async_waits:
-        w.get()
+        cli_job_name = w.get()
+        print(f'Finished multiclient for {cli_job_name}')
 
     pool.terminate()
     pool.close()
