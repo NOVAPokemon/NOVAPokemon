@@ -12,7 +12,7 @@ if [[ ${masterNode} != "${hostnode}" ]]; then
 	exit 0
 fi
 
-rm /tmp/logs_elastic
+rm -r /tmp/logs_elastic
 mkdir /tmp/logs_elastic
 
 python3 "$NOVAPOKEMON"/scripts/setup_nodes.py $numclientnodes
