@@ -7,8 +7,8 @@ import yaml
 NOVAPOKEMON_DIR = os.path.expanduser('~/go/src/github.com/NOVAPokemon')
 DEPL_CHARTS_DIR = f'{NOVAPOKEMON_DIR}/deployment-chart'
 
-services = ['authentication', 'battles', 'location', 'microtransactions', 'notifications', 'store', 'trades',
-            'trainers']
+SERVICES = ['authentication', 'battles', 'location', 'microtransactions',
+            'notifications', 'store', 'trades', 'trainers']
 
 '''
 - host: store-0
@@ -78,7 +78,8 @@ def main():
     helm_unignore_file('templates/ingress-template.yaml')
     helm_ignore_file('templates/ingress.yaml')
 
-    output = subprocess.getoutput(f'cd {DEPL_CHARTS_DIR} && helm template novapokemon . -f ./values.yaml')
+    output = subprocess.getoutput(
+        f'cd {DEPL_CHARTS_DIR} && helm template novapokemon . -f ./values.yaml')
 
     docs = yaml.safe_load_all(output)
 
@@ -86,7 +87,7 @@ def main():
     stateful_sets = []
     for doc in docs:
         if doc['kind'] == 'StatefulSet' and 'metadata' in doc and 'name' in doc['metadata'] and \
-                doc['metadata']['name'] in services:
+                doc['metadata']['name'] in SERVICES:
             stateful_sets.append(doc)
         elif doc['apiVersion'] == "voyager.appscode.com/v1beta1":
             ingress_doc = doc
