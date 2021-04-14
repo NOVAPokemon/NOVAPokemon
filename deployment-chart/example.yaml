@@ -30,6 +30,12 @@ spec:
             - name: webdata
               mountPath: "/webdata"
           command: ["/bin/sh", "-c", 'dd if=/dev/urandom of="/webdata/1mb.bin" bs=1M count=1']
+        - name: web-content-3
+          image: busybox
+          volumeMounts:
+            - name: webdata
+              mountPath: "/webdata"
+          command: [ "/bin/sh", "-c", 'dd if=/dev/urandom of="/webdata/1kb.bin" bs=1K count=1' ]
       containers:
         - image: nginx
           name: nginx
