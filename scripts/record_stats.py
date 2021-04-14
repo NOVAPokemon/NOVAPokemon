@@ -54,56 +54,29 @@ def record_bandwidth(interval, count, experiment_dir):
           f'-F {file_path}'
     subprocess.run(cmd, shell=True)
 
-    # results = []
-    # with open(f"{experiment_dir}/stats/{HOSTNAME}_bandwidth.csv") as bandwidth_fp:
-    #     measures = 0
-
-    #     for line in bandwidth_fp.readlines():
-    #         measures += 1
-    #         splits = line.split(";")
-
-    #         timestamp = float(splits[0])
-    #         bits_out_s = float(splits[-5])
-    #         bits_in_s = float(splits[-4])
-    #         bits_total_s = float(splits[-3])
-
-    #         results.append({
-    #             TIMESTAMP: timestamp,
-    #             BITS_OUT: bits_out_s,
-    #             BITS_IN: bits_in_s,
-    #             BITS_TOTAL: bits_total_s
-    #         })
-
-    # results_path = f'{experiment_dir}/stats/{HOSTNAME}_bandwidth_results.json'
-    # with open(results_path, 'w') as results_fp:
-    #     json.dump(results, results_fp, indent=4)
-
-    # print(f"Wrote bandwidth results to {results_path}!")
-
 
 def record_cpu_and_mem(interval, count, experiment_dir):
     psutil.cpu_percent()
 
-    cpus, mems = {}, {}
-
     max_memory = psutil.virtual_memory().total
+
+    values = {}
 
     i = 0
     while i < count:
-        timestamp = i * interval
+        timestamp = time.time()
         time.sleep(interval)
 
         cpu, mem = get_stats()
-        cpus[timestamp] = cpu
-        mems[timestamp] = (mem / max_memory) * 100
-
+        mem_per = (mem / max_memory) * 100
+        values[timestamp] = (cpu, mem_per)
         i += 1
 
-    results = {'cpu': cpus, 'mem': mems}
-
-    results_path = f'{experiment_dir}/stats/{HOSTNAME}_cpu_mem.json'
+    results_path = f'{experiment_dir}/stats/{HOSTNAME}_cpu_mem.csv'
     with open(results_path, 'w') as f:
-        json.dump(results, f, indent=4)
+        f.write('timestamp;cpu;mem\n')
+        for ts, (cpu, mem) in values.items():
+            f.write(f'{ts};{cpu};{mem}\n')
 
     print(f"Wrote CPU/MEM results to {results_path}")
 
