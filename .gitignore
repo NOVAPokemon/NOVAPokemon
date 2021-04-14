@@ -6,3 +6,5 @@ deployment-chart/charts/kafka-10.3.3.tgz
 *.tgz
 venv/
 .DS_Store
+.vscode/
+.VSCodeCounter/
