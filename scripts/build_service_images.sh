@@ -38,6 +38,8 @@ cp ../location_tags.json .
 cp ../delays_config.json .
 cp ../client_delays.json .
 cp ../cells_to_region.json .
+cp ../lat.txt .
+cp ../locations.json .
 
 if [[ ! -e dockerize ]]; then
 	echo "Downloading dockerize"
@@ -56,6 +58,8 @@ rm location_tags.json
 rm delays_config.json
 rm client_delays.json
 rm cells_to_region.json
+rm lat.txt
+rm locations.json
 
 cd ..
 
