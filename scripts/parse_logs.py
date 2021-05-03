@@ -327,8 +327,10 @@ def parse_receive(log_file, print_list, emitted, current_hosts, msgs_per_server,
     time_recv = parts[5][:-1]
 
     if msg_id not in emitted:
+        return
 
     emitted_msg = emitted[msg_id]
+
     time_sent = emitted_msg[TIME_SENT]
     if msg_type not in msg_type_to_service:
         if emitted_msg[MSG_TYPE] not in msg_type_to_service:
