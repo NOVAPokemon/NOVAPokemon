@@ -50,9 +50,6 @@ if [[ ! -e dockerize ]]; then
 fi
 
 docker build . -t brunoanjos/nova-server-base
-if [[ $test_race == false ]]; then
-	docker push brunoanjos/nova-server-base:latest
-fi
 
 rm location_tags.json
 rm delays_config.json
@@ -69,8 +66,6 @@ rm -rf build_logs || true
 mkdir build_logs
 
 echo "------------------------------ BUILDING SERVICE IMAGES ------------------------------"
-
-rm -rf images/*
 
 for d in */; do
 	dirname_stripped=$(basename "$d")
