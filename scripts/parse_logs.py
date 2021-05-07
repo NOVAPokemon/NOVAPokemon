@@ -4,13 +4,12 @@
 
 import json
 import os
-import sys
-from multiprocessing import Pool
-from icecream import ic
-from matplotlib import markers
-import pandas
+from multiprocessing.pool import Pool
 
 import matplotlib.pyplot as plt
+import pandas
+import sys
+from icecream import ic
 
 INFO_HEADER = "-----------------"
 
@@ -535,7 +534,7 @@ def write_reqs_rets_to_csv(requests, retries, output_dir):
 
 def load_reqs_rets_to_csv(output_dir):
     return pandas.read_csv(f'{output_dir}/reqs.csv', delimiter=';'), \
-        pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
+           pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
 
 
 def process_requests_retries(requests, retries, output_dir, csvs):
