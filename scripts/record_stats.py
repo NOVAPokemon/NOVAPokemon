@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-import json
 import os
 import socket
 import subprocess
-import sys
 import threading
-import time
 
 import psutil
+import sys
+import time
 
 HOSTNAME = socket.gethostname()
 
