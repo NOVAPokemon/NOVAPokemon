@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 import json
+import os
 import socket
 import subprocess
-import sys
-import os
-import pandas
-from icecream import ic
 
 import matplotlib.pyplot as plt
+import pandas
+import sys
+from icecream import ic
 
 HOSTNAME = socket.gethostname()
 IGNORED_INTERFACES = ['lo', 'eno0', 'en1']
@@ -57,7 +57,7 @@ def plot_cpu_mem_stats(min_timestamp, experiment_dir, nodes, prefix):
 
     for node, results in server_results.items():
         plt.plot(results['timestamp'].apply(lambda x: x -
-                                            min_timestamp), results['cpu'], label=node)
+                                                      min_timestamp), results['cpu'], label=node)
 
     prefix_dir = f'{experiment_dir}/plots/{prefix}'
     if not os.path.exists(prefix_dir):
@@ -74,7 +74,7 @@ def plot_cpu_mem_stats(min_timestamp, experiment_dir, nodes, prefix):
 
     for node, results in server_results.items():
         plt.plot(results['timestamp'].apply(lambda x: x -
-                                            min_timestamp), results['mem'], label=node)
+                                                      min_timestamp), results['mem'], label=node)
 
     plt.ylim([0, 100])
     plt.legend()
@@ -104,6 +104,7 @@ def plot_bandwidths(min_timestamp, experiment_dir, nodes, prefix):
 
         file_path = f'{experiment_dir}/stats/{node}_bandwidth.csv'
         bandwidth_data = pandas.read_csv(file_path, delimiter=';')
+
 
         to_keep = bandwidth_data[iface_header].str.contains(
             interface_regex, regex=True)
