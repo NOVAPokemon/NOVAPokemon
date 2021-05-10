@@ -9,7 +9,7 @@ if [[ ${hostname} != "$clientsnode" ]]; then
 	echo "Running this on node $hostname, instead of $clientsnode. Will ssh and run there."
 	echo "Provider username to ssh:"
 	read -r username
-	ssh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon/ && bash scripts/run_client.sh'
+	oarsh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon/ && bash scripts/run_client.sh'
 	exit 0
 fi
 

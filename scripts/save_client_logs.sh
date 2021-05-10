@@ -10,7 +10,7 @@ if [[ ${hostname} != "$clientsnode" ]]; then
 	echo "Provide username for ssh:"
 	username=$(whoami)
 	started=$(ssh "$username"@"$clientsnode" 'cat /tmp/current_client_logs/started_at.txt')
-	ssh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon && bash scripts/save_client_logs.sh'
+	oarsh "$username"@"$clientsnode" 'cd ~/git/NOVAPokemon && bash scripts/save_client_logs.sh'
 	dirname="/home/$username/client_logs_collected_$started"
 	scp -r "$username"@"$clientsnode":"$dirname" /tmp/client_logs_collected_"$started"
 	exit 0
