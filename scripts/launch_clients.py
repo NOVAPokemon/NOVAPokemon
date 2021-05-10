@@ -4,9 +4,10 @@ import os
 import shutil
 import socket
 import subprocess
+from multiprocessing.pool import Pool
+
 import sys
 import time
-from multiprocessing import Pool
 
 NOVAPOKEMON_DIR = os.path.expanduser('~/go/src/github.com/NOVAPokemon')
 CLI_DIR = f'{NOVAPOKEMON_DIR}/client'
@@ -31,7 +32,7 @@ DICT_WAIT_TIME = "wait_time"
 
 def get_client_nodes():
     cmd = "kubectl get nodes -l clientsnode -o go-template " \
-        "--template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}{{end}}'"
+          "--template='{{range .items}}{{.metadata.name}}{{\"\\n\"}}{{end}}'"
 
     return [node.strip() for node in subprocess.getoutput(cmd).split("\n")]
 
@@ -69,7 +70,7 @@ def launch_cli_job(cli_job_name, cli_job, env_vars):
     for var_id, var_value in env_vars.items():
         spread_env_vars.append(f'{var_id}={var_value}')
 
-    cmd = f'sh -c "{NOVAPOKEMON_DIR}/client/multiclient"'
+    cmd = f'sh -c "{NOVAPOKEMON_DIR}/client/multiclient/multiclient"'
     subprocess.run(f'{" ".join(spread_env_vars)} {cmd}', shell=True)
     return cli_job_name
 
@@ -90,7 +91,7 @@ def clean_dir_or_create_on_node(path, node):
     if HOSTNAME == node:
         clean_dir_or_create(path)
     else:
-        cmd = f'ssh {node} \"(rm -rf {path} && mkdir {path}) || mkdir {path}\"'
+        cmd = f'sh {node} \"(rm -rf {path} && mkdir {path}) || mkdir {path}\"'
         run_with_log_and_exit(cmd)
 
 
@@ -115,14 +116,14 @@ def process_time_string(time_string):
 
 def get_ingress_port():
     cmd = 'kubectl get service/voyager-novapokemon-ingress ' \
-        '--template=\'{{index .spec.ports 0 "nodePort"}}\''
+          '--template=\'{{index .spec.ports 0 "nodePort"}}\''
 
     return subprocess.getoutput(cmd).strip()
 
 
 def get_ingress_hostname():
     cmd = 'kubectl get node -l node-role.kubernetes.io/master= ' \
-        '--template=\'{{index .items 0 "metadata" "name"}}\''
+          '--template=\'{{index .items 0 "metadata" "name"}}\''
 
     return subprocess.getoutput(cmd).strip()
 
