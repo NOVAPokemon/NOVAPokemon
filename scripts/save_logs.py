@@ -44,7 +44,7 @@ def save_client_logs(experiment_dir):
     hostname = socket.gethostname()
     for node in nodes:
         if node != hostname:
-            cmd = f'ssh {node} {cp_cmd}'
+            cmd = f'oarsh {node} {cp_cmd}'
             run_with_log_and_exit(cmd)
 
 
