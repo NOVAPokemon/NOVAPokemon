@@ -38,17 +38,16 @@ else
   echo "Building binary..."
 fi
 
-cd "$clientDir" || exit
+(
+  cd "$clientDir" || exit
 
-mv create_thread_clients.c ../
-go build $race_flag -o executable .
-mv ../create_thread_clients.c .
+  go build $race_flag -o executable .
 
-rm ./multiclient
-echo "Building multiclient"
-gcc -pthread -o multiclient create_thread_clients.c
-
-cd - || exit
+  cd multiclient || exit
+  rm ./multiclient
+  echo "Building multiclient"
+  go build -o multiclient create_thread_clients.go
+)
 
 cp "$NOVAPOKEMON"/location_tags.json "$clientDir"/
 cp "$NOVAPOKEMON"/delays_config.json "$clientDir"/
