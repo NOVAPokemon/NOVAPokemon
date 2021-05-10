@@ -3,14 +3,12 @@ import json
 import os
 import socket
 import subprocess
-import sys
 import threading
-import time
-import pandas
-import yaml
 from datetime import datetime
 
-import matplotlib.pyplot as plt
+import sys
+import time
+import yaml
 
 MAPS_DIR = os.path.expanduser(
     '~/go/src/github.com/bruno-anjos/cloud-edge-deployment/latency_maps')
@@ -35,13 +33,13 @@ def run_with_log(cmd):
 
 
 def run_cmd_in_node(cmd, node):
-    cmd = f'ssh {node} "{cmd}"'
+    cmd = f'oarsh {node} "{cmd}"'
     run_with_log(cmd)
 
 
 def run_in_node_with_fork(cmd, node):
     if node != hostname:
-        cmd = f'ssh {node} "{cmd}"'
+        cmd = f'oarsh {node} "{cmd}"'
 
     t = threading.Thread(target=run_with_log, args=(cmd,))
     t.start()
@@ -188,7 +186,7 @@ def get_server_nodes():
 def load_images(nodes):
     for node in nodes:
         if node != hostname:
-            cmd = f'ssh {node} {SCRIPTS_DIR}/load_images.sh'
+            cmd = f'oarsh {node} {SCRIPTS_DIR}/load_images.sh'
             run_with_log_and_exit(cmd)
 
 
@@ -273,8 +271,8 @@ def plot_stats(experiment_dir, min_timestamp):
     cmd = f'python3 {SCRIPTS_DIR}/plot_stats.py {experiment_dir} --ts={min_timestamp}'
     run_with_log_and_exit(cmd)
 
-    cmd = f'python3 {SCRIPTS_DIR}/parse_logs.py {experiment_dir}/clients '\
-        f'{experiment_dir}/servers --output={experiment_dir}/plots --ts={min_timestamp}'
+    cmd = f'python3 {SCRIPTS_DIR}/parse_logs.py {experiment_dir}/clients ' \
+          f'{experiment_dir}/servers --output={experiment_dir}/plots --ts={min_timestamp}'
     run_with_log_and_exit(cmd)
 
 
@@ -288,6 +286,21 @@ def stop_clients(client_nodes):
     cmd = 'killall multiclient; killall executable'
     for node in client_nodes:
         run_cmd_in_node(cmd, node)
+
+
+def change_tc_qdisc():
+    list_and_filter_rules_cmd = 'sudo-g5k tc qdisc show | grep tbf'
+    output = subprocess.getoutput(list_and_filter_rules_cmd)
+    rules = output.split('\n')
+    bandwidth_limit = rules[0].split(' ')[9]
+    interfaces = [rule.strip().split(' ')[4] for rule in rules]
+
+    print(f'Got interfaces: {interfaces}')
+    change_qdisc_cmd = 'sudo-g5k tc qdisc change dev {interface} handle 1: tbf rate {bandwidth} burst 1600 latency 1ms'
+    for interface in interfaces:
+        run_with_log_and_exit(change_qdisc_cmd.format(interface=interface, bandwidth=bandwidth_limit))
+
+    print('Finished changing from tbf to htb')
 
 
 def main():
@@ -354,6 +367,8 @@ def main():
     time.sleep(sleep_time)
     sleep_time = process_time_string_in_sec(time_after_deploy)
     time.sleep(sleep_time)
+
+    change_tc_qdisc()
 
     threads_to_wait = start_recording(
         experiment["duration"], experiment["time_between_snapshots"],
