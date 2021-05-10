@@ -4,13 +4,12 @@
 
 import json
 import os
-import sys
-from multiprocessing import Pool
-from icecream import ic
-from matplotlib import markers
-import pandas
+from multiprocessing.pool import Pool
 
 import matplotlib.pyplot as plt
+import pandas
+import sys
+from icecream import ic
 
 INFO_HEADER = "-----------------"
 
@@ -118,7 +117,7 @@ def load_avg_latency_for_clients_to_csv(output_dir):
     return pandas.read_csv(f'{output_dir}/clients.csv', delimiter=';')
 
 
-def plot_avg_latency_for_clients(min_timestamp, all_results, output_dir, csvs):
+def plot_avg_latency_for_clients(all_results, output_dir, csvs):
     print("Plotting average latency for clients...")
 
     timestamp_header = 'timestamp'
@@ -309,7 +308,7 @@ def plot_latency_per_service(all_results, output_dir):
 #   - histogram with messages sent for client per server
 
 def process_results(min_timestamp, all_results, output_dir, debug, csvs):
-    plot_avg_latency_for_clients(min_timestamp, all_results, output_dir, csvs)
+    plot_avg_latency_for_clients(all_results, output_dir, csvs)
     plot_latency_for_client_per_service(
         min_timestamp, all_results, output_dir, debug)
 
@@ -531,7 +530,7 @@ def write_reqs_rets_to_csv(requests, retries, output_dir):
 
 def load_reqs_rets_to_csv(output_dir):
     return pandas.read_csv(f'{output_dir}/reqs.csv', delimiter=';'), \
-        pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
+           pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
 
 
 def process_requests_retries(requests, retries, output_dir, csvs):
@@ -703,7 +702,7 @@ def process_sent_reqs_got_resps(reqs, resps, csvs, server_logs, output_dir):
     )
 
     ax2.plot(
-        (values[timestamp_header] -min_timestamp) / 1000,
+        (values[timestamp_header] - min_timestamp) / 1000,
         values[rolling_resps_header].div(
             values[rolling_reqs_header]).mul(100),
         label='responses',
