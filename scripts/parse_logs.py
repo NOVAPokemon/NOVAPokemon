@@ -148,7 +148,7 @@ def plot_avg_latency_for_clients(all_results, output_dir, csvs):
 
     min_timestamp = latencies_agg[timestamp_header].min()
 
-    plt.plot(latencies_agg[timestamp_header].apply(lambda x: (x - min_timestamp) / 1000),
+    plt.plot((latencies_agg[timestamp_header] - min_timestamp) / 1000,
              latencies_agg[rolling_time_took_avg_header])
 
     plot_path = f"{output_dir}/clients.png"
@@ -372,13 +372,16 @@ def parse_emit(client_name, emitted, line):
         return
 
     # print("[EMIT]", line)
-    msg_id = parts[4]
-    time_sent = parts[5][:-1]
-    emitted[msg_id] = {
-        TIME_SENT: time_sent,
-        EMMITTER: client_name,
-        MSG_TYPE: msg_type
-    }
+    try:
+        msg_id = parts[4]
+        time_sent = parts[5][:-1]
+        emitted[msg_id] = {
+            TIME_SENT: time_sent,
+            EMMITTER: client_name,
+            MSG_TYPE: msg_type
+        }
+    except Exception:
+        sys.exit(f'Error in client {client_name}: {line}')
 
 
 def parse_resolved(current_hosts, line, ips_to_nodes):
