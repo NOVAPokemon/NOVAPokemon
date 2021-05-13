@@ -7,7 +7,7 @@ metadata:
     ingress.appscode.com/type: NodePort
     ingress.appscode.com/annotations-pod: '{"kubernetes.io/ingress-bandwidth": "10M", "kubernetes.io/egress-bandwidth": "10M"}'
     ingress.appscode.com/max-connections: '10000'
-    ingress.appscode.com/default-timeout: '{"http-request": "5s", "connect": "5s", "server": "5s", "client": "5s", "client-fin": "5s", "tunnel": "5s"}'
+    ingress.appscode.com/default-timeout: '{"http-request": "5s", "connect": "5s", "server": "5s", "client": "5s", "client-fin": "5s", "tunnel": "30m"}'
 spec:
   nodeSelector:
     node-role.kubernetes.io/master: ""
