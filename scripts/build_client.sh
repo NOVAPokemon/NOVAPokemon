@@ -41,12 +41,13 @@ fi
 (
   cd "$clientDir" || exit
 
-  go build $race_flag -o executable .
+  CGO_ENABLED=0 go build $race_flag -o executable .
 
   cd multiclient || exit
   rm ./multiclient
   echo "Building multiclient"
-  go build -o multiclient create_thread_clients.go
+
+  CGO_ENABLED=0 go build -o multiclient create_thread_clients.go
 )
 
 cp "$NOVAPOKEMON"/location_tags.json "$clientDir"/
