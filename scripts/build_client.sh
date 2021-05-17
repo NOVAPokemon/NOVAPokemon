@@ -43,7 +43,7 @@ fi
 
   CGO_ENABLED=0 go build $race_flag -o executable .
 
-  cd multiclient || exit
+  cd multiclient_dir || exit
   rm ./multiclient
   echo "Building multiclient"
 
@@ -56,6 +56,8 @@ cp "$NOVAPOKEMON"/client_delays.json "$clientDir"/
 cp "$NOVAPOKEMON"/cells_to_region.json "$clientDir"/
 cp "$NOVAPOKEMON"/lat.txt "$clientDir"/
 cp "$NOVAPOKEMON"/locations.json "$clientDir"/
+rm -f "$clientDir"/multiclient
+cp "$NOVAPOKEMON"/client/multiclient_dir/multiclient "$clientDir"
 
 docker build "$clientDir" -t brunoanjos/client:latest
 docker save brunoanjos/client:latest > $NOVAPOKEMON/images/client.tar
