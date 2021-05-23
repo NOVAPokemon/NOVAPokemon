@@ -27,7 +27,7 @@ done
 race_flag=""
 
 rm "$clientDir"/locations.json
-rm "$clientDir"/lat.txt
+rm "$clientDir"/lats.txt
 rm "$clientDir"/location_tags.json
 rm "$clientDir"/delays_config.json
 rm "$clientDir"/client_delays.json
@@ -61,5 +61,5 @@ cp "$NOVAPOKEMON"/location_tags.json "$clientDir"/
 cp "$NOVAPOKEMON"/delays_config.json "$clientDir"/
 cp "$NOVAPOKEMON"/client_delays.json "$clientDir"/
 cp "$NOVAPOKEMON"/cells_to_region.json "$clientDir"/
-cp "$NOVAPOKEMON"/lat.txt "$clientDir"/
+cp "$NOVAPOKEMON"/lats.txt "$clientDir"/
 cp "$NOVAPOKEMON"/locations.json "$clientDir"/
