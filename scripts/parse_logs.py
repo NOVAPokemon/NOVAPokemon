@@ -134,6 +134,8 @@ def plot_avg_latency_for_clients(min_timestamp, all_results, output_dir, csvs):
     latencies_csv.index.name = None
     latencies_csv.sort_index(inplace=True)
 
+    print(latencies_csv)
+
     ic(latencies_csv)
     latencies_agg = latencies_csv.groupby(timestamp_header, as_index=False)[
         time_took_header].mean()
@@ -392,14 +394,18 @@ def parse_resolved(current_hosts, line, ips_to_nodes):
     current_hosts[service] = ips_to_nodes[host_ip]
 
 
-def parse_requests(requests, line):
-    msg = line.split('msg=')[1][1:-1]
-    splits = msg.split(" ")
+def parse_requests(requests, line, log_file_path):
+    try:
+        msg = line.split('msg=')[1][1:-1]
+        splits = msg.split(" ")
 
-    timestamp = int(splits[1])
-    count = int(splits[2])
+        timestamp = int(splits[1])
+        count = int(splits[2])
 
-    requests[timestamp] = count
+        requests[timestamp] = count
+    except Exception as e:
+        print(f'{log_file_path}: {line}')
+        raise e
 
 
 def parse_retries(retries, line):
@@ -441,7 +447,7 @@ def parse_file_for_emits(log_file, emitted, retries, requests, sent_reqs, got_re
             if "[RET]" in line:
                 parse_retries(client_retries, line)
             elif "[REQ]" in line:
-                parse_requests(client_requests, line)
+                parse_requests(client_requests, line, log_file[PATH])
             elif "[SENT_REQ_ID]" in line:
                 parse_sent_req(client_sent_reqs, line)
             elif "[GOT_RESP_ID]" in line:

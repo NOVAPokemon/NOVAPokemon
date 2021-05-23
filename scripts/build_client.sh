@@ -54,7 +54,7 @@ cp "$NOVAPOKEMON"/location_tags.json "$clientDir"/
 cp "$NOVAPOKEMON"/delays_config.json "$clientDir"/
 cp "$NOVAPOKEMON"/client_delays.json "$clientDir"/
 cp "$NOVAPOKEMON"/cells_to_region.json "$clientDir"/
-cp "$NOVAPOKEMON"/lat.txt "$clientDir"/
+cp "$NOVAPOKEMON"/lats.txt "$clientDir"/
 cp "$NOVAPOKEMON"/locations.json "$clientDir"/
 rm -f "$clientDir"/multiclient
 cp "$NOVAPOKEMON"/client/multiclient_dir/multiclient "$clientDir"
@@ -63,7 +63,7 @@ docker build "$clientDir" -t brunoanjos/client:latest
 docker save brunoanjos/client:latest > $NOVAPOKEMON/images/client.tar
 
 rm "$clientDir"/locations.json
-rm "$clientDir"/lat.txt
+rm "$clientDir"/lats.txt
 rm "$clientDir"/location_tags.json
 rm "$clientDir"/delays_config.json
 rm "$clientDir"/client_delays.json
