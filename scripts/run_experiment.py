@@ -73,7 +73,7 @@ def get_lats(deploy_opts):
 
     print(f"Getting map {mapname} lats...")
 
-    cmd = f'cp {MAPS_DIR}/{mapname}/lat.txt {NOVAPOKEMON_DIR}/lat.txt'
+    cmd = f'cp {MAPS_DIR}/{mapname}/lats.txt {NOVAPOKEMON_DIR}/lats.txt'
     run_with_log_and_exit(cmd)
 
     print("Done!")

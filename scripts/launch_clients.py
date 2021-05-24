@@ -182,7 +182,7 @@ def main():
         "CELLS_TO_REGION": f'{CLI_DIR}/cells_to_region.json',
         "REGIONS_TO_AREA": f'{CLI_DIR}/regions_to_area.json',
         "CONFIGS": f'{CLI_DIR}/configs.json',
-        "LAT": f'{CLI_DIR}/lat.txt',
+        "LAT": f'{CLI_DIR}/lats.txt',
         "LOCATIONS": f'{CLI_DIR}/locations.json'
     }
 
