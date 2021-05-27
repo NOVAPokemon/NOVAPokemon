@@ -113,7 +113,7 @@ def write_avg_latency_for_clients_to_csv(all_results, output_dir):
                         f'{result[TIME_RECV]};{result[TIME_TOOK]};{client_id}\n')
 
 
-def load_avg_latency_for_clients_to_csv(output_dir):
+def load_avg_latency_for_clients_to_csv(output_dir: str):
     return pandas.read_csv(f'{output_dir}/clients.csv', delimiter=';')
 
 
@@ -540,7 +540,7 @@ def write_reqs_rets_to_csv(requests, retries, output_dir):
 
 def load_reqs_rets_to_csv(output_dir):
     return pandas.read_csv(f'{output_dir}/reqs.csv', delimiter=';'), \
-           pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
+        pandas.read_csv(f'{output_dir}/rets.csv', delimiter=';')
 
 
 def process_requests_retries(requests, retries, output_dir, csvs):
@@ -670,7 +670,8 @@ def process_sent_reqs_got_resps(reqs, resps, csvs, server_logs, output_dir):
     ]
 
     got_reqs = {}
-    dummies = [os.path.join(server_logs, dummy) for dummy in os.listdir(server_logs)]
+    dummies = [os.path.join(server_logs, dummy)
+               for dummy in os.listdir(server_logs)]
     logs = []
     for dummy in dummies:
         for log in os.listdir(dummy):

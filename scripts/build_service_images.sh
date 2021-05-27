@@ -12,6 +12,7 @@ ignored_results="results"
 ignored_images="images"
 ignored_venv="venv"
 ignored_build_logs="build_logs"
+ignored_typings="typings"
 
 DOCKERIZE_VERSION=v0.6.1
 
@@ -75,7 +76,8 @@ for d in */; do
 		[[ "$dirname_stripped" == "$ignored_base_image" ]] || [[ "$dirname_stripped" == "$ignored_deployment_config" ]] ||
 		[[ "$dirname_stripped" == "$ignored_logs" ]] || [[ "$dirname_stripped" == "$ignored_build_logs" ]] ||
 		[[ "$dirname_stripped" == "$ignored_map_viewer" ]] || [[ "$dirname_stripped" == "$ignored_results" ]] ||
-		[[ "$dirname_stripped" == "$ignored_images" ]] || [[ "$dirname_stripped" == "$ignored_venv" ]];
+		[[ "$dirname_stripped" == "$ignored_images" ]] || [[ "$dirname_stripped" == "$ignored_venv" ]] ||
+		[[ "$dirname_stripped" == "$ignored_typings" ]];
 	  then
 		continue
 	fi
@@ -120,6 +122,10 @@ for d in */; do
 
 	cd .. || exit
 done
+
+echo "Pulling and saving mongo image..."
+docker pull mongo:latest
+docker save mongo:latest > images/mongo.tar
 
 echo "Waiting for finish..."
 wait
