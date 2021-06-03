@@ -405,7 +405,6 @@ def parse_requests(requests, line, log_file_path):
         requests[timestamp] = count
     except Exception as e:
         print(f'{log_file_path}: {line}')
-        raise e
 
 
 def parse_retries(retries, line):
