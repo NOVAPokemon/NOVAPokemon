@@ -26,7 +26,7 @@ kafka:
 
 global:
   location: "47e66e27320fa19b"
-  nodeNum: "7"
+  nodeNum: "1"
   api_configmap:
     name: "services-api"
   database:
